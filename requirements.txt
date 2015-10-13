@@ -1,0 +1,15 @@
+Django==1.8
+gunicorn==18.0
+wsgiref==0.1.2
+psycopg2==2.5.1
+django_su==0.4.7
+requests
+dj-static
+dj-database-url
+boto
+django-debug-toolbar
+sendgrid
+djangorestframework
+markdown
+django-filter
+django-storages

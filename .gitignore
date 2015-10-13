@@ -1,0 +1,5 @@
+*.pyc
+*~
+staticfiles
+drop_db.sh
+init_env.sh

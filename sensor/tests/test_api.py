@@ -211,7 +211,6 @@ class Readingtest(TestCase):
         data = [{"sensorid" : "TEMP:XX" , "value" : "50"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
-        print response.status_code
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
         self.assertEqual( response.data , 1)
 

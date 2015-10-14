@@ -160,6 +160,15 @@ class Readingtest(TestCase):
                                                unit = "Degree celcius",
                                                min_value = 0,
                                                max_value = 100)
+
+        self.sensor = SensorID.objects.create( id = "HUM:XX",
+                                               parent_device = dev,
+                                               measurement_type = mtype,
+                                               description = "Measurement of ..",
+                                               unit = "Degree celcius",
+                                               min_value = 0,
+                                               max_value = 100)
+
     
     
     def test_post(self):
@@ -226,9 +235,11 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
         self.assertEqual( response.data , 3)
 
-
-        
-        
+        #No location - fails
+        data = [{"sensorid" : "HUM:XX" , "value" : "50" , "timestamp" : "10-10-2015 12:12:00"}]
+        string_data = json.dumps( data )
+        response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
         

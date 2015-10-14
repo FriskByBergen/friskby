@@ -95,6 +95,11 @@ class Reading(APIView):
                 sensor = models.SensorID.objects.get( pk = sensorid )
                 if not sensor.valid_input( value ):
                     return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
+
+                if sensor.location is None:
+                    if not "location" in reading:
+                        return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
+                        
             except models.SensorID.DoesNotExist:
                 return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
             

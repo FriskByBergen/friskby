@@ -126,3 +126,8 @@ if RESTDB_IO_URL is None:
 RESTDB_IO_POST_KEY = os.getenv("RESTDB_IO_POST_KEY")
 if RESTDB_IO_POST_KEY is None:
     raise Exception("Enviroment variable RESTDB_IO_POST_KEY has not been set")
+
+
+RESTDB_IO_GET_KEY = os.getenv("RESTDB_IO_GET_KEY")
+if RESTDB_IO_GET_KEY is None:
+    raise Exception("Enviroment variable RESTDB_IO_GET_KEY has not been set")

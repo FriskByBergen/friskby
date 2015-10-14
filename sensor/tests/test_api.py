@@ -211,17 +211,18 @@ class Readingtest(TestCase):
         data = [{"sensorid" : "TEMP:XX" , "value" : "50"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
+        print response.status_code
+        self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
         self.assertEqual( response.data , 1)
 
 
         #List of reading - return value == len(list)
-        data = [{"sensorid" : "TEMP:XX" , "value" : "50"},
+        data = [{"sensorid" : "TEMP:XX" , "value" : "60"},
                 {"sensorid" : "TEMP:XX" , "value" : 10},
                 {"sensorid" : "TEMP:XX" , "value" : 20}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
+        self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
         self.assertEqual( response.data , 3)
 
 

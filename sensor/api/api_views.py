@@ -95,31 +95,31 @@ class Reading(APIView):
             except models.SensorID.DoesNotExist:
                 return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
             
-        return (status.HTTP_200_OK , "")
+        return (True , "")
 
 
     def restdb_io_post( self , data ):
-        headers = {"Content-Type" : "application/json"}
-        params = {"x-apikey" : settings.RESTDB_IO_POST_KEY}
+        headers = {"Content-Type" : "application/json",
+                   "x-apikey" :  settings.RESTDB_IO_POST_KEY}
 
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        timestamp = time.strftime("%m-%d-%Y %H:%M:%S", time.gmtime())
         for reading in data:
             reading["timestamp"] = timestamp
             post_data = json.dumps( reading )
-            response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers , params = params)
-            if response.status_code != status.HTTP_200_OK:
+            response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers )
+            if response.status_code != status.HTTP_201_CREATED:
                 return (response.status_code , response.text)
 
-        return (status.HTTP_200_OK , len(data))
+        return (status.HTTP_201_CREATED , len(data))
 
         
 
     def post(self , request , format = None):
         if request.data:
             payload_status , msg = self.checkPayload( request.data )
-            if payload_status == status.HTTP_200_OK:
+            if payload_status is True:
                 restdb_io_status , msg = self.restdb_io_post( request.data )
-                if restdb_io_status == status.HTTP_200_OK:
+                if restdb_io_status == status.HTTP_201_CREATED:
                     return Response(msg , status = restdb_io_status)
                 else:
                     return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )

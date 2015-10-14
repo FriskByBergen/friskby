@@ -117,5 +117,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-print BASE_DIR
 
+RESTDB_IO_URL = os.getenv("RESTDB_IO_URL")
+if RESTDB_IO_URL is None:
+    raise Exception("Enviroment variable RESTDB_IO_URL has not been set")
+
+RESTDB_IO_POST_KEY = os.getenv("RESTDB_IO_POST_KEY")
+if RESTDB_IO_POST_KEY is None:
+    raise Exception("Enviroment variable RESTDB_IO_POST_KEY has not been set")

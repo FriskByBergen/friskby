@@ -1,4 +1,8 @@
 import json
+import requests
+import time
+
+from django.conf import settings
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -94,13 +98,31 @@ class Reading(APIView):
         return (status.HTTP_200_OK , "")
 
 
+    def restdb_io_post( self , data ):
+        headers = {"Content-Type" : "application/json"}
+        params = {"x-apikey" : settings.RESTDB_IO_POST_KEY}
 
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        for reading in data:
+            reading["timestamp"] = timestamp
+            post_data = json.dumps( reading )
+            response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers , params = params)
+            if response.status_code != status.HTTP_200_OK:
+                return (response.status_code , response.text)
+
+        return (status.HTTP_200_OK , len(data))
+
+        
 
     def post(self , request , format = None):
         if request.data:
             payload_status , msg = self.checkPayload( request.data )
             if payload_status == status.HTTP_200_OK:
-                return Response(len(request.data) , status = status.HTTP_200_OK)
+                restdb_io_status , msg = self.restdb_io_post( request.data )
+                if restdb_io_status == status.HTTP_200_OK:
+                    return Response(msg , status = restdb_io_status)
+                else:
+                    return Response("Posting to restdb.io failed" , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
             else:
                 return Response( msg , status = payload_status )
         else:

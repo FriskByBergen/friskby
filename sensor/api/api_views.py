@@ -122,7 +122,7 @@ class Reading(APIView):
                 if restdb_io_status == status.HTTP_200_OK:
                     return Response(msg , status = restdb_io_status)
                 else:
-                    return Response("Posting to restdb.io failed" , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
+                    return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
             else:
                 return Response( msg , status = payload_status )
         else:

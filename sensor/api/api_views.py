@@ -88,6 +88,9 @@ class Reading(APIView):
             else:
                 return (status.HTTP_400_BAD_REQUEST , "Missing 'value' field in payload")
 
+            if not "timestamp" in reading:
+                return (status.HTTP_400_BAD_REQUEST , "Missing 'timestamp' field in payload")
+
             try:
                 sensor = models.SensorID.objects.get( pk = sensorid )
                 if not sensor.valid_input( value ):
@@ -102,9 +105,7 @@ class Reading(APIView):
         headers = {"Content-Type" : "application/json",
                    "x-apikey" :  settings.RESTDB_IO_POST_KEY}
 
-        timestamp = time.strftime("%m-%d-%Y %H:%M:%S", time.gmtime())
         for reading in data:
-            reading["timestamp"] = timestamp
             post_data = json.dumps( reading )
             response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers )
             if response.status_code != status.HTTP_201_CREATED:

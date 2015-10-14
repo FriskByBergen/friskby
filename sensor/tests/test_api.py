@@ -173,42 +173,44 @@ class Readingtest(TestCase):
         response = client.post("/sensor/api/reading/" , data = "Not valid json" , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
-        # Payload structure is invalid
-        data = [{"sensoridXX" : "TempXX" , "value" : 50}]
+
+        # Payload structure is invalid - missing timestamp
+        data = [{"sensorid" : "TEMP:XX" , "value" : 50}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
+
         # SensorID is invalid
-        data = [{"sensorid" : "TempXX" , "value" : 50}]
+        data = [{"sensorid" : "TempXX" , "value" : 50 , "timestamp" : "10-10-2015 12:12:00"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND , response.data)
 
         # Value out of range
-        data = [{"sensorid" : "TEMP:XX" , "value" : 400}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : 400, "timestamp" : "10-10-2015 12:12:00"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
         # Value not float
-        data = [{"sensorid" : "TEMP:XX" , "value" : "50X"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : "50X" , "timestamp" : "10-10-2015 12:12:00"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
         # A list of several readings - error in one.
-        data = [{"sensorid" : "TEMP:XX" , "value" : 50},
-                {"sensorid" : "TEMP:XX" , "value" : 60},
-                {"sensorid" : "TEMP:XX" , "value" : 160}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "10-10-2015 12:12:00"},
+                {"sensorid" : "TEMP:XX" , "value" : 60 , "timestamp" : "10-10-2015 12:12:00"},
+                {"sensorid" : "TEMP:XX" , "value" : 160 , "timestamp" : "10-10-2015 12:12:00"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
         # Value is string-float - OK
-        data = [{"sensorid" : "TEMP:XX" , "value" : "50"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : "50" , "timestamp" : "10-10-2015 12:12:00"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
@@ -216,9 +218,9 @@ class Readingtest(TestCase):
 
 
         #List of reading - return value == len(list)
-        data = [{"sensorid" : "TEMP:XX" , "value" : "60"},
-                {"sensorid" : "TEMP:XX" , "value" : 10},
-                {"sensorid" : "TEMP:XX" , "value" : 20}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : "60", "timestamp" : "10-10-2015 12:12:00"},
+                {"sensorid" : "TEMP:XX" , "value" : 10, "timestamp" : "10-10-2015 12:12:00"},
+                {"sensorid" : "TEMP:XX" , "value" : 20, "timestamp" : "10-10-2015 12:12:00"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)

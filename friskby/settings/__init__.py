@@ -59,7 +59,7 @@ ROOT_URLCONF = 'friskby.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['friskby/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

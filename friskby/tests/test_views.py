@@ -2,11 +2,9 @@ from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
 from rest_framework import status
 
-print "Running it"
 class ViewTest(TestCase):
     def setUp(self):
         pass
-
         
 
     def test_get_root(self):

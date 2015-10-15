@@ -6,6 +6,54 @@ Main page for Friskby API
 </title>
 </head>
 <body>
-API: Boody
+<h3>This is the main page describing the friskby web API </h3>
+
+
+<h4> How it works </h4> This webpage is a thin Django based frontent
+which accepts posts, validates the post and the reposts the validated
+content to the restdb.io storage server.
+
+
+<h4> How to add a new sensor </h4> This web application is a simple
+database backed web application. <a href="/admin/">The Django admin</a>
+site supports the basic CRUD operations.
+
+
+<h4> How to post </h4>
+
+
+<div style="background-color:lightgray">
+<pre>
+#!/usr/bin/env python
+import requests
+import json
+
+url = "http://friskby.herokuapp.com/sensor/api/reading/"
+headers = {"Content-Type" : "application/json"}
+
+data = [{"sensorid" : "TEMP:XX" , "value" : 50, "timestamp" : "10-10-2015 12:12:00"},
+        {"sensorid" : "HUM:XX"  , "value" : 20, "timestamp" : "10-10-2015 12:12:00"}]
+
+response = requests.post( url , data = json.dumps( data ) , headers = headers )
+
+if response.status_code == 201:
+    print "Posted %s measurements" % response.text
+else:
+    print "ERROR - posting failed"
+    print "Status: %s" % response.status_code
+    print "Msg: %s" % response.text
+
+
+</pre>
+</div>
+
+<h4> About the code </h4>
+
+The code for the web project is at GitHub - will move to the FriskbyBergen account: 
+<a href="https://github.com/joakim-hove/friskby/"> friskby <a/>
+
+The code is currently deployed on heroku. 
+
+
 </body>
 </html>

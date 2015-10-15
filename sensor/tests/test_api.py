@@ -1,3 +1,4 @@
+import random
 import json
 from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
@@ -147,23 +148,23 @@ class SensorIDTest(TestCase):
 
 class Readingtest(TestCase):
     def setUp(self):
-        loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
+        self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         hp = Company.objects.create( name = "Hewlett Packard" )
-        dev = DeviceType.objects.create( name = "HP-X123" , company = hp)
-        mtype = MeasurementType.objects.create( name = "Temperature" )
+        self.dev = DeviceType.objects.create( name = "HP-X123" , company = hp)
+        self.mtype = MeasurementType.objects.create( name = "Temperature" )
         
         self.sensor = SensorID.objects.create( id = "TEMP:XX",
-                                               location = loc,
-                                               parent_device = dev,
-                                               measurement_type = mtype,
+                                               location = self.loc,
+                                               parent_device = self.dev,
+                                               measurement_type = self.mtype,
                                                description = "Measurement of ..",
                                                unit = "Degree celcius",
                                                min_value = 0,
                                                max_value = 100)
 
         self.sensor = SensorID.objects.create( id = "HUM:XX",
-                                               parent_device = dev,
-                                               measurement_type = mtype,
+                                               parent_device = self.dev,
+                                               measurement_type = self.mtype,
                                                description = "Measurement of ..",
                                                unit = "Degree celcius",
                                                min_value = 0,
@@ -241,6 +242,43 @@ class Readingtest(TestCase):
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
+        
+    def test_get(self):
+        # The funny construction with a random sensorID is to work
+        # around a bug/limitation/misunderstanding in the restdb.io
+        # api which seems to cap the return at 100 elements?
+        sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
+        SensorID.objects.create( id = sensor_id,
+                                 location = self.loc,
+                                 parent_device = self.dev,
+                                 measurement_type = self.mtype,
+                                 description = "Measurement of ..",
+                                 unit = "Degree celcius",
+                                 min_value = 0,
+                                 max_value = 100)
+        
+        
+        client = Client( )
+        response = client.get("/sensor/api/reading/")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id)
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = json.loads( response.data )
+        len1 = len(result)
+
+        data = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "10-10-2015 12:12:00"},
+                {"sensorid" : sensor_id , "value" : 10, "timestamp" : "10-10-2015 12:12:00"},
+                {"sensorid" : sensor_id , "value" : 20, "timestamp" : "10-10-2015 12:12:00"}]
+        string_data = json.dumps( data )
+        response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
+        self.assertEqual( response.data , 3)
 
         
-        
+        response = client.get("/sensor/api/reading/%s/" % sensor_id)
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = json.loads( response.data )
+        len2 = len(result)        
+
+        self.assertEqual( 3 , len2 - len1 )

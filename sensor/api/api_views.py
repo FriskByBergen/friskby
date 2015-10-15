@@ -133,3 +133,25 @@ class Reading(APIView):
                 return Response( msg , status = payload_status )
         else:
             return Response("Missing data" , status = status.HTTP_400_BAD_REQUEST )
+
+
+    def get(self , request , sensor_id = None):
+        if sensor_id is None:
+            return Response("Must supply sensorid when querying" , status = status.HTTP_400_BAD_REQUEST )
+            
+        try:
+            sensor = models.SensorID.objects.get( pk = sensor_id )
+            headers = {"Content-Type" : "application/json",
+                       "x-apikey" :  settings.RESTDB_IO_GET_KEY}
+            query_string = json.dumps( {"sensorid" : sensor_id} )
+            response = requests.get( settings.RESTDB_IO_URL , headers = headers , params = {"q" : query_string})
+            data = response.json()
+            time_series = []
+            for reading in data:
+                time_series.append( (reading["timestamp"] , reading["value"]) )
+                
+            return Response( json.dumps( time_series ) , status = response.status_code ) 
+        except models.SensorID.DoesNotExist:
+            return Response("No such sensor:%s" % sensor_id , status = status.HTTP_200_OK )
+            
+        

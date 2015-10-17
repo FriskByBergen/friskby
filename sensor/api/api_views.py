@@ -135,11 +135,17 @@ class Reading(APIView):
             return Response("Missing data" , status = status.HTTP_400_BAD_REQUEST )
 
 
-    def restdb_io_get(self , sensor_id):
+    def restdb_io_get(self , sensor_id , request_params):
         headers = {"Content-Type" : "application/json",
                    "x-apikey" :  settings.RESTDB_IO_GET_KEY}
         query_string = json.dumps( {"sensorid" : sensor_id} )
-        response = requests.get( settings.RESTDB_IO_URL , headers = headers , params = {"q" : query_string})
+
+        params = {"q" : query_string}
+        params.update( request_params )
+        if not "max" in params:
+            params["max"] = 99999999
+
+        response = requests.get( settings.RESTDB_IO_URL , headers = headers , params = params)
 
         if response.status_code == status.HTTP_200_OK:
             data = response.json()
@@ -158,7 +164,7 @@ class Reading(APIView):
             
         try:
             sensor = models.SensorID.objects.get( pk = sensor_id )
-            return self.restdb_io_get( sensor_id )
+            return self.restdb_io_get( sensor_id , request.GET )
         except models.SensorID.DoesNotExist:
             return Response("No such sensor:%s" % sensor_id , status = status.HTTP_200_OK )
             

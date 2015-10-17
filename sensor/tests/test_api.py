@@ -282,3 +282,5 @@ class Readingtest(TestCase):
         len2 = len(result)        
 
         self.assertEqual( 3 , len2 - len1 )
+        
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , )

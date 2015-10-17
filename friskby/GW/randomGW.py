@@ -13,7 +13,6 @@ if sensor is None:
     sys.exit( msg )
 
 
-num = 10
 min_value = sensor.getMinValue( )
 max_value = sensor.getMaxValue( )
 sleep_time = 1
@@ -25,17 +24,13 @@ except Exception:
     last_value = 0.50 * (min_value + max_value)
 
 
-for i in range(num):
-    random_value = (max_value - min_value) + 1.25 * (random.random() - 0.5) * (max_value - min_value)
-    new_value = last_value * corr + (1 - corr) * random_value 
+random_value = (max_value - min_value) + 1.25 * (random.random() - 0.5) * (max_value - min_value)
+new_value = last_value * corr + (1 - corr) * random_value 
 
-    if new_value > max_value:
-        new_value = max_value
+if new_value > max_value:
+    new_value = max_value
     
-    if new_value < min_value:
-        new_value = min_value
+if new_value < min_value:
+    new_value = min_value
     
-    sensor.postValue( new_value )
-    print "Posting value: %g" % new_value
-    time.sleep( sleep_time )
-    last_value = new_value
+sensor.postValue( new_value )

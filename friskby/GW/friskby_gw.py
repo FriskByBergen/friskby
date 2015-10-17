@@ -23,6 +23,14 @@ class FriskByHttp(object):
             raise Exception("Query to:%s returned status code:%s Error:%s" % (url , response.status_code , response.text))
 
 
+    def postToURL(self , api_url , data , params = None ):
+        url = self.url + api_url
+        response = requests.post(url , data = json.dumps( data ) , headers = {"content_type" :  "application/json"})
+        if response.status_code != 201:
+            raise Exception("Post failed: %s" % response.text)
+            
+
+
             
 class FriskBySensor(FriskByHttp):
     def __init__(self , values , url = ROOT_URL):
@@ -32,7 +40,8 @@ class FriskBySensor(FriskByHttp):
         self.max_value = values["max_value"]
 
 
-    def timeStamp(self, time = None):
+    @classmethod
+    def timeStamp(cls , time = None):
         if time is None:
             time = datetime.datetime.now()
             
@@ -55,20 +64,18 @@ class FriskBySensor(FriskByHttp):
             raise Exception("No data for sensor:%s" % self.id)
             
 
-    def postValue(self , value):
-        url = self.url + "sensor/api/reading/"
-        timestamp = self.timeStamp( )
+    def postValue(self , value , timestamp = None):
+        if timestamp is None:
+            timestamp = self.timeStamp( )
+
         data = []
         try:
             for v in value:
                 data.append( {"value" : v , "timestamp" : timestamp , "sensorid" : self.id } ) 
         except TypeError:
             data.append( {"value" : value , "timestamp" : timestamp , "sensorid" : self.id } ) 
-            
-        response = requests.post(url , data = json.dumps( data ) , headers = {"content_type" :  "application/json"})
-        if response.status_code != 201:
-            raise Exception("Post failed: %s" % response.text)
 
+        self.postToURL( "sensor/api/reading/" , data )
 
 
 class FriskByGW(FriskByHttp):

@@ -323,7 +323,7 @@ class Readingtest(TestCase):
 
         response = client.get("/sensor/api/reading/%s/" % sensor_id)
         self.assertEqual( response.status_code , status.HTTP_200_OK )
-        result = json.loads( response.data )
+        result = response.data
         len1 = len(result)
 
         data = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "10-10-2015 12:12:00"},
@@ -337,7 +337,7 @@ class Readingtest(TestCase):
         
         response = client.get("/sensor/api/reading/%s/" % sensor_id)
         self.assertEqual( response.status_code , status.HTTP_200_OK )
-        result = json.loads( response.data )
+        result = response.data
         len2 = len(result)        
 
         self.assertEqual( 3 , len2 - len1 )

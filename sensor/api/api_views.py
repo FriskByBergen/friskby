@@ -162,7 +162,7 @@ class Reading(APIView):
         query_string = json.dumps( {"sensorid" : sensor_id} )
 
         params = {"q" : query_string,
-                  "sort" : "timespamp",
+                  "sort" : "timestamp",
                   "dir" : 1 }
         params.update( request_params )
         if not "max" in params:

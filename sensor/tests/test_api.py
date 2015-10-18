@@ -6,6 +6,33 @@ from rest_framework import status
 
 from sensor.models import *
 
+class TestContext(object):
+    def __init__(self):
+        self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
+        self.hp = Company.objects.create( name = "Hewlett Packard" )
+        self.dev = DeviceType.objects.create( name = "HP-X123" , company = self.hp)
+        self.mtype = MeasurementType.objects.create( name = "Temperature" )
+        
+        self.temp_sensor = SensorID.objects.create( id = "TEMP:XX",
+                                                    location = self.loc,
+                                                    parent_device = self.dev,
+                                                    measurement_type = self.mtype,
+                                                    description = "Measurement of temperature",
+                                                    unit = "Degree celcius",
+                                                    min_value = 0,
+                                                    max_value = 100)
+
+        self.hum_sensor = SensorID.objects.create( id = "HUM:XX",
+                                                   parent_device = self.dev,
+                                                   measurement_type = self.mtype,
+                                                   description = "Measurement humidity",
+                                                   unit = "Percent humidity",
+                                                   min_value = 0,
+                                                   max_value = 100)
+        
+
+
+
 class MeasurementTypeTest(TestCase):
 
     def setUp(self):
@@ -148,28 +175,7 @@ class SensorIDTest(TestCase):
 
 class Readingtest(TestCase):
     def setUp(self):
-        self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
-        hp = Company.objects.create( name = "Hewlett Packard" )
-        self.dev = DeviceType.objects.create( name = "HP-X123" , company = hp)
-        self.mtype = MeasurementType.objects.create( name = "Temperature" )
-        
-        self.sensor = SensorID.objects.create( id = "TEMP:XX",
-                                               location = self.loc,
-                                               parent_device = self.dev,
-                                               measurement_type = self.mtype,
-                                               description = "Measurement of ..",
-                                               unit = "Degree celcius",
-                                               min_value = 0,
-                                               max_value = 100)
-
-        self.sensor = SensorID.objects.create( id = "HUM:XX",
-                                               parent_device = self.dev,
-                                               measurement_type = self.mtype,
-                                               description = "Measurement of ..",
-                                               unit = "Degree celcius",
-                                               min_value = 0,
-                                               max_value = 100)
-
+        self.context = TestContext()
     
     
     def test_post(self):
@@ -249,9 +255,9 @@ class Readingtest(TestCase):
         # api which seems to cap the return at 100 elements?
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         SensorID.objects.create( id = sensor_id,
-                                 location = self.loc,
-                                 parent_device = self.dev,
-                                 measurement_type = self.mtype,
+                                 location = self.context.loc,
+                                 parent_device = self.context.dev,
+                                 measurement_type = self.context.mtype,
                                  description = "Measurement of ..",
                                  unit = "Degree celcius",
                                  min_value = 0,

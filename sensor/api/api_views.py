@@ -161,7 +161,9 @@ class Reading(APIView):
                    "x-apikey" :  settings.RESTDB_IO_GET_KEY}
         query_string = json.dumps( {"sensorid" : sensor_id} )
 
-        params = {"q" : query_string}
+        params = {"q" : query_string,
+                  "sort" : "timespamp",
+                  "dir" : 1 }
         params.update( request_params )
         if not "max" in params:
             params["max"] = 99999999
@@ -173,7 +175,7 @@ class Reading(APIView):
             time_series = []
             for reading in data:
                 time_series.append( (reading["timestamp"] , reading["value"]) )
-            return Response( json.dumps( time_series ) , status = response.status_code ) 
+            return Response( time_series , status = response.status_code ) 
         else:
             return Response( response.data , status = response.status_code ) 
 

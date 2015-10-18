@@ -6,7 +6,7 @@ ROOT_URL = "https://friskby.herokuapp.com/"
 
 
 class FriskByHttp(object):
-    def __init__(self , url = ROOT_URL):
+    def __init__(self , url):
         self.url = url
 
 
@@ -25,7 +25,7 @@ class FriskByHttp(object):
 
     def postToURL(self , api_url , data , params = None ):
         url = self.url + api_url
-        response = requests.post(url , data = json.dumps( data ) , headers = {"content_type" :  "application/json"})
+        response = requests.post(url , data = json.dumps( data ) , headers = {"Content-Type" : "application/json"})
         if response.status_code != 201:
             raise Exception("Post failed: %s" % response.text)
             
@@ -34,7 +34,7 @@ class FriskByHttp(object):
             
 class FriskBySensor(FriskByHttp):
     def __init__(self , values , url = ROOT_URL):
-        super(FriskBySensor , self).__init__( ROOT_URL )
+        super(FriskBySensor , self).__init__( url )
         self.id = values["id"]
         self.min_value = values["min_value"]
         self.max_value = values["max_value"]
@@ -81,7 +81,7 @@ class FriskBySensor(FriskByHttp):
 class FriskByGW(FriskByHttp):
 
     def __init__(self , url = ROOT_URL):
-        super(FriskByGW , self).__init__( ROOT_URL )
+        super(FriskByGW , self).__init__( url )
 
     
     def sensorList(self):

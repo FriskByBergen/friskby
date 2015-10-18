@@ -2,10 +2,13 @@
 <head>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"> </script>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 <script>
+
+function plot_data( result ) {
+   
+}
 
 
 function init_sensor_selection( result ) {
@@ -61,11 +64,20 @@ function update_sensor_selection( result ) {
 
 function sensor_select_event( ev ) {
    var sensor_id = document.getElementById('id_sensor_id_select').value;
-   var post = { type 	   : "GET",
-                dataType   : "json",
-                url        : "/sensor/api/sensorinfo/" + sensor_id.toString() + "/", 
-                success    : update_sensor_selection };
-   $.ajax( post );
+   {
+      var meta_post = { type 	   : "GET",
+                        dataType   : "json",
+                        url        : "/sensor/api/sensorinfo/" + sensor_id.toString() + "/", 
+                        success    : update_sensor_selection };
+      $.ajax( meta_post );
+   }
+   {
+      var data_post = { type 	   : "GET",
+                        dataType   : "json",
+                        url        : "/sensor/api/reading/" + sensor_id.toString() + "/", 
+                        success    : plot_data };
+      $.ajax( data_post );
+   }
    return false; 
 }
 
@@ -85,6 +97,11 @@ Main page for Friskby API
 </title>
 </head>
 <body>
+
+
+
+
+<svg id="visualisation" width="800" height="400"></svg>
 <h4> A simple javascript example </h4>
 <div id="id_sensor_select_box" style="background-color:lightgray">
 <label> Sensor: </sensor>

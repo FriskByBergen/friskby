@@ -20,6 +20,9 @@ urlpatterns = [
     url(r'^sensorID/$' , SensorIDList.as_view()),
     url(r'^sensorID/(?P<pk>%s)/$' % models.SensorID.IDPattern , SensorID.as_view()),
     #
+    url(r'^sensorinfo/$' , SensorInfo.as_view()),
+    url(r'^sensorinfo/(?P<sensor_id>%s)/$' % models.SensorID.IDPattern , SensorInfo.as_view()),
+    #
     url(r'^reading/$'            , Reading.as_view()),
     url(r'^reading/(?P<sensor_id>%s)/$' % models.SensorID.IDPattern , Reading.as_view()),
 ]

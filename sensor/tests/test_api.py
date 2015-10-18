@@ -173,6 +173,59 @@ class SensorIDTest(TestCase):
         self.assertEqual( sensor0["max_value"] , 100 )
 
 
+
+class SensorInfoTest(TestCase):
+    def setUp(self):
+        self.context = TestContext()
+
+    def test_get_list(self):
+        client = Client( )
+
+        # Missing data
+        response = client.get("/sensor/api/sensorinfo/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
+        sensor_list = response.data
+        sensor0 = sensor_list[0]
+        loc = sensor0["location"]
+        self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
+
+        dev = sensor0["parent_device"]
+        self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
+
+        mtype = sensor0["measurement_type"]
+        self.assertEqual( mtype , {"id" : 1 , "name" : "Temperature"} ) 
+        
+        self.assertEqual( sensor0["min_value"] , 0 )
+        self.assertEqual( sensor0["max_value"] , 100 )
+
+
+
+    def test_get(self):
+        client = Client( )
+
+        response = client.get("/sensor/api/sensorinfo/XYZ/")
+        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
+
+        response = client.get("/sensor/api/sensorinfo/TEMP:XX/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+
+        sensor0 = response.data
+        loc = sensor0["location"]
+        self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
+
+        dev = sensor0["parent_device"]
+        self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
+
+        mtype = sensor0["measurement_type"]
+        self.assertEqual( mtype , {"id" : 1 , "name" : "Temperature"} ) 
+        
+        self.assertEqual( sensor0["min_value"] , 0 )
+        self.assertEqual( sensor0["max_value"] , 100 )
+
+        
+
+
+
 class Readingtest(TestCase):
     def setUp(self):
         self.context = TestContext()

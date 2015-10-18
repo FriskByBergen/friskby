@@ -73,6 +73,27 @@ class SensorID(generics.RetrieveAPIView):
 
 #################################################################
 
+class SensorInfo(APIView):
+    def get(self , request , sensor_id = None):
+        if sensor_id is None:
+            sensor_list = models.SensorID.objects.all()
+        else:
+            try:
+                sensor_list = [ models.SensorID.objects.get( pk = sensor_id ) ]
+            except models.SensorID.DoesNotExist:
+                return Response("The sensorID:%s is not found" % sensor_id , status.HTTP_404_NOT_FOUND)
+            
+        result = []
+        for sensor in sensor_list:
+            serialized = SensorInfoSerializer( sensor )
+            result.append( serialized.data )
+            
+        if sensor_id is None:
+            return Response( result , status = status.HTTP_200_OK ) 
+        else:
+            return Response( result[0] , status = status.HTTP_200_OK ) 
+
+
 class Reading(APIView):
 
     def checkPayload(self , data):

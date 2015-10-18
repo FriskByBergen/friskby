@@ -1,11 +1,104 @@
 <html>
 <head>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"> </script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script>
+
+
+function init_sensor_selection( result ) {
+    sensor_select = document.getElementById('id_sensor_id_select');
+    for (var index=0; index < result.length; index++) {
+        var sensor = result[index];
+	var option = document.createElement("option");
+	option.text = sensor.description;
+        option.value = sensor.id;
+	sensor_select.add(option, sensor_select[0]);
+   }
+   sensor_select_event( );
+}
+
+
+function fetch_sensor_selection( ev ) {
+   var post = { type     : "GET", 
+	        dataType : "json" ,
+                url      : "/sensor/api/sensorinfo/",
+                success  : init_sensor_selection };
+
+   $.ajax( post );
+   return false; 
+}
+
+
+function update_sensor_selection( result ) {
+   {   
+       var location_text;   			      
+       var location = result.location;
+       location_text = location.name + "(" + location.latitude.toString() + "," + location.longitude.toString() + "," + location.altitude.toString() + ")";
+       $("#id_location").html( location_text );
+   }
+   {
+       var range_text;
+       range_text = result.min_value.toString() + " - " + result.max_value.toString();
+       $("#id_range").html( range_text );
+   }			      
+   {
+       var device_text;
+       var device = result.parent_device;
+       device_text = device.company.name + " / " + device.name;
+       $("#id_device_type").html( device_text );
+   }
+
+   $("#id_measurement_type").html( result.measurement_type.name );
+   $("#id_unit").html( result.unit );
+   $("#id_sensor_id").html( result.id );
+   $("#id_description").html( result.description );
+}
+
+
+
+function sensor_select_event( ev ) {
+   var sensor_id = document.getElementById('id_sensor_id_select').value;
+   var post = { type 	   : "GET",
+                dataType   : "json",
+                url        : "/sensor/api/sensorinfo/" + sensor_id.toString() + "/", 
+                success    : update_sensor_selection };
+   $.ajax( post );
+   return false; 
+}
+
+
+
+window.onload = function() {
+   sensor_select = document.getElementById('id_sensor_id_select');
+   sensor_select.onchange = sensor_select_event;
+   fetch_sensor_selection( );
+   sensor_select_event( );   
+}
+
+
+</script>
 <title>
 Main page for Friskby API
 </title>
 </head>
 <body>
+<h4> A simple javascript example </h4>
+<div id="id_sensor_select_box" style="background-color:lightgray">
+<label> Sensor: </sensor>
+<select id="id_sensor_id_select" name="SensorID">
+</select> <p>
+<label> SensorID: </label> <span id="id_sensor_id"> </span><p>
+<label> Description: </label> <span id="id_description"> </span><p>
+<label> Location: </label> <span id="id_location"> </span><p>
+<label> Measurement type: </label> <span id="id_measurement_type"> </span><p>
+<label> Measurement unit: </label> <span id="id_unit"> </span><p>
+<label> Range: </label> <span id="id_range"> </span><p>
+<label> Device type: </label> <span id="id_device_type"> </span><p>
+</div>
+
 <h3>This is the main page describing the friskby web API </h3>
 
 

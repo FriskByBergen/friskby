@@ -28,6 +28,9 @@ class MeasurementType( Model ):
         return self.name
 
 
+class TimeStamp( Model ):
+    timestamp = DateTimeField("timestamp")
+
 
 class Location( Model ):
     name = CharField("Location" , max_length = 60 )

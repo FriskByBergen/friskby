@@ -4,7 +4,10 @@ from django.core.validators import RegexValidator
 
 class DataType( Model ):
     id = CharField("DataType" , max_length = 60 , primary_key = True)
-    
+
+    def __unicode__(self):
+        return self.id
+
 
 class Company( Model ):
     name = CharField("Device manufacturer" , max_length = 60)
@@ -30,6 +33,9 @@ class MeasurementType( Model ):
 
 class TimeStamp( Model ):
     timestamp = DateTimeField("timestamp")
+
+    def __unicode__(self):
+        return str(self.timestamp)
 
 
 class Location( Model ):

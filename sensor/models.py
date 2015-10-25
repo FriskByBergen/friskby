@@ -1,6 +1,11 @@
 from django.db.models import *
 from django.core.validators import RegexValidator
 
+
+class DataType( Model ):
+    id = CharField("DataType" , max_length = 60 , primary_key = True)
+    
+
 class Company( Model ):
     name = CharField("Device manufacturer" , max_length = 60)
 

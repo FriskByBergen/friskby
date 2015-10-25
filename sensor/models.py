@@ -47,6 +47,7 @@ class SensorID( Model ):
     location = ForeignKey( Location , null = True )
     parent_device = ForeignKey( DeviceType )
     measurement_type = ForeignKey( MeasurementType )
+    data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
     unit = CharField("Unit" , max_length = 60 )
     min_value = FloatField("Minimum value")

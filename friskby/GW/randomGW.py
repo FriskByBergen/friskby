@@ -25,7 +25,7 @@ except Exception:
     last_value = 0.50 * (min_value + max_value)
 
 
-random_value = (max_value - min_value) * (1 + 1.25 * (random.random() - 0.5))
+random_value = (max_value - min_value) * (0.5 + 1.25 * (random.random() - 0.5))
 new_value = last_value * corr + (1 - corr) * random_value 
 
 if new_value > max_value:
@@ -33,5 +33,5 @@ if new_value > max_value:
     
 if new_value < min_value:
     new_value = min_value
-    
+
 sensor.postValue( new_value )

@@ -30,6 +30,12 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = ('id', 'name' , 'latitude', 'longitude', 'altitude')
 
 
+class DataTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataType
+        fields = ('id',)
+
+
 class DeviceInfoSerializer(serializers.ModelSerializer):
     company = CompanySerializer( read_only = True )
     class Meta:

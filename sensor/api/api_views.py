@@ -61,6 +61,19 @@ class Location(generics.RetrieveAPIView):
 
 #################################################################
 
+
+class DataTypeList(generics.ListCreateAPIView):
+    queryset = models.DataType.objects.all()
+    serializer_class = DataTypeSerializer
+    
+
+class DataType(generics.RetrieveAPIView):    
+    queryset = models.DataType.objects.all()
+    serializer_class = DataTypeSerializer
+
+
+#################################################################
+
 class SensorIDList(generics.ListCreateAPIView):
     queryset = models.SensorID.objects.all()
     serializer_class = SensorIDSerializer

@@ -17,6 +17,9 @@ urlpatterns = [
     url(r'^location/$' , LocationList.as_view()),
     url(r'^location/(?P<pk>[0-9]+)/$' , Location.as_view()),
     #
+    url(r'^data_type/$' , DataTypeList.as_view()),
+    url(r'^data_type/(?P<pk>[0-9]+)/$' , DataType.as_view()),
+    #
     url(r'^sensorID/$' , SensorIDList.as_view()),
     url(r'^sensorID/(?P<pk>%s)/$' % models.SensorID.IDPattern , SensorID.as_view()),
     #

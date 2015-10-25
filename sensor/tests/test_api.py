@@ -104,6 +104,24 @@ class DeviceTypeTest(TestCase):
         self.assertEqual( dev0["company"] , self.hp.id )
 
 
+class DataTypeTest(TestCase):
+    def setUp(self):
+        DataType.objects.create( id = "FILTEREDX" )
+        
+    def test_get(self):
+        client = Client( )
+        response = client.get("/sensor/api/data_type/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads( response.content )
+        self.assertEqual( len(data) , 3 )
+        
+        type_list = [ x["id"] for x in data ]
+        self.assertTrue("TEST" in type_list)
+        self.assertTrue("RAWDATA" in type_list)
+        self.assertTrue("FILTEREDX" in type_list)
+
+
+
 class LocationTest(TestCase):
     def setUp(self):
         Location.objects.create( name = "DanmarksPlass" , latitude = 100.0 , longitude = 60)

@@ -135,7 +135,7 @@ class TimeStampTest(TestCase):
         
     def test_get(self):
         client = Client( )
-        response = client.get("/sensor/api/time_stamp/")
+        response = client.get("/sensor/api/timestamp/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
         self.assertEqual( len(data) , 3 )

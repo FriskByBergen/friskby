@@ -1,5 +1,7 @@
 import random
 import json
+
+from django.utils import timezone
 from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
 from rest_framework import status
@@ -121,6 +123,22 @@ class DataTypeTest(TestCase):
         self.assertTrue("TEST" in type_list)
         self.assertTrue("RAWDATA" in type_list)
         self.assertTrue("FILTEREDX" in type_list)
+
+
+class TimeStampTest(TestCase):
+
+    def setUp(self):
+        TimeStamp.objects.create( timestamp = timezone.now() )
+        TimeStamp.objects.create( timestamp = timezone.now() )
+        TimeStamp.objects.create( timestamp = timezone.now() )
+
+        
+    def test_get(self):
+        client = Client( )
+        response = client.get("/sensor/api/time_stamp/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads( response.content )
+        self.assertEqual( len(data) , 3 )
 
 
 

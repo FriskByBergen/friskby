@@ -20,6 +20,9 @@ urlpatterns = [
     url(r'^data_type/$' , DataTypeList.as_view()),
     url(r'^data_type/(?P<pk>[0-9]+)/$' , DataType.as_view()),
     #
+    url(r'^timestamp/$' , TimeStampList.as_view()),
+    url(r'^timestamp/(?P<pk>[0-9]+)/$' , TimeStamp.as_view()),
+    #
     url(r'^sensorID/$' , SensorIDList.as_view()),
     url(r'^sensorID/(?P<pk>%s)/$' % models.SensorID.IDPattern , SensorID.as_view()),
     #

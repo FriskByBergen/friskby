@@ -36,6 +36,12 @@ class DataTypeSerializer(serializers.ModelSerializer):
         fields = ('id',)
 
 
+class TimeStampSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimeStamp
+        fields = ('timestamp',)
+
+
 class DeviceInfoSerializer(serializers.ModelSerializer):
     company = CompanySerializer( read_only = True )
     class Meta:

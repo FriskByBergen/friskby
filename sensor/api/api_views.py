@@ -74,6 +74,19 @@ class DataType(generics.RetrieveAPIView):
 
 #################################################################
 
+class TimeStampList(generics.ListCreateAPIView):
+    queryset = models.TimeStamp.objects.all()
+    serializer_class = TimeStampSerializer
+    
+
+class TimeStamp(generics.RetrieveAPIView):    
+    queryset = models.TimeStamp.objects.all()
+    serializer_class = TimeStampSerializer
+
+
+#################################################################
+
+
 class SensorIDList(generics.ListCreateAPIView):
     queryset = models.SensorID.objects.all()
     serializer_class = SensorIDSerializer

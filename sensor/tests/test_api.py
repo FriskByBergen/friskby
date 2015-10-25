@@ -12,7 +12,8 @@ class TestContext(object):
         self.hp = Company.objects.create( name = "Hewlett Packard" )
         self.dev = DeviceType.objects.create( name = "HP-X123" , company = self.hp)
         self.mtype = MeasurementType.objects.create( name = "Temperature" )
-        
+        self.raw_data = DataType.objects.get( pk = "RAWDATA" )
+
         self.temp_sensor = SensorID.objects.create( id = "TEMP:XX",
                                                     location = self.loc,
                                                     parent_device = self.dev,
@@ -28,7 +29,8 @@ class TestContext(object):
                                                    description = "Measurement humidity",
                                                    unit = "Percent humidity",
                                                    min_value = 0,
-                                                   max_value = 100)
+                                                   max_value = 100,
+                                                   data_type = self.raw_data )
         
 
 
@@ -215,7 +217,7 @@ class SensorInfoTest(TestCase):
         
         self.assertEqual( sensor0["min_value"] , 0 )
         self.assertEqual( sensor0["max_value"] , 100 )
-
+        self.assertEqual( sensor0["data_type"] , "TEST" )
 
 
     def test_get(self):
@@ -240,7 +242,11 @@ class SensorInfoTest(TestCase):
         self.assertEqual( sensor0["min_value"] , 0 )
         self.assertEqual( sensor0["max_value"] , 100 )
 
-        
+
+        response = client.get("/sensor/api/sensorinfo/HUM:XX/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        sensor0 = response.data
+        self.assertEqual( sensor0["data_type"] , "RAWDATA" )
 
 
 

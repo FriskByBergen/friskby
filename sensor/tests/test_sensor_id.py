@@ -24,8 +24,10 @@ class SensorIDTest(TestCase):
         
 
     def test_create(self):
+        test_state = DataType.objects.get( pk = "TEST" )
         obj = SensorID.objects.get( pk = "TEMP")
         self.assertEqual( obj.id , "TEMP")
+        self.assertEqual( obj.data_type , test_state )
         
 
     def test_validate(self):

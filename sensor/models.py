@@ -32,6 +32,10 @@ class MeasurementType( Model ):
 
 
 class TimeStamp( Model ):
+    # When parsing a string the format should be as: "2015-10-10T10:10:00+01";
+    # i.e. yyyy-mm-ddTHH:MM:SS+zz
+    # Where the +zz is a timezone shift relative to UTC; i.e. +01 for Central European Time.
+
     timestamp = DateTimeField("timestamp")
 
     def __unicode__(self):

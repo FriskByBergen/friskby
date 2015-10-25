@@ -12,5 +12,5 @@ class TimeStampTest(TestCase):
 
     def test_create(self):
         ts1 = TimeStamp.objects.create( timestamp = timezone.now() )
-        ts2 = TimeStamp.objects.create( timestamp = dateparse.parse_datetime("2015-10-10 10:10:00"))
+        ts2 = TimeStamp.objects.create( timestamp = dateparse.parse_datetime("2015-10-10T10:10:00+01"))
         

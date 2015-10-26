@@ -95,6 +95,11 @@ class DataInfo( Model ):
     location = ForeignKey( Location )
     timestamp = ForeignKey( TimeStamp )
     sensor = ForeignKey( SensorID )
+
+    
+    def __unicode__(self):
+        return "%s @ %s" % ( self.sensor , self.timestamp )
+
     
     def save(self , *args, **kwargs):
         # If the sensor indeed has a location you should not supply an

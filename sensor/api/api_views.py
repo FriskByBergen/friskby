@@ -74,6 +74,19 @@ class DataType(generics.RetrieveAPIView):
 
 #################################################################
 
+class DataInfoList(generics.ListCreateAPIView):
+    queryset = models.DataInfo.objects.all()
+    serializer_class = DataInfoSerializer
+    
+
+class DataInfo(generics.RetrieveAPIView):    
+    queryset = models.DataInfo.objects.all()
+    serializer_class = DataInfoSerializer
+
+
+#################################################################
+
+
 class TimeStampList(generics.ListCreateAPIView):
     queryset = models.TimeStamp.objects.all()
     serializer_class = TimeStampSerializer
@@ -169,7 +182,7 @@ class Reading(APIView):
 
     def post(self , request , format = None):
         if request.data:
-            payload_status , msg = self.checkPayload( request.data )
+            payload_status , msg  = self.checkPayload( request.data )
             if payload_status is True:
                 restdb_io_status , msg = self.restdb_io_post( request.data )
                 if restdb_io_status == status.HTTP_201_CREATED:

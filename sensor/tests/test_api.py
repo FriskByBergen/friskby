@@ -33,8 +33,15 @@ class TestContext(object):
                                                    min_value = 0,
                                                    max_value = 100,
                                                    data_type = self.raw_data )
-        
 
+        self.ts = TimeStamp.objects.create( timestamp = TimeStamp.parse_datetime("2015-10-10T10:10:00+01") )
+        self.data_info1 = DataInfo.objects.create( timestamp = self.ts, 
+                                                   location = self.loc,
+                                                   sensor = self.hum_sensor )
+
+        self.data_info2 = DataInfo.objects.create( timestamp = self.ts, 
+                                                   sensor = self.temp_sensor )
+        
 
 
 class MeasurementTypeTest(TestCase):
@@ -267,6 +274,18 @@ class SensorInfoTest(TestCase):
         self.assertEqual( sensor0["data_type"] , "RAWDATA" )
 
 
+class DataInfoTest(TestCase):
+    def setUp(self):
+        self.context = TestContext()
+        
+
+    def test_get(self):
+        client = Client( )
+        response = client.get("/sensor/api/datainfo/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
+        info_list = response.data
+        self.assertEqual( len(info_list) , 2 )
+
 
 class Readingtest(TestCase):
     def setUp(self):
@@ -293,35 +312,35 @@ class Readingtest(TestCase):
 
 
         # SensorID is invalid
-        data = [{"sensorid" : "TempXX" , "value" : 50 , "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "TempXX" , "value" : 50 , "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND , response.data)
 
         # Value out of range
-        data = [{"sensorid" : "TEMP:XX" , "value" : 400, "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : 400, "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
         # Value not float
-        data = [{"sensorid" : "TEMP:XX" , "value" : "50X" , "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : "50X" , "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
         # A list of several readings - error in one.
-        data = [{"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "10-10-2015 12:12:00"},
-                {"sensorid" : "TEMP:XX" , "value" : 60 , "timestamp" : "10-10-2015 12:12:00"},
-                {"sensorid" : "TEMP:XX" , "value" : 160 , "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "10-10-2015T12:12:00+01"},
+                {"sensorid" : "TEMP:XX" , "value" : 60 , "timestamp" : "10-10-2015T12:12:00+01"},
+                {"sensorid" : "TEMP:XX" , "value" : 160 , "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
         # Value is string-float - OK
-        data = [{"sensorid" : "TEMP:XX" , "value" : "50" , "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : "50" , "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
@@ -329,19 +348,23 @@ class Readingtest(TestCase):
 
 
         #List of reading - return value == len(list)
-        data = [{"sensorid" : "TEMP:XX" , "value" : "60", "timestamp" : "10-10-2015 12:12:00"},
-                {"sensorid" : "TEMP:XX" , "value" : 10, "timestamp" : "10-10-2015 12:12:00"},
-                {"sensorid" : "TEMP:XX" , "value" : 20, "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "TEMP:XX" , "value" : "60", "timestamp" : "10-10-2015T12:12:00+01"},
+                {"sensorid" : "TEMP:XX" , "value" : 10, "timestamp" : "10-10-2015T12:12:00+01"},
+                {"sensorid" : "TEMP:XX" , "value" : 20, "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
         self.assertEqual( response.data , 3)
 
         #No location - fails
-        data = [{"sensorid" : "HUM:XX" , "value" : "50" , "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : "HUM:XX" , "value" : "50" , "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
+
+        response = client.get("/sensor/api/datainfo/")
+        self.assertEqual( len(response.data) , 6 )
+        
 
         
     def test_get(self):
@@ -368,9 +391,9 @@ class Readingtest(TestCase):
         result = response.data
         len1 = len(result)
 
-        data = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "10-10-2015 12:12:00"},
-                {"sensorid" : sensor_id , "value" : 10, "timestamp" : "10-10-2015 12:12:00"},
-                {"sensorid" : sensor_id , "value" : 20, "timestamp" : "10-10-2015 12:12:00"}]
+        data = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "10-10-2015T12:12:00+01"},
+                {"sensorid" : sensor_id , "value" : 10, "timestamp" : "10-10-2015T12:12:00+01"},
+                {"sensorid" : sensor_id , "value" : 20, "timestamp" : "10-10-2015T12:12:00+01"}]
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)

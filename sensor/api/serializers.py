@@ -65,3 +65,11 @@ class SensorIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = SensorID
         fields = ('id', 'location','parent_device','measurement_type','description','unit','min_value','max_value')
+
+
+
+class DataInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DataInfo
+        fields = ('location','timestamp','sensor')

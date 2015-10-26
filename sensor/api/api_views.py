@@ -136,32 +136,31 @@ class SensorInfo(APIView):
 class Reading(APIView):
 
     def checkPayload(self , data):
-        for reading in data:
-            if "sensorid" in reading:
-                sensorid = reading["sensorid"]
-            else:
-                return (status.HTTP_400_BAD_REQUEST , "Missing 'sensorid' field in payload")
+        if "sensorid" in data:
+            sensorid = data["sensorid"]
+        else:
+            return (status.HTTP_400_BAD_REQUEST , "Missing 'sensorid' field in payload")
 
                     
-            if "value" in reading:
-                value = reading["value"]
-            else:
-                return (status.HTTP_400_BAD_REQUEST , "Missing 'value' field in payload")
+        if "value" in data:
+            value = data["value"]
+        else:
+            return (status.HTTP_400_BAD_REQUEST , "Missing 'value' field in payload")
 
-            if not "timestamp" in reading:
-                return (status.HTTP_400_BAD_REQUEST , "Missing 'timestamp' field in payload")
+        if not "timestamp" in data:
+            return (status.HTTP_400_BAD_REQUEST , "Missing 'timestamp' field in payload")
 
-            try:
-                sensor = models.SensorID.objects.get( pk = sensorid )
-                if not sensor.valid_input( value ):
-                    return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
+        try:
+            sensor = models.SensorID.objects.get( pk = sensorid )
+            if not sensor.valid_input( value ):
+                return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
 
-                if sensor.location is None:
-                    if not "location" in reading:
-                        return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
+            if sensor.location is None:
+                if not "location" in data:
+                    return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
                         
-            except models.SensorID.DoesNotExist:
-                return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
+        except models.SensorID.DoesNotExist:
+            return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
             
         return (True , "")
 
@@ -170,13 +169,12 @@ class Reading(APIView):
         headers = {"Content-Type" : "application/json",
                    "x-apikey" :  settings.RESTDB_IO_POST_KEY}
 
-        for reading in data:
-            post_data = json.dumps( reading )
-            response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers )
-            if response.status_code != status.HTTP_201_CREATED:
-                return (response.status_code , response.text)
+        post_data = json.dumps( data )
+        response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers )
+        if response.status_code != status.HTTP_201_CREATED:
+            return (response.status_code , response.text)
 
-        return (status.HTTP_201_CREATED , len(data))
+        return (status.HTTP_201_CREATED , 1)
 
         
 

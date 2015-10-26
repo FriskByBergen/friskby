@@ -68,13 +68,7 @@ class FriskBySensor(FriskByHttp):
         if timestamp is None:
             timestamp = self.timeStamp( )
 
-        data = []
-        try:
-            for v in value:
-                data.append( {"value" : v , "timestamp" : timestamp , "sensorid" : self.id } ) 
-        except TypeError:
-            data.append( {"value" : value , "timestamp" : timestamp , "sensorid" : self.id } ) 
-
+        data = {"value" : v , "timestamp" : timestamp , "sensorid" : self.id }
         self.postToURL( "sensor/api/reading/" , data )
 
 

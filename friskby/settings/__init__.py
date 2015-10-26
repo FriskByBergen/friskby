@@ -98,7 +98,10 @@ else:
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Oslo'
+TIME_ZONE = os.getenv("TZ")
+if TIME_ZONE is None:
+    raise Exception("Must set time zone variable TZ")
+
 
 USE_I18N = True
 

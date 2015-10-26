@@ -1,3 +1,4 @@
+from django.utils import dateparse
 from django.db.models import *
 from django.core.validators import RegexValidator
 
@@ -40,6 +41,11 @@ class TimeStamp( Model ):
 
     def __unicode__(self):
         return str(self.timestamp)
+
+    @classmethod
+    def parse_datetime(cls , time_string ):
+        dt = dateparse.parse_datetime( time_string )
+        return dt
 
 
 class Location( Model ):

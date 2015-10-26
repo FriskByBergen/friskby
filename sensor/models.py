@@ -85,3 +85,9 @@ class SensorID( Model ):
 
 
 
+class DataInfo( Model ):
+    location = ForeignKey( Location )
+    timestamp = ForeignKey( TimeStamp )
+    sensor = ForeignKey( SensorID )
+    
+    

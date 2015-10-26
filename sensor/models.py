@@ -96,4 +96,10 @@ class DataInfo( Model ):
     timestamp = ForeignKey( TimeStamp )
     sensor = ForeignKey( SensorID )
     
-    
+    def save(self , *args, **kwargs):
+        # If the sensor indeed has a location you should not supply an
+        # extra location with the DataInfo() object. In case you the
+        # location from the sensor will override anyway.
+        if not self.sensor.location is None:
+            self.location = self.sensor.location
+        super(DataInfo , self).save(*args , **kwargs)

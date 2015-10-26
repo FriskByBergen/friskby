@@ -45,7 +45,7 @@ class FriskBySensor(FriskByHttp):
         if time is None:
             time = datetime.datetime.now()
             
-        return time.strftime("%Y-%m-%d %H:%M:%S")
+        return time.strftime("%Y-%m-%dT%H:%M:%S+01")
 
 
     def getMinValue(self):
@@ -68,7 +68,7 @@ class FriskBySensor(FriskByHttp):
         if timestamp is None:
             timestamp = self.timeStamp( )
 
-        data = {"value" : v , "timestamp" : timestamp , "sensorid" : self.id }
+        data = {"value" : value , "timestamp" : timestamp , "sensorid" : self.id }
         self.postToURL( "sensor/api/reading/" , data )
 
 

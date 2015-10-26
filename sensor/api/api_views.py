@@ -135,7 +135,7 @@ class SensorInfo(APIView):
 
 class Reading(APIView):
 
-    def checkPayload(self , data):
+    def cleanPayload(self , data):
         if "sensorid" in data:
             sensorid = data["sensorid"]
         else:
@@ -176,21 +176,52 @@ class Reading(APIView):
 
         return (status.HTTP_201_CREATED , 1)
 
-        
 
     def post(self , request , format = None):
-        if request.data:
-            payload_status , msg  = self.checkPayload( request.data )
-            if payload_status is True:
-                restdb_io_status , msg = self.restdb_io_post( request.data )
-                if restdb_io_status == status.HTTP_201_CREATED:
-                    return Response(msg , status = restdb_io_status)
-                else:
-                    return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
-            else:
-                return Response( msg , status = payload_status )
-        else:
+        if request.data is None:
             return Response("Missing data" , status = status.HTTP_400_BAD_REQUEST )
+            
+        data = request.data
+        for key in ["sensorid" , "value" , "timestamp"]:
+            if not key in data:
+                return Response("Missing '%s' field in payload" % key , status.HTTP_400_BAD_REQUEST)
+
+        sensorid = data["sensorid"]
+        value = data["value"]
+        timestring = data["timestamp"]
+        timestamp = models.TimeStamp.parse_datetime( timestring )
+        location = None
+        if timestamp is None:
+            return Response("Timestamp '%s' is invalid" % timestring , status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sensor = models.SensorID.objects.get( pk = sensorid )
+            if not sensor.valid_input( value ):
+                return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
+
+            if sensor.location is None:
+                if not "location" in data:
+                    return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
+                location = data["location"]
+                    
+        except models.SensorID.DoesNotExist:
+            return Response("The sensorID:%s is not found" % sensorid , status.HTTP_404_NOT_FOUND)
+
+
+        ts = models.TimeStamp.objects.create( timestamp = timestamp )
+        data_info = models.DataInfo( timestamp = ts , 
+                                     sensor = sensor )
+        if not location is None:
+            data_info.location = location
+        data_info.save()
+        
+        restdb_io_status , msg = self.restdb_io_post( request.data )
+        if restdb_io_status == status.HTTP_201_CREATED:
+            return Response(msg , status = restdb_io_status)
+        else:
+            return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
+            
+
 
 
     def restdb_io_get(self , sensor_id , request_params):

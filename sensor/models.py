@@ -42,7 +42,11 @@ class TimeStamp( Model ):
     def __unicode__(self):
         return str(self.timestamp)
 
+
     @classmethod
+    # This takes a time_string which is supposed to be in the time
+    # zone given by the settings.TIME_ZONE variable. The resulting
+    # dt variable is a time zone aware datetime instance.
     def parse_datetime(cls , time_string ):
         dt = dateparse.parse_datetime( time_string )
         return dt

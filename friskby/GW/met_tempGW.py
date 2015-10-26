@@ -26,8 +26,6 @@ for sensor_id , url in sensor_map.items():
 
         temp = float(temp_node.get("value"))
         ts = temp_node.get("time")
-        ts = ts.replace("T"," ")
-        t = datetime.datetime.strptime( ts[:-1] , "%Y-%m-%d %H:%M:%S")
-        ts = sensor.timeStamp( time = t )
         sensor.postValue( temp , timestamp = ts )
+
 

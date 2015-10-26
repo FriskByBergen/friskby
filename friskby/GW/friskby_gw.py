@@ -41,11 +41,13 @@ class FriskBySensor(FriskByHttp):
 
 
     @classmethod
+    # If this does not have an explicit timezone, it will be
+    # interpreted according to the TIME_ZONE variable in settings.
     def timeStamp(cls , time = None):
         if time is None:
             time = datetime.datetime.now()
             
-        return time.strftime("%Y-%m-%dT%H:%M:%S+01")
+        return time.strftime("%Y-%m-%dT%H:%M:%S")
 
 
     def getMinValue(self):
@@ -63,6 +65,14 @@ class FriskBySensor(FriskByHttp):
         else:
             raise Exception("No data for sensor:%s" % self.id)
             
+    def getData(self):
+        data = self.getFromURL( "sensor/api/reading/%s/" % self.id , params = {"sort" : "_id"})
+        if len(data) > 0:
+            return data
+        else:
+            raise Exception("No data for sensor:%s" % self.id)
+        
+
 
     def postValue(self , value , timestamp = None):
         if timestamp is None:

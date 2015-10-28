@@ -122,6 +122,19 @@ class Sensor(generics.RetrieveAPIView):
 
 #################################################################
 
+class SensorTypeList(generics.ListCreateAPIView):
+    queryset = models.SensorType.objects.all()
+    serializer_class = SensorTypeSerializer
+    
+
+class SensorType(generics.RetrieveAPIView):    
+    queryset = models.SensorType.objects.all()
+    serializer_class = SensorTypeSerializer
+
+
+#################################################################
+
+
 class SensorInfo(APIView):
     def get(self , request , sensor_id = None):
         if sensor_id is None:

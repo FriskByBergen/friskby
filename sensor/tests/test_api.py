@@ -135,6 +135,22 @@ class LocationTest(TestCase):
         self.assertTrue( loc0["altitude"] is None )
         
 
+class SensorTypeTest(TestCase):
+    def setUp(self):
+        self.context = TestContext( )
+    
+    def test_get(self):
+        client = Client( )
+        response = client.get("/sensor/api/sensortype/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads( response.content )
+        self.assertEqual( len(data) , 1 )
+
+        response = client.get("/sensor/api/sensortype/%d/" % self.context.sensor_type_temp.id)
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads( response.content )
+        self.assertEqual( data["max_value"] , self.context.sensor_type_temp.max_value )
+
 
 
 class SensorTest(TestCase):

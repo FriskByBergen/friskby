@@ -67,6 +67,12 @@ class SensorSerializer(serializers.ModelSerializer):
         fields = ('id', 'location','parent_device','measurement_type','description','unit','min_value','max_value')
 
 
+class SensorTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorType
+        fields = ('id', 'short_description','parent_device','measurement_type','description','unit','min_value','max_value')
+
+
 
 class DataInfoSerializer(serializers.ModelSerializer):
 

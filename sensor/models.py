@@ -60,7 +60,35 @@ class Location( Model ):
 
     def __unicode__(self):
         return self.name
+
+
+class SensorType( Model ):
+    short_description = CharField("Short description" , max_length = 40)
+    parent_device = ForeignKey( DeviceType )
+    measurement_type = ForeignKey( MeasurementType )
+    description = CharField("Description" , max_length = 256 )
+    unit = CharField("Unit" , max_length = 60 )
+    min_value = FloatField("Minimum value")
+    max_value = FloatField("Maximum value")
+
+    def __unicode__(self):
+        return self.short_description
         
+
+    def valid_input(self , value):
+        if not isinstance(value,float):
+            try:
+                value = float(value)
+            except:
+                return False
+                
+        if self.min_value <= value <= self.max_value:
+            return True
+
+        return False
+
+
+
 
 class Sensor( Model ):
     IDPattern = "[-_:a-zA-Z0-9]+"

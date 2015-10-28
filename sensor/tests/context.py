@@ -9,6 +9,14 @@ class TestContext(object):
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
 
+        self.sensor_type_temp = SensorType.objects.create( parent_device = self.dev,
+                                                           measurement_type = self.mtype,
+                                                           short_description = "Temp",
+                                                           description = "Measurement of temperature",
+                                                           unit = "Degree celcius",
+                                                           min_value = 0,
+                                                           max_value = 100)
+        
         self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
                                                   location = self.loc,
                                                   parent_device = self.dev,

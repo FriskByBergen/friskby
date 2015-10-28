@@ -9,7 +9,9 @@ class TestContext(object):
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
 
-        self.sensor_type_temp = SensorType.objects.create( parent_device = self.dev,
+        self.sensor_type_temp = SensorType.objects.create( company = self.hp,
+                                                           product_name = "XX12762 Turbo",
+                                                           parent_device = self.dev,
                                                            measurement_type = self.mtype,
                                                            short_description = "Temp",
                                                            description = "Measurement of temperature",

@@ -110,14 +110,14 @@ class TimeStamp(generics.RetrieveAPIView):
 #################################################################
 
 
-class SensorIDList(generics.ListCreateAPIView):
-    queryset = models.SensorID.objects.all()
-    serializer_class = SensorIDSerializer
+class SensorList(generics.ListCreateAPIView):
+    queryset = models.Sensor.objects.all()
+    serializer_class = SensorSerializer
     
 
-class SensorID(generics.RetrieveAPIView):    
-    queryset = models.SensorID.objects.all()
-    serializer_class = SensorIDSerializer
+class Sensor(generics.RetrieveAPIView):    
+    queryset = models.Sensor.objects.all()
+    serializer_class = SensorSerializer
 
 
 #################################################################
@@ -125,11 +125,11 @@ class SensorID(generics.RetrieveAPIView):
 class SensorInfo(APIView):
     def get(self , request , sensor_id = None):
         if sensor_id is None:
-            sensor_list = models.SensorID.objects.all()
+            sensor_list = models.Sensor.objects.all()
         else:
             try:
-                sensor_list = [ models.SensorID.objects.get( pk = sensor_id ) ]
-            except models.SensorID.DoesNotExist:
+                sensor_list = [ models.Sensor.objects.get( pk = sensor_id ) ]
+            except models.Sensor.DoesNotExist:
                 return Response("The sensorID:%s is not found" % sensor_id , status.HTTP_404_NOT_FOUND)
             
         result = []
@@ -161,7 +161,7 @@ class Reading(APIView):
             return (status.HTTP_400_BAD_REQUEST , "Missing 'timestamp' field in payload")
 
         try:
-            sensor = models.SensorID.objects.get( pk = sensorid )
+            sensor = models.Sensor.objects.get( pk = sensorid )
             if not sensor.valid_input( value ):
                 return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
 
@@ -169,7 +169,7 @@ class Reading(APIView):
                 if not "location" in data:
                     return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
                         
-        except models.SensorID.DoesNotExist:
+        except models.Sensor.DoesNotExist:
             return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
             
         return (True , "")
@@ -205,7 +205,7 @@ class Reading(APIView):
             return Response("Timestamp '%s' is invalid" % timestring , status.HTTP_400_BAD_REQUEST)
 
         try:
-            sensor = models.SensorID.objects.get( pk = sensorid )
+            sensor = models.Sensor.objects.get( pk = sensorid )
             if not sensor.valid_input( value ):
                 return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
 
@@ -214,7 +214,7 @@ class Reading(APIView):
                     return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
                 location = data["location"]
                     
-        except models.SensorID.DoesNotExist:
+        except models.Sensor.DoesNotExist:
             return Response("The sensorID:%s is not found" % sensorid , status.HTTP_404_NOT_FOUND)
 
 
@@ -270,9 +270,9 @@ class Reading(APIView):
             return Response("Must supply sensorid when querying" , status = status.HTTP_400_BAD_REQUEST )
             
         try:
-            sensor = models.SensorID.objects.get( pk = sensor_id )
+            sensor = models.Sensor.objects.get( pk = sensor_id )
             return self.restdb_io_get( sensor_id , request.GET )
-        except models.SensorID.DoesNotExist:
+        except models.Sensor.DoesNotExist:
             return Response("No such sensor:%s" % sensor_id , status = status.HTTP_200_OK )
             
         

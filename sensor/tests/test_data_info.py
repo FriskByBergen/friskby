@@ -4,7 +4,7 @@ from sensor.models import *
 
 
 class DataInfoTest(TestCase):
-
+    
     def setUp(self):
         company = Company(name = "Texas Instrument")
         company.save()
@@ -16,13 +16,13 @@ class DataInfoTest(TestCase):
         mtype = MeasurementType( name = "Temperature" )
         mtype.save()
 
-        self.sensor = SensorID.objects.create( id = "TEMP", 
-                                               measurement_type = mtype , 
-                                               description = "Temparture", 
-                                               unit = "Celcius", 
-                                               min_value = -10 , 
-                                               max_value = 100 , 
-                                               parent_device = device_type)
+        self.sensor = Sensor.objects.create( id = "TEMP", 
+                                             measurement_type = mtype , 
+                                             description = "Temparture", 
+                                             unit = "Celcius", 
+                                             min_value = -10 , 
+                                             max_value = 100 , 
+                                             parent_device = device_type)
 
         self.location = Location.objects.create( name = "Location" , 
                                                  latitude = 1000,

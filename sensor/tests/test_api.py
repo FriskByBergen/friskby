@@ -137,21 +137,21 @@ class LocationTest(TestCase):
 
 
 
-class SensorIDTest(TestCase):
+class SensorTest(TestCase):
     def setUp(self):
         loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         hp = Company.objects.create( name = "Hewlett Packard" )
         dev = DeviceType.objects.create( name = "HP-X123" , company = hp)
         mtype = MeasurementType.objects.create( name = "Temperature" )
         
-        self.sensor = SensorID.objects.create( id = "TEMP:XX",
-                                               location = loc,
-                                               parent_device = dev,
-                                               measurement_type = mtype,
-                                               description = "Measurement of ..",
-                                               unit = "Degree celcius",
-                                               min_value = 0,
-                                               max_value = 100)
+        self.sensor = Sensor.objects.create( id = "TEMP:XX",
+                                             location = loc,
+                                             parent_device = dev,
+                                             measurement_type = mtype,
+                                             description = "Measurement of ..",
+                                             unit = "Degree celcius",
+                                             min_value = 0,
+                                             max_value = 100)
         
 
     def test_valid_key(self):
@@ -171,12 +171,12 @@ class SensorIDTest(TestCase):
 
     def test_get(self):
         client = Client( )
-        response = client.get("/sensor/api/sensorID/")
+        response = client.get("/sensor/api/sensor/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
         self.assertEqual( len(data) , 1 )
 
-        response = client.get("/sensor/api/sensorID/TEMP:XX/")
+        response = client.get("/sensor/api/sensor/TEMP:XX/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
 
@@ -325,14 +325,14 @@ class Readingtest(TestCase):
         # around a bug/limitation/misunderstanding in the restdb.io
         # api which seems to cap the return at 100 elements?
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
-        SensorID.objects.create( id = sensor_id,
-                                 location = self.context.loc,
-                                 parent_device = self.context.dev,
-                                 measurement_type = self.context.mtype,
-                                 description = "Measurement of ..",
-                                 unit = "Degree celcius",
-                                 min_value = 0,
-                                 max_value = 100)
+        Sensor.objects.create( id = sensor_id,
+                               location = self.context.loc,
+                               parent_device = self.context.dev,
+                               measurement_type = self.context.mtype,
+                               description = "Measurement of ..",
+                               unit = "Degree celcius",
+                               min_value = 0,
+                               max_value = 100)
         
         
         client = Client( )

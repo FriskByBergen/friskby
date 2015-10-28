@@ -90,7 +90,7 @@ class FriskByGW(FriskByHttp):
     
     def sensorList(self):
         sensor_list = []
-        sensor_data = self.getFromURL( "sensor/api/sensorID/")
+        sensor_data = self.getFromURL( "sensor/api/sensor/")
         for data in sensor_data:
             sensor_list.append( FriskBySensor( data , self.url ))
         return sensor_list
@@ -98,7 +98,7 @@ class FriskByGW(FriskByHttp):
     
     def getSensor(self , sensorid):
         try:
-            sensor_data = self.getFromURL( "sensor/api/sensorID/%s/" % sensorid)
+            sensor_data = self.getFromURL( "sensor/api/sensor/%s/" % sensorid)
             return FriskBySensor( sensor_data , self.url )
         except Exception:
             sensor = None

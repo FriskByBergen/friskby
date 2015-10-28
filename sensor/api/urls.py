@@ -29,14 +29,14 @@ urlpatterns = [
     url(r'^datavalue/$' , DataValueList.as_view()),
     url(r'^datavalue/(?P<pk>[0-9]+)/$' , DataValue.as_view()),
     #
-    url(r'^sensorID/$' , SensorIDList.as_view()),
-    url(r'^sensorID/(?P<pk>%s)/$' % models.SensorID.IDPattern , SensorID.as_view()),
+    url(r'^sensor/$' , SensorList.as_view()),
+    url(r'^sensor/(?P<pk>%s)/$' % models.Sensor.IDPattern , Sensor.as_view()),
     #
     url(r'^sensorinfo/$' , SensorInfo.as_view()),
-    url(r'^sensorinfo/(?P<sensor_id>%s)/$' % models.SensorID.IDPattern , SensorInfo.as_view()),
+    url(r'^sensorinfo/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , SensorInfo.as_view()),
     #
     url(r'^reading/$'            , Reading.as_view()),
-    url(r'^reading/(?P<sensor_id>%s)/$' % models.SensorID.IDPattern , Reading.as_view()),
+    url(r'^reading/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , Reading.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

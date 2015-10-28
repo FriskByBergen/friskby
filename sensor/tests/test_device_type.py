@@ -23,22 +23,22 @@ class DeviceTypeTest(TestCase):
         mtype_hum.save()
 
         
-        temp = SensorID( id = "temp", 
-                         measurement_type = mtype_temp , 
-                         description = "Temp / Hum", 
-                         unit = "Celcius", 
-                         min_value = -10 , 
-                         max_value = 100 , 
-                         parent_device = device_type)
+        temp = Sensor( id = "temp", 
+                       measurement_type = mtype_temp , 
+                       description = "Temp / Hum", 
+                       unit = "Celcius", 
+                       min_value = -10 , 
+                       max_value = 100 , 
+                       parent_device = device_type)
 
-        hum  = SensorID( id = "hum" , 
-                         measurement_type = mtype_hum , 
-                         description = "Temp / Hum", 
-                         unit = "Celcius", 
-                         min_value = -10 , 
-                         max_value = 100 , 
-                         parent_device = device_type)
-
+        hum  = Sensor( id = "hum" , 
+                       measurement_type = mtype_hum , 
+                       description = "Temp / Hum", 
+                       unit = "Celcius", 
+                       min_value = -10 , 
+                       max_value = 100 , 
+                       parent_device = device_type)
+        
         temp.save()
         hum.save()
 

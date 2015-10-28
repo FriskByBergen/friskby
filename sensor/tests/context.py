@@ -9,23 +9,23 @@ class TestContext(object):
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
 
-        self.temp_sensor = SensorID.objects.create( id = "TEMP:XX",
-                                                    location = self.loc,
-                                                    parent_device = self.dev,
-                                                    measurement_type = self.mtype,
-                                                    description = "Measurement of temperature",
-                                                    unit = "Degree celcius",
-                                                    min_value = 0,
-                                                    max_value = 100)
+        self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
+                                                  location = self.loc,
+                                                  parent_device = self.dev,
+                                                  measurement_type = self.mtype,
+                                                  description = "Measurement of temperature",
+                                                  unit = "Degree celcius",
+                                                  min_value = 0,
+                                                  max_value = 100)
 
-        self.hum_sensor = SensorID.objects.create( id = "HUM:XX",
-                                                   parent_device = self.dev,
-                                                   measurement_type = self.mtype,
-                                                   description = "Measurement humidity",
-                                                   unit = "Percent humidity",
-                                                   min_value = 0,
-                                                   max_value = 100,
-                                                   data_type = self.raw_data )
+        self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
+                                                 parent_device = self.dev,
+                                                 measurement_type = self.mtype,
+                                                 description = "Measurement humidity",
+                                                 unit = "Percent humidity",
+                                                 min_value = 0,
+                                                 max_value = 100,
+                                                 data_type = self.raw_data )
 
         self.ts = TimeStamp.objects.create( timestamp = TimeStamp.parse_datetime("2015-10-10T10:10:00+01") )
         self.data_info1 = DataInfo.objects.create( timestamp = self.ts, 

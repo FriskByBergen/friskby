@@ -62,7 +62,7 @@ class Location( Model ):
         return self.name
         
 
-class SensorID( Model ):
+class Sensor( Model ):
     IDPattern = "[-_:a-zA-Z0-9]+"
 
     id = CharField("Sensor ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
@@ -98,7 +98,7 @@ class SensorID( Model ):
 class DataInfo( Model ):
     location = ForeignKey( Location )
     timestamp = ForeignKey( TimeStamp )
-    sensor = ForeignKey( SensorID )
+    sensor = ForeignKey( Sensor )
 
     
     def __unicode__(self):

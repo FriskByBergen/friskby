@@ -112,3 +112,21 @@ class DataInfo( Model ):
         if not self.sensor.location is None:
             self.location = self.sensor.location
         super(DataInfo , self).save(*args , **kwargs)
+
+
+
+
+class DataValue( Model ):
+    data_type = ForeignKey( DataType )
+    data_info = ForeignKey( DataInfo )
+    value = FloatField( )
+    
+    def __unicode__(self):
+        return str(self.value)
+
+    def save(self , *args , **kwargs):
+        if self.data_info.sensor.valid_input( self.value ):
+            super(DataValue , self).save(*args , **kwargs)
+        else:
+            raise ValueError("Tried to save invalid value:%s for sensor:%s" % (self.value , self.data_info.sensor))
+        

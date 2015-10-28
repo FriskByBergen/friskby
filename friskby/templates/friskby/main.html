@@ -103,6 +103,7 @@ function fetch_sensor_selection( ev ) {
 
 
 function update_sensor_selection( result ) {
+   var sensor_type = result.sensor_type;			      
    {   
        var location_text;   			      
        var location = result.location;
@@ -111,7 +112,7 @@ function update_sensor_selection( result ) {
    }
    {
        var range_text;
-       range_text = result.min_value.toString() + " - " + result.max_value.toString();
+       range_text = sensor_type.min_value.toString() + " - " + sensor_type.max_value.toString();
        $("#id_range").html( range_text );
    }			      
    {
@@ -120,12 +121,13 @@ function update_sensor_selection( result ) {
        device_text = device.company.name + " / " + device.name;
        $("#id_device_type").html( device_text );
    }
-
-   $("#id_data_type").html( result.data_type );			      
-   $("#id_measurement_type").html( result.measurement_type.name );
-   $("#id_unit").html( result.unit );
    $("#id_sensor_id").html( result.id );
    $("#id_description").html( result.description );
+   $("#id_data_type").html( result.data_type );			      
+
+
+   $("#id_unit").html( sensor_type.unit );
+   $("#id_measurement_type").html( sensor_type.measurement_type.name );
 }
 
 
@@ -229,7 +231,7 @@ Main page for Friskby API
 </select> <p>
 <label> Sensor: </label> <span id="id_sensor_id"> </span><p>
 <label> Description: </label> <span id="id_description"> </span><p>
-<label> Data type: </label> <span id="id_datatype"> </span><p>
+<label> Data type: </label> <span id="id_data_type"> </span><p>
 <label> Location: </label> <span id="id_location"> </span><p>
 <label> Measurement type: </label> <span id="id_measurement_type"> </span><p>
 <label> Measurement unit: </label> <span id="id_unit"> </span><p>

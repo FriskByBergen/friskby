@@ -96,32 +96,18 @@ class Sensor( Model ):
     IDPattern = "[-_:a-zA-Z0-9]+"
 
     id = CharField("Sensor ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
+    sensor_type = ForeignKey( SensorType )
     location = ForeignKey( Location , null = True )
     parent_device = ForeignKey( DeviceType )
-    measurement_type = ForeignKey( MeasurementType )
     data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
-    unit = CharField("Unit" , max_length = 60 )
-    min_value = FloatField("Minimum value")
-    max_value = FloatField("Maximum value")
-    
 
     def __unicode__(self):
         return self.id
 
 
-    def valid_input(self , value):
-        if not isinstance(value,float):
-            try:
-                value = float(value)
-            except:
-                return False
-                
-        if self.min_value <= value <= self.max_value:
-            return True
-
-        return False
-
+    def valid_input(self , input_value):
+        return self.sensor_type.valid_input( input_value )
 
 
 

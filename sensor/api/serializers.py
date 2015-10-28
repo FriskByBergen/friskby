@@ -49,28 +49,36 @@ class DeviceInfoSerializer(serializers.ModelSerializer):
         fields = ('id', 'name' , 'company')
 
 
+class SensorTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorType
+        fields = ('id', 'product_name','company','short_description','parent_device','measurement_type','description','unit','min_value','max_value')
+
+
+class SensorTypeInfoSerializer(serializers.ModelSerializer):
+    measurement_type = MeasurementTypeSerializer( read_only = True )
+    class Meta:
+        model = SensorType
+        fields = ('id', 'product_name','company','short_description','parent_device','measurement_type','description','unit','min_value','max_value')
+
+
 
 class SensorInfoSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
     parent_device = DeviceInfoSerializer( read_only = True )
-    measurement_type = MeasurementTypeSerializer( read_only = True )
-    
+    sensor_type = SensorTypeInfoSerializer( read_only = True )
+
     class Meta:
         model = Sensor
-        fields = ('id', 'location','parent_device','measurement_type','data_type','description','unit','min_value','max_value')
+        fields = ('id', 'sensor_type', 'location','parent_device','data_type','description')
 
 
 
 class SensorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sensor
-        fields = ('id', 'location','parent_device','measurement_type','description','unit','min_value','max_value')
+        fields = ('id', 'sensor_type','location','parent_device','description')
 
-
-class SensorTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SensorType
-        fields = ('id', 'product_name','company','short_description','parent_device','measurement_type','description','unit','min_value','max_value')
 
 
 

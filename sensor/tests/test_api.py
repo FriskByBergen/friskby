@@ -155,32 +155,22 @@ class SensorTypeTest(TestCase):
 
 class SensorTest(TestCase):
     def setUp(self):
-        loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
-        hp = Company.objects.create( name = "Hewlett Packard" )
-        dev = DeviceType.objects.create( name = "HP-X123" , company = hp)
-        mtype = MeasurementType.objects.create( name = "Temperature" )
-        
-        self.sensor = Sensor.objects.create( id = "TEMP:XX",
-                                             location = loc,
-                                             parent_device = dev,
-                                             measurement_type = mtype,
-                                             description = "Measurement of ..",
-                                             unit = "Degree celcius",
-                                             min_value = 0,
-                                             max_value = 100)
-        
+        self.context = TestContext( )
+
 
     def test_valid_key(self):
-        self.sensor.id = "Invalid id"
+        sensor = self.context.temp_sensor
+        sensor.id = "Invalid id"
         with self.assertRaises(ValidationError):
-            self.sensor.full_clean()
+            sensor.full_clean()
 
-        self.sensor.id = "?=+/"
+        sensor.id = "?=+/"
         with self.assertRaises(ValidationError):
-            self.sensor.full_clean()
+            sensor.full_clean()
             
-        self.sensor.id = "TEMP:XX_aa-23864"
-        self.sensor.full_clean()
+        sensor.id = "TEMP:XX_aa-23864"
+        sensor.save( )
+        sensor.full_clean()
 
         
         
@@ -190,15 +180,14 @@ class SensorTest(TestCase):
         response = client.get("/sensor/api/sensor/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
-        self.assertEqual( len(data) , 1 )
+        self.assertEqual( len(data) , 2 )
 
         response = client.get("/sensor/api/sensor/TEMP:XX/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
 
         sensor0 = data
-        self.assertEqual( sensor0["min_value"] , 0 )
-        self.assertEqual( sensor0["max_value"] , 100 )
+        self.assertEqual( sensor0["description"] , "tempm")
 
 
 
@@ -214,18 +203,18 @@ class SensorInfoTest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
         sensor_list = response.data
         sensor0 = sensor_list[0]
+        self.assertEqual( sensor0["data_type"] , "TEST" )
         loc = sensor0["location"]
         self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
 
         dev = sensor0["parent_device"]
         self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
 
-        mtype = sensor0["measurement_type"]
-        self.assertEqual( mtype , {"id" : 1 , "name" : "Temperature"} ) 
+        sensor_type = sensor0["sensor_type"]
+        self.assertEqual( sensor_type["product_name"] , "XX12762 Turbo" ) 
         
-        self.assertEqual( sensor0["min_value"] , 0 )
-        self.assertEqual( sensor0["max_value"] , 100 )
-        self.assertEqual( sensor0["data_type"] , "TEST" )
+        self.assertEqual( sensor_type["min_value"] , 0 )
+        self.assertEqual( sensor_type["max_value"] , 100 )
 
 
     def test_get(self):
@@ -244,17 +233,17 @@ class SensorInfoTest(TestCase):
         dev = sensor0["parent_device"]
         self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
 
-        mtype = sensor0["measurement_type"]
-        self.assertEqual( mtype , {"id" : 1 , "name" : "Temperature"} ) 
+        sensor_type = sensor0["sensor_type"]
+        self.assertEqual( sensor_type["measurement_type"] , {"id" : 1 , "name" : "Temperature"} ) 
+        self.assertEqual( sensor_type["min_value"] , 0 )
+        self.assertEqual( sensor_type["max_value"] , 100 )
+
         
-        self.assertEqual( sensor0["min_value"] , 0 )
-        self.assertEqual( sensor0["max_value"] , 100 )
-
-
         response = client.get("/sensor/api/sensorinfo/HUM:XX/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         sensor0 = response.data
         self.assertEqual( sensor0["data_type"] , "RAWDATA" )
+
 
 
 class DataInfoTest(TestCase):
@@ -344,11 +333,9 @@ class Readingtest(TestCase):
         Sensor.objects.create( id = sensor_id,
                                location = self.context.loc,
                                parent_device = self.context.dev,
-                               measurement_type = self.context.mtype,
-                               description = "Measurement of ..",
-                               unit = "Degree celcius",
-                               min_value = 0,
-                               max_value = 100)
+                               sensor_type = self.context.sensor_type_temp , 
+                               description = "Measurement of ..")
+
         
         
         client = Client( )

@@ -2,10 +2,12 @@ from django.utils import timezone,dateparse
 from django.test import TestCase
 from sensor.models import *
 
+from .context import TestContext
 
 class DataInfoTest(TestCase):
     
     def setUp(self):
+        self.context = TestContext( )
         company = Company(name = "Texas Instrument")
         company.save()
 
@@ -17,11 +19,8 @@ class DataInfoTest(TestCase):
         mtype.save()
 
         self.sensor = Sensor.objects.create( id = "TEMP", 
-                                             measurement_type = mtype , 
+                                             sensor_type = self.context.sensor_type_temp,
                                              description = "Temparture", 
-                                             unit = "Celcius", 
-                                             min_value = -10 , 
-                                             max_value = 100 , 
                                              parent_device = device_type)
 
         self.location = Location.objects.create( name = "Location" , 

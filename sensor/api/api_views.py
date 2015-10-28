@@ -214,7 +214,11 @@ class Reading(APIView):
         if not location is None:
             data_info.location = location
         data_info.save()
-        
+
+        DataValue.objects.create( data_info = data_info ,
+                                  data_type = sensor.data_type ,  
+                                  value = value )
+
         restdb_io_status , msg = self.restdb_io_post( request.data )
         if restdb_io_status == status.HTTP_201_CREATED:
             return Response(msg , status = restdb_io_status)

@@ -83,6 +83,16 @@ class DataInfo(generics.RetrieveAPIView):
     queryset = models.DataInfo.objects.all()
     serializer_class = DataInfoSerializer
 
+#################################################################
+
+class DataValueList(generics.ListCreateAPIView):
+    queryset = models.DataValue.objects.all()
+    serializer_class = DataValueSerializer
+    
+
+class DataValue(generics.RetrieveAPIView):    
+    queryset = models.DataValue.objects.all()
+    serializer_class = DataValueSerializer
 
 #################################################################
 
@@ -215,9 +225,11 @@ class Reading(APIView):
             data_info.location = location
         data_info.save()
 
-        DataValue.objects.create( data_info = data_info ,
-                                  data_type = sensor.data_type ,  
-                                  value = value )
+        data_value = models.DataValue( data_info = data_info ,
+                                       data_type = sensor.data_type ,  
+                                       value = value )
+        data_value.save( )
+        
 
         restdb_io_status , msg = self.restdb_io_post( request.data )
         if restdb_io_status == status.HTTP_201_CREATED:

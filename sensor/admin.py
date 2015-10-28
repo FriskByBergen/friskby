@@ -9,4 +9,5 @@ admin.site.register(Location)
 admin.site.register(TimeStamp)
 admin.site.register(DataType)
 admin.site.register(DataInfo)
+admin.site.register(DataValue)
 

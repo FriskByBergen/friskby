@@ -313,6 +313,12 @@ class Readingtest(TestCase):
         last_info = response.data[2]
         self.assertEqual( last_info["sensor"] , "TEMP:XX")
 
+        response = client.get("/sensor/api/datavalue/")
+        self.assertEqual( len(response.data) , 1 )
+        last_value = response.data[0]
+        self.assertEqual( last_value["value"] , 50)
+
+
         
     def test_get(self):
         # The funny construction with a random sensorID is to work

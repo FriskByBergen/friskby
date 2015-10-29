@@ -295,7 +295,9 @@ class Reading(APIView):
             
         try:
             sensor = models.Sensor.objects.get( pk = sensor_id )
-            return self.restdb_io_get( sensor_id , request.GET )
+            ts = sensor.get_ts( )
+            return Response(ts , status = status.HTTP_200_OK )
+            #return self.restdb_io_get( sensor_id , request.GET )
         except models.Sensor.DoesNotExist:
             return Response("No such sensor:%s" % sensor_id , status = status.HTTP_200_OK )
             

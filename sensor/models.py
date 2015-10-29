@@ -117,10 +117,21 @@ class Sensor( Model ):
 
     def __unicode__(self):
         return self.id
-
+        
 
     def valid_input(self , input_value):
         return self.sensor_type.valid_input( input_value )
+
+
+    def get_ts(self, data_type = None):
+        if data_type is None:
+            data_type = self.data_type
+
+        ts = []
+        for data_value in DataValue.objects.filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
+            ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
+
+        return ts
 
 
 

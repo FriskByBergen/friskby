@@ -3,6 +3,16 @@ from django.db.models import *
 from django.core.validators import RegexValidator
 
 
+class Location( Model ):
+    name = CharField("Location" , max_length = 60 )
+    latitude = FloatField("Latitude")
+    longitude = FloatField("Longitude")
+    altitude = FloatField("Altitude" , null = True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class DataType( Model ):
     id = CharField("DataType" , max_length = 60 , primary_key = True)
 
@@ -23,6 +33,18 @@ class DeviceType( Model ):
 
     def __unicode__(self):
         return self.name
+
+
+class Device( Model ):
+    IDPattern = "[-_:a-zA-Z0-9]+"
+
+    id = CharField("Device ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
+    location = ForeignKey( Location , null = True )
+    device_type = ForeignKey( DeviceType )
+    description = CharField("Description" , max_length = 256 )
+
+    def __unicode__(self):
+        return self.id
 
 
 class MeasurementType( Model ):
@@ -52,14 +74,6 @@ class TimeStamp( Model ):
         return dt
 
 
-class Location( Model ):
-    name = CharField("Location" , max_length = 60 )
-    latitude = FloatField("Latitude")
-    longitude = FloatField("Longitude")
-    altitude = FloatField("Altitude" , null = True)
-
-    def __unicode__(self):
-        return self.name
 
 
 class SensorType( Model ):

@@ -11,8 +11,11 @@ urlpatterns = [
     url(r'^company/$' , CompanyList.as_view()),
     url(r'^company/(?P<pk>[0-9]+)/$' , Company.as_view()),
     #
+    url(r'^device_type/$' , DeviceTypeList.as_view()),
+    url(r'^device_type/(?P<pk>[0-9]+)/$' , DeviceType.as_view()),
+    #
     url(r'^device/$' , DeviceList.as_view()),
-    url(r'^device/(?P<pk>[0-9]+)/$' , Device.as_view()),
+    url(r'^device/(?P<pk>%s)/$' % models.Device.IDPattern, Device.as_view()),
     #
     url(r'^location/$' , LocationList.as_view()),
     url(r'^location/(?P<pk>[0-9]+)/$' , Location.as_view()),

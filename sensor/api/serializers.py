@@ -2,6 +2,12 @@ from rest_framework import serializers
 
 from sensor.models import *
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ('id', 'name' , 'latitude', 'longitude', 'altitude')
+
+
 
 class MeasurementTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,17 +23,20 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 
-class DeviceSerializer(serializers.ModelSerializer):
+class DeviceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceType
         fields = ('id', 'name' , 'company')
 
 
+class DeviceSerializer(serializers.ModelSerializer):
+    location = LocationSerializer( read_only = True )
+    device_type = DeviceTypeSerializer( read_only = True )
 
-class LocationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Location
-        fields = ('id', 'name' , 'latitude', 'longitude', 'altitude')
+        model = Device
+        fields = ('id', 'location' , 'device_type','description')
+
 
 
 class DataTypeSerializer(serializers.ModelSerializer):
@@ -42,7 +51,7 @@ class TimeStampSerializer(serializers.ModelSerializer):
         fields = ('timestamp',)
 
 
-class DeviceInfoSerializer(serializers.ModelSerializer):
+class DeviceTypeInfoSerializer(serializers.ModelSerializer):
     company = CompanySerializer( read_only = True )
     class Meta:
         model = DeviceType
@@ -65,7 +74,7 @@ class SensorTypeInfoSerializer(serializers.ModelSerializer):
 
 class SensorInfoSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
-    parent_device = DeviceInfoSerializer( read_only = True )
+    parent_device = DeviceTypeInfoSerializer( read_only = True )
     sensor_type = SensorTypeInfoSerializer( read_only = True )
 
     class Meta:

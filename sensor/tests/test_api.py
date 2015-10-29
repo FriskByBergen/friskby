@@ -73,13 +73,40 @@ class DeviceTypeTest(TestCase):
 
     def test_get(self):
         client = Client( )
-        response = client.get("/sensor/api/device/")
+        response = client.get("/sensor/api/device_type/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
         self.assertEqual( len(data) , 2 )
         
         dev0 = data[0]
         self.assertEqual( dev0["company"] , self.hp.id )
+
+
+class DeviceTest(TestCase):
+    def setUp(self):
+        ti = Company.objects.create( name = "Texas Instrument" )
+        dev_type = DeviceType.objects.create( name = "TI123" , company = ti )
+        self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
+        self.dev = Device( device_type = dev_type , 
+                           location = self.loc , 
+                           description = "desc")
+
+
+    def test_id_pattern(self):
+        self.dev.id = "Invalid ID"
+        with self.assertRaises(ValidationError):
+             self.dev.full_clean()
+
+
+    def test_get(self):
+        self.dev.id = "Valid-ID"
+        self.dev.save()
+        client = Client( )
+        response = client.get("/sensor/api/device/Valid-ID/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads( response.content )
+        self.assertEqual( data["description"] , "desc" )
+        
 
 
 class DataTypeTest(TestCase):
@@ -332,7 +359,7 @@ class Readingtest(TestCase):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
                                location = self.context.loc,
-                               parent_device = self.context.dev,
+                               parent_device = self.context.dev_type,
                                sensor_type = self.context.sensor_type_temp , 
                                description = "Measurement of ..")
 

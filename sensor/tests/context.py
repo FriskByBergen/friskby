@@ -4,14 +4,15 @@ class TestContext(object):
     def __init__(self):
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.hp = Company.objects.create( name = "Hewlett Packard" )
-        self.dev = DeviceType.objects.create( name = "HP-X123" , company = self.hp)
+        self.dev_type = DeviceType.objects.create( name = "HP-X123" , company = self.hp)
+        self.dev = Device.objects.create( id = "DevXXX" , location = self.loc , device_type = self.dev_type , description = "Besrkivels")
         self.mtype = MeasurementType.objects.create( name = "Temperature" )
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
 
         self.sensor_type_temp = SensorType.objects.create( company = self.hp,
                                                            product_name = "XX12762 Turbo",
-                                                           parent_device = self.dev,
+                                                           parent_device = self.dev_type,
                                                            measurement_type = self.mtype,
                                                            short_description = "Temp",
                                                            description = "Measurement of temperature",
@@ -21,12 +22,12 @@ class TestContext(object):
         
         self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
                                                   location = self.loc,
-                                                  parent_device = self.dev,
+                                                  parent_device = self.dev_type,
                                                   description = "tempm",
                                                   sensor_type = self.sensor_type_temp)
 
         self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
-                                                 parent_device = self.dev,
+                                                 parent_device = self.dev_type,
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  sensor_type = self.sensor_type_temp)

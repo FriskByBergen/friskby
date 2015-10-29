@@ -39,13 +39,24 @@ class Company(generics.RetrieveAPIView):
 
 #################################################################
 
-class DeviceList(generics.ListCreateAPIView):
+class DeviceTypeList(generics.ListCreateAPIView):
     queryset = models.DeviceType.objects.all()
+    serializer_class = DeviceTypeSerializer
+    
+
+class DeviceType(generics.RetrieveAPIView):    
+    queryset = models.DeviceType.objects.all()
+    serializer_class = DeviceTypeSerializer
+
+#################################################################
+
+class DeviceList(generics.ListCreateAPIView):
+    queryset = models.Device.objects.all()
     serializer_class = DeviceSerializer
     
 
 class Device(generics.RetrieveAPIView):    
-    queryset = models.DeviceType.objects.all()
+    queryset = models.Device.objects.all()
     serializer_class = DeviceSerializer
 
 #################################################################

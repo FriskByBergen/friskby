@@ -11,7 +11,7 @@ from rest_framework import status
 
 import sensor.models as models
 from sensor.api.serializers import *
-
+from sensor.api.info_serializers import *
 
 class MeasurementTypeList(generics.ListCreateAPIView):
     queryset = models.MeasurementType.objects.all()

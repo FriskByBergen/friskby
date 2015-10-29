@@ -1,12 +1,17 @@
 from rest_framework import serializers
-
 from sensor.models import *
+
+
+# This module only contains 'pure' serializers; in particular that
+# implies that foreign keys are just represented with their ID. In the
+# module info_serializers are several serializers which collect
+# information from related classes to present a more convenient view
+# for consumers.
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ('id', 'name' , 'latitude', 'longitude', 'altitude')
-
 
 
 class MeasurementTypeSerializer(serializers.ModelSerializer):
@@ -15,12 +20,10 @@ class MeasurementTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ('id', 'name')
-
 
 
 class DeviceTypeSerializer(serializers.ModelSerializer):
@@ -28,26 +31,12 @@ class DeviceTypeSerializer(serializers.ModelSerializer):
         model = DeviceType
         fields = ('id', 'name' , 'company')
 
-class DeviceTypeInfoSerializer(serializers.ModelSerializer):
-    company = CompanySerializer( read_only = True )
-    class Meta:
-        model = DeviceType
-        fields = ('id', 'name' , 'company')
 
 
 
 class DeviceSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
     device_type = DeviceTypeSerializer( read_only = True )
-
-    class Meta:
-        model = Device
-        fields = ('id', 'location' , 'device_type','description')
-
-
-class DeviceInfoSerializer(serializers.ModelSerializer):
-    location = LocationSerializer( read_only = True )
-    device_type = DeviceTypeInfoSerializer( read_only = True )
 
     class Meta:
         model = Device
@@ -67,11 +56,6 @@ class TimeStampSerializer(serializers.ModelSerializer):
         fields = ('timestamp',)
 
 
-class DeviceTypeInfoSerializer(serializers.ModelSerializer):
-    company = CompanySerializer( read_only = True )
-    class Meta:
-        model = DeviceType
-        fields = ('id', 'name' , 'company')
 
 
 class SensorTypeSerializer(serializers.ModelSerializer):
@@ -80,22 +64,6 @@ class SensorTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'product_name','company','short_description','measurement_type','description','unit','min_value','max_value')
 
 
-class SensorTypeInfoSerializer(serializers.ModelSerializer):
-    measurement_type = MeasurementTypeSerializer( read_only = True )
-    class Meta:
-        model = SensorType
-        fields = ('id', 'product_name','company','short_description','measurement_type','description','unit','min_value','max_value')
-
-
-
-class SensorInfoSerializer(serializers.ModelSerializer):
-    location = LocationSerializer( read_only = True )
-    parent_device = DeviceInfoSerializer( read_only = True )
-    sensor_type = SensorTypeInfoSerializer( read_only = True )
-
-    class Meta:
-        model = Sensor
-        fields = ('id', 'sensor_type', 'location','parent_device','data_type','description')
 
 
 

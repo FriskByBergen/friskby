@@ -151,7 +151,7 @@ class DataValue( Model ):
     value = FloatField( )
     
     def __unicode__(self):
-        return str(self.value)
+        return "%s: %s" % (str(self.data_info) , str(self.value))
 
     def save(self , *args , **kwargs):
         if self.data_info.sensor.valid_input( self.value ):

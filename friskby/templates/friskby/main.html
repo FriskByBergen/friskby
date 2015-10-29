@@ -117,8 +117,9 @@ function update_sensor_selection( result ) {
    }			      
    {
        var device_text;
-       var device = result.parent_device;
-       device_text = device.company.name + " / " + device.name;
+       var parent_device = result.parent_device;
+       var device_type = parent_device.device_type;
+       device_text = parent_device.id + " : " + device_type.company.name + " / " + device_type.name;
        $("#id_device_type").html( device_text );
    }
    $("#id_sensor_id").html( result.id );

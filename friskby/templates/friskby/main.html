@@ -106,7 +106,7 @@ function update_sensor_selection( result ) {
    var sensor_type = result.sensor_type;			      
    {   
        var location_text;   			      
-       var location = result.location;
+       var location = result.parent_device.location;
        location_text = location.name + "(" + location.latitude.toString() + "," + location.longitude.toString() + "," + location.altitude.toString() + ")";
        $("#id_location").html( location_text );
    }

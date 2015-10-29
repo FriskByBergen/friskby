@@ -32,10 +32,9 @@ class SensorTypeInfoSerializer(serializers.ModelSerializer):
 
 
 class SensorInfoSerializer(serializers.ModelSerializer):
-    location = LocationSerializer( read_only = True )
     parent_device = DeviceInfoSerializer( read_only = True )
     sensor_type = SensorTypeInfoSerializer( read_only = True )
 
     class Meta:
         model = Sensor
-        fields = ('id', 'sensor_type', 'location','parent_device','data_type','description')
+        fields = ('id', 'sensor_type', 'parent_device','data_type','description')

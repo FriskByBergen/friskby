@@ -23,11 +23,16 @@ class SensorInfoTest(TestCase):
         sensor_list = response.data
         sensor0 = sensor_list[0]
         self.assertEqual( sensor0["data_type"] , "TEST" )
-        loc = sensor0["location"]
+        loc = sensor0["parent_device"]["location"]
         self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
 
         dev = sensor0["parent_device"]
-        #self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
+        self.assertEqual( dev["id"] , self.context.dev.id )
+        self.assertEqual( dev["description"] , self.context.dev.description )
+
+        dev_type = dev["device_type"]
+        self.assertEqual( dev_type["name"] , self.context.dev_type.name )
+        
 
         sensor_type = sensor0["sensor_type"]
         self.assertEqual( sensor_type["product_name"] , "XX12762 Turbo" ) 
@@ -46,11 +51,10 @@ class SensorInfoTest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
         sensor0 = response.data
-        loc = sensor0["location"]
+        loc = sensor0["parent_device"]["location"]
         self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
 
         dev = sensor0["parent_device"]
-        #self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
 
         sensor_type = sensor0["sensor_type"]
         self.assertEqual( sensor_type["measurement_type"] , {"id" : 1 , "name" : "Temperature"} ) 

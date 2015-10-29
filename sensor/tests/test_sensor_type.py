@@ -21,8 +21,7 @@ class SensorTypeTest(TestCase):
                                                       description = "Temparture", 
                                                       unit = "Celcius", 
                                                       min_value = -10 , 
-                                                      max_value = 100 , 
-                                                      parent_device = device_type)
+                                                      max_value = 100 )
         
 
     def test_validate(self):

@@ -61,14 +61,14 @@ class DeviceTypeInfoSerializer(serializers.ModelSerializer):
 class SensorTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SensorType
-        fields = ('id', 'product_name','company','short_description','parent_device','measurement_type','description','unit','min_value','max_value')
+        fields = ('id', 'product_name','company','short_description','measurement_type','description','unit','min_value','max_value')
 
 
 class SensorTypeInfoSerializer(serializers.ModelSerializer):
     measurement_type = MeasurementTypeSerializer( read_only = True )
     class Meta:
         model = SensorType
-        fields = ('id', 'product_name','company','short_description','parent_device','measurement_type','description','unit','min_value','max_value')
+        fields = ('id', 'product_name','company','short_description','measurement_type','description','unit','min_value','max_value')
 
 
 

@@ -80,7 +80,6 @@ class SensorType( Model ):
     product_name = CharField( "Product name" , max_length = 256 )
     company = ForeignKey( Company )
     short_description = CharField("Short description" , max_length = 40)
-    parent_device = ForeignKey( DeviceType )
     measurement_type = ForeignKey( MeasurementType )
     description = CharField("Description" , max_length = 256 )
     unit = CharField("Unit" , max_length = 60 )

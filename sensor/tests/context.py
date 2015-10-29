@@ -12,7 +12,6 @@ class TestContext(object):
 
         self.sensor_type_temp = SensorType.objects.create( company = self.hp,
                                                            product_name = "XX12762 Turbo",
-                                                           parent_device = self.dev_type,
                                                            measurement_type = self.mtype,
                                                            short_description = "Temp",
                                                            description = "Measurement of temperature",

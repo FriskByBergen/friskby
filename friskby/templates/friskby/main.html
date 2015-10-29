@@ -248,6 +248,10 @@ content to the restdb.io storage server.
 
 <h4> The api endpoints </h4>
 
+The endpoints listed below are a pure serialization of the records
+from the database, in particular related objects are only represented
+with the primary key. 
+
 Each device is created by a <a href="/sensor/api/company/"> Company </a> <p>
 Each sensor is part of a <a href="/sensor/api/device/"> Device </a> <p>
 Several types of devices: <a href="/sensor/api/device_type/"> DeviceTypes </a> <p>
@@ -255,9 +259,12 @@ There can be several <a href="/sensor/api/measurement_type/"> measurment types <
 Each sensor must have <a href="/sensor/api/location/"> location </a> <p>
 These are the <a href="/sensor/api/sensor/"> sensors </a> <p>
 These are the <a href="/sensor/api/sensortype/"> sensor types </a> <p>
-These are sensor INFO <a href="/sensor/api/sensorinfo/"> sensor info </a> <p>
 These are the <a href="/sensor/api/data_types/"> data_types </a> TEST and RAWDATA are created by default <p>
 Timestamps <a href="/sensor/api/timestamp/"> timestamp </a> <p>
+
+<h4> The info endpoints </h4>
+These are sensor INFO <a href="/sensor/api/sensorinfo/"> sensor info </a> <p>
+
 
 <h4> How to add a new sensor </h4> This web application is a simple
 database backed web application. <a href="/admin/">The Django admin</a>

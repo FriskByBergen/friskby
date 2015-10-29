@@ -21,14 +21,14 @@ class TestContext(object):
         
         self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
                                                   location = self.loc,
-                                                  parent_device = self.dev_type,
+                                                  parent_device = self.dev,
                                                   description = "tempm",
                                                   sensor_type = self.sensor_type_temp)
 
         self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
-                                                 parent_device = self.dev_type,
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
+                                                 parent_device = self.dev,
                                                  sensor_type = self.sensor_type_temp)
 
         self.ts = TimeStamp.objects.create( timestamp = TimeStamp.parse_datetime("2015-10-10T10:10:00+01") )

@@ -15,13 +15,17 @@ class DataInfoTest(TestCase):
         device_type.company = company
         device_type.save()
 
+        device = Device.objects.create( id = "ID",
+                                        device_type = device_type ,
+                                        description = "Besk")
+
         mtype = MeasurementType( name = "Temperature" )
         mtype.save()
 
         self.sensor = Sensor.objects.create( id = "TEMP", 
                                              sensor_type = self.context.sensor_type_temp,
                                              description = "Temparture", 
-                                             parent_device = device_type)
+                                             parent_device = device)
 
         self.location = Location.objects.create( name = "Location" , 
                                                  latitude = 1000,

@@ -235,7 +235,7 @@ class SensorInfoTest(TestCase):
         self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
 
         dev = sensor0["parent_device"]
-        self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
+        #self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
 
         sensor_type = sensor0["sensor_type"]
         self.assertEqual( sensor_type["product_name"] , "XX12762 Turbo" ) 
@@ -258,7 +258,7 @@ class SensorInfoTest(TestCase):
         self.assertEqual( loc , {"id" : 1 , "name" : "Ulriken" , "latitude" : 200 , "longitude" : 120 , "altitude" : 600})
 
         dev = sensor0["parent_device"]
-        self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
+        #self.assertEqual( dev , {"id" : 1 , "name" : "HP-X123" , "company" : {"id" : 1 , "name" : "Hewlett Packard"} } )
 
         sensor_type = sensor0["sensor_type"]
         self.assertEqual( sensor_type["measurement_type"] , {"id" : 1 , "name" : "Temperature"} ) 
@@ -359,7 +359,7 @@ class Readingtest(TestCase):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
                                location = self.context.loc,
-                               parent_device = self.context.dev_type,
+                               parent_device = self.context.dev,
                                sensor_type = self.context.sensor_type_temp , 
                                description = "Measurement of ..")
 

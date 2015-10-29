@@ -28,10 +28,26 @@ class DeviceTypeSerializer(serializers.ModelSerializer):
         model = DeviceType
         fields = ('id', 'name' , 'company')
 
+class DeviceTypeInfoSerializer(serializers.ModelSerializer):
+    company = CompanySerializer( read_only = True )
+    class Meta:
+        model = DeviceType
+        fields = ('id', 'name' , 'company')
+
+
 
 class DeviceSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
     device_type = DeviceTypeSerializer( read_only = True )
+
+    class Meta:
+        model = Device
+        fields = ('id', 'location' , 'device_type','description')
+
+
+class DeviceInfoSerializer(serializers.ModelSerializer):
+    location = LocationSerializer( read_only = True )
+    device_type = DeviceTypeInfoSerializer( read_only = True )
 
     class Meta:
         model = Device
@@ -74,7 +90,7 @@ class SensorTypeInfoSerializer(serializers.ModelSerializer):
 
 class SensorInfoSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
-    parent_device = DeviceTypeInfoSerializer( read_only = True )
+    parent_device = DeviceInfoSerializer( read_only = True )
     sensor_type = SensorTypeInfoSerializer( read_only = True )
 
     class Meta:

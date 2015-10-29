@@ -111,7 +111,7 @@ class Sensor( Model ):
     id = CharField("Sensor ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
     sensor_type = ForeignKey( SensorType )
     location = ForeignKey( Location , null = True )
-    parent_device = ForeignKey( DeviceType )
+    parent_device = ForeignKey( Device )
     data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
 

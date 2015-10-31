@@ -11,9 +11,9 @@ sensor_map = {"MET:TEMP:FLORIDA" : "http://www.yr.no/place/Norway/Hordaland/Berg
               "MET:TEMP:BLINDERN" : "http://www.yr.no/place/Norway/Oslo/Oslo/Blindern/varsel.xml"}
 
 key = "00001111-2222-3333-4444-555566667777"
-gw = FriskByGW( key = key )
+gw = FriskByGW( )
 for sensor_id , url in sensor_map.items():
-    sensor = gw.getSensor(sensor_id)
+    sensor = gw.getSensor(sensor_id , key = key )
     if sensor is None:
         msg = "Sorry - the friskby server at:%s does not have a %s sensor - add that manually first." % (gw.getRootURL() , sensor_id)
 

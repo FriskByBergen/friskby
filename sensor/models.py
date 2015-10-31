@@ -2,6 +2,7 @@ from django.utils import dateparse
 from django.db.models import *
 from django.core.validators import RegexValidator
 
+from api_key.models import ApiKey
 
 class Location( Model ):
     name = CharField("Location" , max_length = 60 )
@@ -114,6 +115,7 @@ class Sensor( Model ):
     parent_device = ForeignKey( Device )
     data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
+    post_key = ForeignKey( ApiKey )
 
     def __unicode__(self):
         return self.id

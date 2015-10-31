@@ -82,6 +82,7 @@ class Readingtest(TestCase):
         # api which seems to cap the return at 100 elements?
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
+                               post_key = self.context.key , 
                                location = self.context.loc,
                                parent_device = self.context.dev,
                                sensor_type = self.context.sensor_type_temp , 

@@ -216,10 +216,11 @@ class Reading(APIView):
             return Response("Missing data" , status = status.HTTP_400_BAD_REQUEST )
             
         data = request.data
-        for key in ["sensorid" , "value" , "timestamp"]:
+        for key in ["key" , "sensorid" , "value" , "timestamp"]:
             if not key in data:
                 return Response("Missing '%s' field in payload" % key , status.HTTP_400_BAD_REQUEST)
 
+        key = data["key"]
         sensorid = data["sensorid"]
         value = data["value"]
         timestring = data["timestamp"]
@@ -230,16 +231,21 @@ class Reading(APIView):
 
         try:
             sensor = models.Sensor.objects.get( pk = sensorid )
-            if not sensor.valid_input( value ):
-                return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
-
-            if sensor.location is None:
-                if not "location" in data:
-                    return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
-                location = data["location"]
-                    
         except models.Sensor.DoesNotExist:
             return Response("The sensorID:%s is not found" % sensorid , status.HTTP_404_NOT_FOUND)
+
+        if not sensor.valid_post_key( key ):
+            return Response("Invalid key:'%s' when posting to:'%s'" % (key , sensorid) , status.HTTP_403_FORBIDDEN)
+
+        if not sensor.valid_input( value ):
+            return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
+
+        if sensor.location is None:
+            if not "location" in data:
+                return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
+            location = data["location"]
+                    
+
 
 
         ts = models.TimeStamp.objects.create( timestamp = timestamp )

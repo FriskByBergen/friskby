@@ -135,6 +135,9 @@ class Sensor( Model ):
 
         return ts
 
+    def valid_post_key( self , key_string):
+        return self.post_key.access( key_string )
+
 
 
 class DataInfo( Model ):

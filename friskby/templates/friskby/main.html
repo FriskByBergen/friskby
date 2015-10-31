@@ -284,8 +284,11 @@ import json
 url = "http://friskby.herokuapp.com/sensor/api/reading/"
 headers = {"Content-Type" : "application/json"}
 
-data = [{"sensorid" : "TEMP:XX" , "value" : 50, "timestamp" : "10-10-2015T12:12:00Z"},
-        {"sensorid" : "HUM:XX"  , "value" : 20, "timestamp" : "10-10-2015T12:12:00Z"}]
+api_key1 = "VerySecretKey"
+api_key2 = "AnotherSecretKey"
+
+data = [{"sensorid" : "TEMP:XX" , "value" : 50, "timestamp" : "10-10-2015T12:12:00Z" , "key" : api_key1},
+        {"sensorid" : "HUM:XX"  , "value" : 20, "timestamp" : "10-10-2015T12:12:00Z" , "key" : api_key2}]
 
 for measurement in data:
     response = requests.post( url , data = json.dumps( measurement ) , headers = headers )

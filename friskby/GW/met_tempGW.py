@@ -10,8 +10,8 @@ from friskby_gw import FriskByGW
 sensor_map = {"MET:TEMP:FLORIDA" : "http://www.yr.no/place/Norway/Hordaland/Bergen/Bergen_(Florida)_observation_site/varsel.xml", 
               "MET:TEMP:BLINDERN" : "http://www.yr.no/place/Norway/Oslo/Oslo/Blindern/varsel.xml"}
 
-
-gw = FriskByGW( )
+key = "00001111-2222-3333-4444-555566667777"
+gw = FriskByGW( key = key )
 for sensor_id , url in sensor_map.items():
     sensor = gw.getSensor(sensor_id)
     if sensor is None:

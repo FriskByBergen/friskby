@@ -6,9 +6,10 @@ import time
 from friskby_gw import FriskByGW
 
 
-gw = FriskByGW(  )
+gw = FriskByGW( url = "http://127.0.0.1:8000/" )
+key = "00001111-2222-3333-4444-555566667777"
 sensor_id = "RANDOM"
-sensor = gw.getSensor( sensor_id )
+sensor = gw.getSensor( sensor_id , key = key )
 if sensor is None:
     msg = "Sorry - the friskby server at:%s does not have a %s sensor - add that manually first." % (gw.getRootURL() , sensor_id)
     sys.exit( msg )

@@ -4,6 +4,7 @@ from sensor.models import *
 class TestContext(object):
     def __init__(self):
         self.key = ApiKey.objects.create( description = "Newkey")
+        self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.hp = Company.objects.create( name = "Hewlett Packard" )
         self.dev_type = DeviceType.objects.create( name = "HP-X123" , company = self.hp)

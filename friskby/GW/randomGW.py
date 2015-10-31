@@ -6,7 +6,7 @@ import time
 from friskby_gw import FriskByGW
 
 
-gw = FriskByGW( url = "http://127.0.0.1:8000/" )
+gw = FriskByGW( )
 key = "00001111-2222-3333-4444-555566667777"
 sensor_id = "RANDOM"
 sensor = gw.getSensor( sensor_id , key = key )

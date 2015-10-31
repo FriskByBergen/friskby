@@ -8,7 +8,7 @@ class ApiKeyTest(TestCase):
         key = ApiKey.objects.create( description = "New key" )
         self.assertFalse( key.access("No/not/this"))
 
-        ext_key = key.external_key
+        ext_key = str(key.external_key)
         self.assertTrue( key.access( ext_key ))
         
         key.reset()

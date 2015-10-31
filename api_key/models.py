@@ -12,7 +12,7 @@ class ApiKey( Model ):
 
 
     def access(self , external_key):
-        if self.external_key == external_key:
+        if str(self.external_key) == external_key:
             return True
         else:
             return False

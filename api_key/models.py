@@ -8,7 +8,7 @@ class ApiKey( Model ):
 
     
     def __unicode__(self):
-        return self.description
+        return "%s: %s" % ( self.description , str(self.external_key))
 
 
     def access(self , external_key):

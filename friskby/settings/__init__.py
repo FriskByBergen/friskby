@@ -166,8 +166,6 @@ RESTDB_IO_GET_KEY = os.getenv("RESTDB_IO_GET_KEY")
 if RESTDB_IO_GET_KEY is None:
     raise Exception("Enviroment variable RESTDB_IO_GET_KEY has not been set")
 
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_URLS_REGEX = r'^/friskby/api/.*$'
 
 
 # By default the application will store an entry in the RawData
@@ -180,4 +178,8 @@ if os.getenv("FORCE_VALID_KEY"):
     value = os.getenv("FORCE_VALID_KEY").lower()
     if value == "true":
         FORCE_VALID_KEY = True
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+#CORS_URLS_REGEX = r'^/friskby/api/.*$'
 

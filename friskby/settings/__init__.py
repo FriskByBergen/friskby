@@ -36,7 +36,7 @@ if os.getenv("FRISKBY_DEBUG"):
     else:
         raise Exception("When setting the FRISKBY_DEBUG env veriable it must be True | False")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["friskby.herokuapp.com"]
 
 
 # Application definition

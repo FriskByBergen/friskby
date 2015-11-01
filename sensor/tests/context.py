@@ -1,7 +1,10 @@
+from api_key.models import *
 from sensor.models import *
 
 class TestContext(object):
     def __init__(self):
+        self.key = ApiKey.objects.create( description = "Newkey")
+        self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.hp = Company.objects.create( name = "Hewlett Packard" )
         self.dev_type = DeviceType.objects.create( name = "HP-X123" , company = self.hp)
@@ -23,12 +26,14 @@ class TestContext(object):
                                                   location = self.loc,
                                                   parent_device = self.dev,
                                                   description = "tempm",
+                                                  post_key = self.key,
                                                   sensor_type = self.sensor_type_temp)
 
         self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
+                                                 post_key = self.key,
                                                  sensor_type = self.sensor_type_temp)
 
         self.ts = TimeStamp.objects.create( timestamp = TimeStamp.parse_datetime("2015-10-10T10:10:00+01") )

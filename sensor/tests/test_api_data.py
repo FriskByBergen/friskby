@@ -14,6 +14,23 @@ class Readingtest(TestCase):
     def setUp(self):
         self.context = TestContext()
     
+    def test_post_key(self):
+        client = Client( )
+
+        # Missing key 
+        data = {"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01"}
+        string_data = json.dumps( data )
+        response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
+
+        # Invalid key 
+        data = {"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01" , "key" : "Invalid"}
+        string_data = json.dumps( data )
+        response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN , response.data)
+
+    
+
     
     def test_post(self):
         client = Client( )
@@ -28,38 +45,38 @@ class Readingtest(TestCase):
 
 
         # Payload structure is invalid - missing timestamp
-        data = {"sensorid" : "TEMP:XX" , "value" : 50}
+        data = {"sensorid" : "TEMP:XX" , "value" : 50, "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
         # SensorID is invalid
-        data = {"sensorid" : "TempXX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"sensorid" : "TempXX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND , response.data)
 
         # Value out of range
-        data = {"sensorid" : "TEMP:XX" , "value" : 400, "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"sensorid" : "TEMP:XX" , "value" : 400, "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
         # Value not float
-        data = {"sensorid" : "TEMP:XX" , "value" : "50X" , "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"sensorid" : "TEMP:XX" , "value" : "50X" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
         # Value is string-float - OK
-        data = {"sensorid" : "TEMP:XX" , "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"sensorid" : "TEMP:XX" , "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
 
         #No location - fails
-        data = {"sensorid" : "HUM:XX" , "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"sensorid" : "HUM:XX" , "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
@@ -82,6 +99,7 @@ class Readingtest(TestCase):
         # api which seems to cap the return at 100 elements?
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
+                               post_key = self.context.key , 
                                location = self.context.loc,
                                parent_device = self.context.dev,
                                sensor_type = self.context.sensor_type_temp , 
@@ -98,9 +116,9 @@ class Readingtest(TestCase):
         result = response.data
         len1 = len(result)
 
-        data_list = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "2015-10-10T12:12:00+01"},
-                     {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:12:00+01"},
-                     {"sensorid" : sensor_id , "value" : 20, "timestamp" : "2015-10-10T12:12:00+01"}]
+        data_list = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key},
+                     {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key},
+                     {"sensorid" : sensor_id , "value" : 20, "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}]
 
         for data in data_list:
             string_data = json.dumps( data )

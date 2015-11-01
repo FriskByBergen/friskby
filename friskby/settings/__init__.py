@@ -40,12 +40,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
+    'api_key',
     'sensor'
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -134,3 +137,6 @@ if RESTDB_IO_POST_KEY is None:
 RESTDB_IO_GET_KEY = os.getenv("RESTDB_IO_GET_KEY")
 if RESTDB_IO_GET_KEY is None:
     raise Exception("Enviroment variable RESTDB_IO_GET_KEY has not been set")
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_URLS_REGEX = r'^/friskby/api/.*$'

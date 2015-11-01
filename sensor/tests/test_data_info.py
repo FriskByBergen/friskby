@@ -25,6 +25,7 @@ class DataInfoTest(TestCase):
         self.sensor = Sensor.objects.create( id = "TEMP", 
                                              sensor_type = self.context.sensor_type_temp,
                                              description = "Temparture", 
+                                             post_key = self.context.key , 
                                              parent_device = device)
 
         self.location = Location.objects.create( name = "Location" , 

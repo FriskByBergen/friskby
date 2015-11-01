@@ -33,12 +33,13 @@ class FriskByHttp(object):
 
             
 class FriskBySensor(FriskByHttp):
-    def __init__(self , values , url = ROOT_URL):
+    def __init__(self , values , url = ROOT_URL , key = None):
         super(FriskBySensor , self).__init__( url )
         sensor_type = values["sensor_type"]
         self.id = values["id"]
         self.min_value = sensor_type["min_value"]
         self.max_value = sensor_type["max_value"]
+        self.post_key = key
 
 
     @classmethod
@@ -80,6 +81,8 @@ class FriskBySensor(FriskByHttp):
             timestamp = self.timeStamp( )
 
         data = {"value" : value , "timestamp" : timestamp , "sensorid" : self.id }
+        if not self.post_key is None:
+            data["key"] = self.post_key
         self.postToURL( "sensor/api/reading/" , data )
 
 
@@ -97,10 +100,10 @@ class FriskByGW(FriskByHttp):
         return sensor_list
 
     
-    def getSensor(self , sensorid):
+    def getSensor(self , sensorid , key = None ):
         try:
             sensor_data = self.getFromURL( "sensor/api/sensorinfo/%s/" % sensorid)
-            return FriskBySensor( sensor_data , self.url )
+            return FriskBySensor( sensor_data , self.url , key )
         except Exception:
             sensor = None
         return sensor

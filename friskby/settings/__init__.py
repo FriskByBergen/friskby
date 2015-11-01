@@ -26,7 +26,15 @@ BASE_DIR , tail = os.path.split( os.path.dirname(__file__))
 SECRET_KEY = '+xy7&q+xuwnohtv$0)m7rpv7y&3#qndflc_%c%@3_jbx8h3b!4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+if os.getenv("FRISKBY_DEBUG"):
+    debug_site = os.getenv("FRISKBY_DEBUG")
+    if debug_site.lower() == "false":
+        DEBUG = False
+    elif debug_site.lower() == "true":
+        DEBUG = True
+    else:
+        raise Exception("When setting the FRISKBY_DEBUG env veriable it must be True | False")
 
 ALLOWED_HOSTS = []
 

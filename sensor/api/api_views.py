@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+import datetime 
 
 from django.conf import settings
 
@@ -8,10 +9,37 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+import json
 
 import sensor.models as models
 from sensor.api.serializers import *
 from sensor.api.info_serializers import *
+
+class Send(APIView):
+    def post(self , request , format = None):
+        if not "data" in request.POST:
+            return Response("Invalid request: no data recieved",status=400)
+        try:
+            json_data = json.loads(request.POST['data'])
+        except ValueError:
+            return Response("Invalid request: the data isn't valid json",status=400)
+        if not 'apikey' in json_data:
+            return Response("Missing apikey in json data",status=400)
+        if not 'deviceid' in json_data:
+            return Response("Missing deviceid in json data",status=400)
+        if not 'timestamp' in json_data:
+            return Response("Missing timestamp in json data",status=400)
+        
+        rd = RawData(apikey=json_data['apikey'],timestamp=datetime.datetime.utcnow(),deviceid=json_data['apikey'])
+        del json_data['apikey']
+        del json_data['deviceid']
+        rd.data = data=json_data
+        rd.save()
+        return Response("OK")
+
+
+
+        
 
 class MeasurementTypeList(generics.ListCreateAPIView):
     queryset = models.MeasurementType.objects.all()

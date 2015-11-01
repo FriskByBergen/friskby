@@ -4,6 +4,13 @@ from django.core.validators import RegexValidator
 
 from api_key.models import ApiKey
 
+class RawData(Model):
+    data = TextField()
+    apikey = CharField(max_length=128)
+    timestamp = DateTimeField("timestamp") # Recieved
+    deviceid = CharField(max_length=128)
+    parsed = BooleanField(default = False)
+
 class Location( Model ):
     name = CharField("Location" , max_length = 60 )
     latitude = FloatField("Latitude")

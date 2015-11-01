@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'friskby.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-if "test" in sys.argv:
+test = True
+if test is True:
     DATABASES = { 'default' : {
         "ENGINE" : "django.db.backends.sqlite3",
         "NAME" : "friskby.sqlite",
@@ -101,7 +101,7 @@ else:
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = os.getenv("TZ")
+TIME_ZONE = "UTC"
 if TIME_ZONE is None:
     raise Exception("Must set time zone variable TZ")
 

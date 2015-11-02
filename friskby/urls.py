@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 
 import sensor.urls
 import friskby_urls
 
 urlpatterns = [
-    url(r'^admin/'   , include(admin.site.urls)),
-    url(r'^sensor/'  , include(sensor.urls)),
-    url(r'^friskby/' , include(friskby_urls))
+    url(r'^accounts/login/$'  , auth_views.login,{'template_name': 'admin/login.html'}),
+    url(r'^admin/'            , include(admin.site.urls)),
+    url(r'^sensor/'           , include(sensor.urls)),
+    url(r'^friskby/'          , include(friskby_urls))
 ]

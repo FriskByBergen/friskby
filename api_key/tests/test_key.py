@@ -13,3 +13,15 @@ class ApiKeyTest(TestCase):
         
         key.reset()
         self.assertFalse( key.access( ext_key ))
+
+
+    def test_valid(self):
+        key = ApiKey.objects.create( description = "New key" )
+        ext_key = str(key.external_key)
+
+        self.assertTrue( ApiKey.valid( ext_key ) )
+        self.assertFalse( ApiKey.valid( "invalidKey") )
+        
+        ext_key2 = ext_key.replace("1" , "2")
+        self.assertFalse( ApiKey.valid( "invalidKey") )
+

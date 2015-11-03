@@ -288,12 +288,14 @@ class Reading(APIView):
                                        value = value )
         data_value.save( )
         
-
-        restdb_io_status , msg = self.restdb_io_post( request.data )
-        if restdb_io_status == status.HTTP_201_CREATED:
-            return Response(msg , status = restdb_io_status)
+        if settings.RESTDB_IO_URL is None:
+            return Response(1 , status.HTTP_201_CREATED)
         else:
-            return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
+            restdb_io_status , msg = self.restdb_io_post( request.data )
+            if restdb_io_status == status.HTTP_201_CREATED:
+                return Response(msg , status = restdb_io_status)
+            else:
+                return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
             
 
 

@@ -1,5 +1,7 @@
 import requests
 
+from django.conf import settings
+
 from api_key.models import *
 from sensor.models import *
 
@@ -51,3 +53,5 @@ class TestContext(object):
             self.network = True
         except Exception:
             self.network = False
+            settings.RESTDB_IO_URL = None
+            sys.stderr.write("** WARNING: No network connection - skipping post to restdb.io\n")

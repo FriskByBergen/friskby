@@ -33,11 +33,6 @@ class Readingtest(TestCase):
 
     
     def test_post(self):
-        if self.context.network == False:
-            sys.stderr.write("Sorry - no network connection - skipping reading tests\n")
-            return
-
-            
         client = Client( )
 
         # Missing data
@@ -99,10 +94,6 @@ class Readingtest(TestCase):
 
         
     def test_get(self):
-        if self.context.network == False:
-            sys.stderr.write("Sorry - no network connection - skipping reading tests\n")
-            return
-
         # The funny construction with a random sensorID is to work
         # around a bug/limitation/misunderstanding in the restdb.io
         # api which seems to cap the return at 100 elements?

@@ -27,7 +27,7 @@ class GWTest(TestCase):
 
     def test_get_sensors(self):
         if network == False:
-            sys.stderr.write("Sorry - no network connection - skipping reading tests\n")
+            sys.stderr.write("Sorry - no network connection - skipping GW tests\n")
             return
 
         gw = FriskByGW( )
@@ -47,7 +47,7 @@ class GWTest(TestCase):
         
     def test_get_sensor(self):
         if network == False:
-            sys.stderr.write("Sorry - no network connection - skipping reading tests\n")
+            sys.stderr.write("Sorry - no network connection - skipping GW tests\n")
             return
 
         gw = FriskByGW( )

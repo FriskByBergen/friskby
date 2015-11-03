@@ -96,6 +96,19 @@ else:
         raise Exception("The DATABASE_URL environment variable has not bee set")
 
 
+if False:
+    # This should in my opinion also work
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    if DATABASE_URL:
+        default_db = dj_database_url.parse( DATABASE_URL )
+        default_db["TEST"] = {"ENGINE" : "django.db.backends.sqlite3",
+                              "NAME" : "friskby-test.sqlite" }
+        DATABASES = { "default" : default_db }
+        print DATABASES
+    else:
+        raise Exception("The DATABASE_URL environment variable has not bee set")
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -134,8 +147,7 @@ STATICFILES_DIRS = (
 RESTDB_IO_URL = os.getenv("RESTDB_IO_URL")
 if RESTDB_IO_URL is None:
     raise Exception("Enviroment variable RESTDB_IO_URL has not been set")
-
-
+    
 RESTDB_IO_POST_KEY = os.getenv("RESTDB_IO_POST_KEY")
 if RESTDB_IO_POST_KEY is None:
     raise Exception("Enviroment variable RESTDB_IO_POST_KEY has not been set")
@@ -147,3 +159,16 @@ if RESTDB_IO_GET_KEY is None:
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_URLS_REGEX = r'^/friskby/api/.*$'
+
+
+# By default the application will store an entry in the RawData
+# database if the post has all the required fields, without actually
+# checking that the fields are valid. If the FORCE_VALID_KEY setting
+# is set to True the application will check that supplied key is a
+# valid key before saving.
+FORCE_VALID_KEY = False
+if os.getenv("FORCE_VALID_KEY"):
+    value = os.getenv("FORCE_VALID_KEY").lower()
+    if value == "true":
+        FORCE_VALID_KEY = True
+

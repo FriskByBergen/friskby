@@ -43,7 +43,6 @@ urlpatterns = [
     #
     url(r'^reading/$'            , Reading.as_view()),
     url(r'^reading/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , Reading.as_view()),
-    url(r'^send',Send.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

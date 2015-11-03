@@ -15,30 +15,6 @@ import sensor.models as models
 from sensor.api.serializers import *
 from sensor.api.info_serializers import *
 
-class Send(APIView):
-    def post(self , request , format = None):
-        if not "data" in request.POST:
-            return Response("Invalid request: no data recieved",status=400)
-        try:
-            json_data = json.loads(request.POST['data'])
-        except ValueError:
-            return Response("Invalid request: the data isn't valid json",status=400)
-        if not 'apikey' in json_data:
-            return Response("Missing apikey in json data",status=400)
-        if not 'deviceid' in json_data:
-            return Response("Missing deviceid in json data",status=400)
-        if not 'timestamp' in json_data:
-            return Response("Missing timestamp in json data",status=400)
-        
-        rd = RawData(apikey=json_data['apikey'],timestamp=datetime.datetime.utcnow(),deviceid=json_data['apikey'])
-        del json_data['apikey']
-        del json_data['deviceid']
-        rd.data = data=json_data
-        rd.save()
-        return Response("OK")
-
-
-
         
 
 class MeasurementTypeList(generics.ListCreateAPIView):
@@ -240,27 +216,21 @@ class Reading(APIView):
 
 
     def post(self , request , format = None):
-        if request.data is None:
-            return Response("Missing data" , status = status.HTTP_400_BAD_REQUEST )
-            
-        data = request.data
-        for key in ["key" , "sensorid" , "value" , "timestamp"]:
-            if not key in data:
-                return Response("Missing '%s' field in payload" % key , status.HTTP_400_BAD_REQUEST)
+        try:
+            raw_data = RawData.create( request.data )
+        except ValueError:
+            return Response(RawData.error( request.data ) , status = status.HTTP_400_BAD_REQUEST )
 
-        key = data["key"]
-        sensorid = data["sensorid"]
-        value = data["value"]
-        timestring = data["timestamp"]
-        timestamp = models.TimeStamp.parse_datetime( timestring )
+
+        key = raw_data.apikey
+        sensorid = raw_data.sensor_id
+        value = raw_data.value
+        timestamp = raw_data.timestamp_data
         location = None
-        if timestamp is None:
-            return Response("Timestamp '%s' is invalid" % timestring , status.HTTP_400_BAD_REQUEST)
-
         try:
             sensor = models.Sensor.objects.get( pk = sensorid )
         except models.Sensor.DoesNotExist:
-            return Response("The sensorID:%s is not found" % sensorid , status.HTTP_404_NOT_FOUND)
+            return Response("The sensorID:%s is not found. " % sensorid , status.HTTP_404_NOT_FOUND)
 
         if not sensor.valid_post_key( key ):
             return Response("Invalid key:'%s' when posting to:'%s'" % (key , sensorid) , status.HTTP_403_FORBIDDEN)
@@ -269,9 +239,9 @@ class Reading(APIView):
             return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
 
         if sensor.location is None:
-            if not "location" in data:
+            if not "location" in request.data:
                 return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
-            location = data["location"]
+            location = request.data["location"]
                     
 
 

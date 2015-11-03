@@ -50,7 +50,7 @@ class FriskBySensor(FriskByHttp):
             time = datetime.datetime.now()
             
         return time.strftime("%Y-%m-%dT%H:%M:%S")
-
+        
 
     def getMinValue(self):
         return self.min_value

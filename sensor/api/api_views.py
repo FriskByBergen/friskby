@@ -234,9 +234,10 @@ class Reading(APIView):
 
         if not sensor.valid_post_key( key ):
             return Response("Invalid key:'%s' when posting to:'%s'" % (key , sensorid) , status.HTTP_403_FORBIDDEN)
-
+            
         if not sensor.valid_input( value ):
             return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
+        value = float(value)
 
         if sensor.location is None:
             if not "location" in request.data:
@@ -261,7 +262,11 @@ class Reading(APIView):
         if settings.RESTDB_IO_URL is None:
             return Response(1 , status.HTTP_201_CREATED)
         else:
-            restdb_io_status , msg = self.restdb_io_post( request.data )
+            restdb_io_status , msg = self.restdb_io_post( {"key" : raw_data.apikey,
+                                                           "sensorid" : raw_data.sensor_id,
+                                                           "value" : value , 
+                                                           "timestamp" : raw_data.timestamp_data.strftime("%Y-%m-%dT%H:%M:%S") } )
+
             if restdb_io_status == status.HTTP_201_CREATED:
                 return Response(msg , status = restdb_io_status)
             else:

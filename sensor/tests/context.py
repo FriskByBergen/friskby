@@ -49,7 +49,7 @@ class TestContext(object):
                                                    sensor = self.temp_sensor )
         
         try:
-            response = request.get("https://github.com")
+            response = requests.get("https://github.com/")
             self.network = True
         except Exception:
             self.network = False

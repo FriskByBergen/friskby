@@ -14,7 +14,7 @@ except ImportError:
 
 
 try:
-    response = request.get("https://github.com")
+    response = requests.get("https://github.com")
     network = True
 except Exception:
     network = False

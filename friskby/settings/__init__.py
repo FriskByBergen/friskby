@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'friskby.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-test = True
-if test is True:
+
+if "test" in sys.argv:
     DATABASES = { 'default' : {
         "ENGINE" : "django.db.backends.sqlite3",
         "NAME" : "friskby.sqlite",

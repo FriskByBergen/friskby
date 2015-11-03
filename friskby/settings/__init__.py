@@ -101,7 +101,14 @@ else:
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = "UTC"
+
+
+# The Django project is set up to use timezone information; i.e all
+# date and time instances should be 'aware' in Python language, and
+# everything stored in the database is in UTZ. The timezone setting
+# here is only used as a default fallback when interacting with the
+# user.
+TIME_ZONE = os.environ.get("TZ")
 if TIME_ZONE is None:
     raise Exception("Must set time zone variable TZ")
 

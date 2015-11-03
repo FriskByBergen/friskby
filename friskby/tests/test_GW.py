@@ -1,3 +1,4 @@
+import requests
 import os
 import sys
 from unittest import TestCase
@@ -12,6 +13,12 @@ except ImportError:
     sys.path.pop(0)
 
 
+try:
+    response = request.get("https://github.com")
+    network = True
+except Exception:
+    network = False
+
 
 class GWTest(TestCase):
     def setUp(self):
@@ -19,7 +26,11 @@ class GWTest(TestCase):
 
 
     def test_get_sensors(self):
-        gw = FriskByGW()
+        if network == False:
+            sys.stderr.write("Sorry - no network connection - skipping reading tests\n")
+            return
+
+        gw = FriskByGW( )
         sensors = gw.sensorList()
         for sensor in sensors:
             self.assertTrue( isinstance( sensor , FriskBySensor ))
@@ -35,6 +46,10 @@ class GWTest(TestCase):
 
         
     def test_get_sensor(self):
+        if network == False:
+            sys.stderr.write("Sorry - no network connection - skipping reading tests\n")
+            return
+
         gw = FriskByGW( )
         sensor = gw.getSensor( "NO/does/not/exist")
         self.assertIsNone( sensor )

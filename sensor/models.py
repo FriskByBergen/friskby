@@ -1,15 +1,98 @@
+import uuid
+import json
+import datetime
+import pytz
+
+from django.conf import settings
 from django.utils import dateparse
 from django.db.models import *
 from django.core.validators import RegexValidator
 
 from api_key.models import ApiKey
 
+
 class RawData(Model):
-    data = TextField()
     apikey = CharField(max_length=128)
-    timestamp = DateTimeField("timestamp") # Recieved
-    deviceid = CharField(max_length=128)
+    sensor_id = CharField(max_length=128)
+    timestamp_recieved = DateTimeField(  ) 
+    timestamp_data = DateTimeField( )
+    value = CharField( max_length = 128 )
+    extra_data = TextField( null = True , blank = True )
     parsed = BooleanField(default = False)
+
+    
+    def save(self,*args, **kwargs):
+        if self.timestamp_recieved is None:
+            self.timestamp_recieved = datetime.datetime.now( pytz.utc )
+        super(RawData , self).save(*args , **kwargs)
+        
+
+
+    @classmethod
+    def is_valid(cls , data):
+        valid = True
+        if data is None:
+            valid = False
+        
+        if valid:
+            for key in ["key" , "sensorid" , "value" , "timestamp"]:
+                if not key in data:
+                    valid = False
+        
+        if valid:
+            ts = TimeStamp.parse_datetime( data["timestamp"] )
+            if ts is None:
+                valid = False
+
+        if valid and settings.FORCE_VALID_KEY:
+            valid = ApiKey.valid( data["key"] )
+            
+        return valid
+
+    
+    @classmethod
+    def error(cls , data ):
+        if data is None:
+            return "Error: empty payload"
+        
+        missing_keys = []
+        for key in ["key" , "sensorid" , "value" , "timestamp"]:
+            if not key in data:
+                missing_keys.append( key )
+        if missing_keys:
+            return "Error: missing fields in payload: %s" % missing_keys
+
+        ts = TimeStamp.parse_datetime( data["timestamp"] )
+        if ts is None:
+            return "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz"
+
+        if settings.FORCE_VALID_KEY:
+            if not ApiKey.valid( data["key"] ):
+                return "Error: invalid key"
+
+
+        return None
+
+
+    @classmethod
+    def create(cls , data):
+        if cls.is_valid(data):
+            rd = RawData( apikey = data["key"],
+                          sensor_id = data["sensorid"],
+                          timestamp_data = TimeStamp.parse_datetime( data["timestamp"]),
+                          value = data["value"] )
+            del data["key"]
+            del data["sensorid"]
+            del data["value"]
+            del data["timestamp"]
+            if data:
+                rd.extra_data = json.dumps( data )
+            rd.save()
+            
+            return rd
+        else:
+            raise ValueError("Invalid input data")
+
 
 class Location( Model ):
     name = CharField("Location" , max_length = 60 )
@@ -81,7 +164,7 @@ class TimeStamp( Model ):
         dt = dateparse.parse_datetime( time_string )
         return dt
 
-
+    
 
 
 class SensorType( Model ):

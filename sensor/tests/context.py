@@ -1,3 +1,7 @@
+import requests
+
+from django.conf import settings
+
 from api_key.models import *
 from sensor.models import *
 
@@ -43,3 +47,11 @@ class TestContext(object):
 
         self.data_info2 = DataInfo.objects.create( timestamp = self.ts, 
                                                    sensor = self.temp_sensor )
+        
+        try:
+            response = requests.get("https://github.com/")
+            self.network = True
+        except Exception:
+            self.network = False
+            settings.RESTDB_IO_URL = None
+            sys.stderr.write("** WARNING: No network connection - skipping post to restdb.io\n")

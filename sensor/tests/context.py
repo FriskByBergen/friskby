@@ -1,6 +1,8 @@
 import requests
 
 from django.conf import settings
+from django.contrib.auth.models import User 
+from django.utils.crypto import get_random_string
 
 from api_key.models import *
 from sensor.models import *
@@ -47,7 +49,12 @@ class TestContext(object):
 
         self.data_info2 = DataInfo.objects.create( timestamp = self.ts, 
                                                    sensor = self.temp_sensor )
-        
+
+        self.test_user_passwd = get_random_string( length = 10 ),
+        self.test_user = User.objects.create_user( get_random_string( length = 10 ),
+                                                   password = self.test_user_passwd , 
+                                                   email = "joe@invalid.email.com" )
+
         try:
             response = requests.get("https://github.com/")
             self.network = True
@@ -55,3 +62,4 @@ class TestContext(object):
             self.network = False
             settings.RESTDB_IO_URL = None
             sys.stderr.write("** WARNING: No network connection - skipping post to restdb.io\n")
+        

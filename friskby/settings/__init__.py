@@ -26,9 +26,17 @@ BASE_DIR , tail = os.path.split( os.path.dirname(__file__))
 SECRET_KEY = '+xy7&q+xuwnohtv$0)m7rpv7y&3#qndflc_%c%@3_jbx8h3b!4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+if os.getenv("FRISKBY_DEBUG"):
+    debug_site = os.getenv("FRISKBY_DEBUG")
+    if debug_site.lower() == "false":
+        DEBUG = False
+    elif debug_site.lower() == "true":
+        DEBUG = True
+    else:
+        raise Exception("When setting the FRISKBY_DEBUG env veriable it must be True | False")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["friskby.herokuapp.com"]
 
 
 # Application definition
@@ -40,6 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'corsheaders',
     'rest_framework',
     'api_key',
@@ -157,8 +166,6 @@ RESTDB_IO_GET_KEY = os.getenv("RESTDB_IO_GET_KEY")
 if RESTDB_IO_GET_KEY is None:
     raise Exception("Enviroment variable RESTDB_IO_GET_KEY has not been set")
 
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_URLS_REGEX = r'^/friskby/api/.*$'
 
 
 # By default the application will store an entry in the RawData
@@ -171,4 +178,8 @@ if os.getenv("FORCE_VALID_KEY"):
     value = os.getenv("FORCE_VALID_KEY").lower()
     if value == "true":
         FORCE_VALID_KEY = True
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+#CORS_URLS_REGEX = r'^/friskby/api/.*$'
 

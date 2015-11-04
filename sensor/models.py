@@ -220,7 +220,7 @@ class Sensor( Model ):
             data_type = self.data_type
 
         ts = []
-        for data_value in DataValue.objects.filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
+        for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
             ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
 
         return ts

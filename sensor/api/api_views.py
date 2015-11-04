@@ -258,7 +258,9 @@ class Reading(APIView):
                                        data_type = sensor.data_type ,  
                                        value = value )
         data_value.save( )
-        
+        raw_data.parsed = True
+        raw_data.save( )
+
         if settings.RESTDB_IO_URL is None:
             return Response(1 , status.HTTP_201_CREATED)
         else:

@@ -94,9 +94,6 @@ class Readingtest(TestCase):
 
         
     def test_get(self):
-        # The funny construction with a random sensorID is to work
-        # around a bug/limitation/misunderstanding in the restdb.io
-        # api which seems to cap the return at 100 elements?
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
                                post_key = self.context.key , 
@@ -114,7 +111,6 @@ class Readingtest(TestCase):
         response = client.get("/sensor/api/reading/%s/" % sensor_id)
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
-        len1 = len(result)
 
         data_list = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key},
                      {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key},
@@ -129,8 +125,11 @@ class Readingtest(TestCase):
         response = client.get("/sensor/api/reading/%s/" % sensor_id)
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
-        len2 = len(result)        
 
-        self.assertEqual( 3 , len2 - len1 )
+        self.assertEqual( 3 , len(result) )
+        for res,d in zip(result , data_list):
+            ts = TimeStamp.parse_datetime( d["timestamp"] )
+            self.assertEqual( ts , res[0] )
+            self.assertEqual( float(d["value"]) , res[1] )
         
         response = client.get("/sensor/api/reading/%s/" % sensor_id , )

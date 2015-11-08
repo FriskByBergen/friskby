@@ -39,6 +39,8 @@ class SensorInfoTest(TestCase):
         
         self.assertEqual( sensor_type["min_value"] , 0 )
         self.assertEqual( sensor_type["max_value"] , 100 )
+        self.assertTrue( sensor0["on_line"] )
+
 
 
     def test_get(self):

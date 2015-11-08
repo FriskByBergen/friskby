@@ -206,6 +206,7 @@ class Sensor( Model ):
     data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
     post_key = ForeignKey( ApiKey )
+    on_line = BooleanField( default = True )
 
     def __unicode__(self):
         return self.id

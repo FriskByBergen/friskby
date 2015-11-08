@@ -37,4 +37,4 @@ class SensorInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sensor
-        fields = ('id', 'sensor_type', 'parent_device','data_type','description')
+        fields = ('id', 'sensor_type', 'parent_device','data_type','description','on_line')

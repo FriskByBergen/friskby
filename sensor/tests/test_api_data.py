@@ -29,6 +29,22 @@ class Readingtest(TestCase):
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN , response.data)
 
+
+    def test_post_offline(self):
+        client = Client( )
+        self.context.temp_sensor.on_line = False
+        self.context.temp_sensor.save( ) 
+        sensor_id = self.context.temp_sensor.id
+        data = {"sensorid" : sensor_id , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
+        string_data = json.dumps( data )
+        response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id)
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+        self.assertEqual( len(result) , 0 )
+
     
 
     

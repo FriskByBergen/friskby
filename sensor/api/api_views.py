@@ -245,34 +245,34 @@ class Reading(APIView):
             location = request.data["location"]
                     
 
+        if sensor.on_line:
+            ts = models.TimeStamp.objects.create( timestamp = timestamp )
+            data_info = models.DataInfo( timestamp = ts , 
+                                         sensor = sensor )
+            if not location is None:
+                data_info.location = location
 
+            data_info.save()
+            data_value = models.DataValue.objects.create( data_info = data_info ,
+                                                          data_type = sensor.data_type ,  
+                                                          value = value )
+            raw_data.parsed = True
+            raw_data.save( )
 
-        ts = models.TimeStamp.objects.create( timestamp = timestamp )
-        data_info = models.DataInfo( timestamp = ts , 
-                                     sensor = sensor )
-        if not location is None:
-            data_info.location = location
-        data_info.save()
-
-        data_value = models.DataValue( data_info = data_info ,
-                                       data_type = sensor.data_type ,  
-                                       value = value )
-        data_value.save( )
-        raw_data.parsed = True
-        raw_data.save( )
-
-        if settings.RESTDB_IO_URL is None:
-            return Response(1 , status.HTTP_201_CREATED)
-        else:
-            restdb_io_status , msg = self.restdb_io_post( {"key" : raw_data.apikey,
-                                                           "sensorid" : raw_data.sensor_id,
-                                                           "value" : value , 
-                                                           "timestamp" : raw_data.timestamp_data.strftime("%Y-%m-%dT%H:%M:%S") } )
-
-            if restdb_io_status == status.HTTP_201_CREATED:
-                return Response(msg , status = restdb_io_status)
+            if settings.RESTDB_IO_URL is None:
+                return Response(1 , status.HTTP_201_CREATED)
             else:
-                return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
+                restdb_io_status , msg = self.restdb_io_post( {"key" : raw_data.apikey,
+                                                               "sensorid" : raw_data.sensor_id,
+                                                               "value" : value , 
+                                                               "timestamp" : raw_data.timestamp_data.strftime("%Y-%m-%dT%H:%M:%S") } )
+
+                if restdb_io_status == status.HTTP_201_CREATED:
+                    return Response(msg , status = restdb_io_status)
+                else:
+                    return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
+        else:
+            return Response("Sensor: %s is offline - rawdata created and stored" % raw_data.sensor_id )
             
 
 

@@ -3,7 +3,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"> </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
+<script src="{{ STATIC_URL }}js/moment_2.10.6.js"></script>
 <script>
    //Width and height
    var w = 600;
@@ -91,6 +91,51 @@ function init_sensor_selection( result ) {
 }
 
 
+function current_sensor_update_event( ev ) {
+   fetch_current_sensors( );
+}
+
+function fetch_current_sensors( ev ) {
+   var post = { type     : "GET", 
+	        dataType : "json" ,
+                url      : "/sensor/api/current/",
+                success  : update_current_sensors };
+   
+   $.ajax( post );
+   return false; 
+}
+
+function update_current_sensors( result ) {
+   var table_text = "<table><tr><th align=\"left\">Sensor</th><th align=\"left\">Last update</th><th align=\"left\">Current value</th></tr>";
+
+   for (var index = 0; index < result.length; index++) {
+      var sensor_row = result[index];
+      table_text = table_text + "<tr>";
+
+      table_text = table_text + "<td>" + sensor_row.sensorid + "</td>";
+
+      if ('timestamp' in sensor_row) {
+         var date = moment( new Date( sensor_row.timestamp ) );
+         table_text = table_text + "<td>" + date.format("DD/MM/YYYY HH:mm:ss") + "</td>";
+      } 
+
+      if ('value' in sensor_row) {
+         var value = sensor_row.value;
+         if (value == null)
+            table_text = table_text + "<td> --- </td>";
+         else 
+            table_text = table_text + "<td>" + value + "</td>";
+      } 
+
+      table_text = table_text + "</tr>";
+   }
+
+   table_text = table_text + "</table>";
+   $("#id_current_sensors").html( table_text );
+}
+
+
+
 function fetch_sensor_selection( ev ) {
    var post = { type     : "GET", 
 	        dataType : "json" ,
@@ -123,6 +168,8 @@ function update_sensor_selection( result ) {
        $("#id_device_type").html( device_text );
    }
    $("#id_sensor_id").html( result.id );
+   $("#id_current_timestamp").html( result.current_timestamp );
+   $("#id_current_value").html( result.current_value );
    $("#id_description").html( result.description );
    $("#id_data_type").html( result.data_type );			      
    if (result.on_line) {
@@ -179,6 +226,7 @@ window.onload = function() {
    sensor_select.onchange = sensor_select_event;
    fetch_sensor_selection( );
    sensor_select_event( );   
+   current_sensor_update_event( );
    init_canvas();			      
 }
 
@@ -243,7 +291,12 @@ Main page for Friskby API
 <label> Measurement unit: </label> <span id="id_unit"> </span><p>
 <label> Range: </label> <span id="id_range"> </span><p>
 <label> Device type: </label> <span id="id_device_type"> </span><p>
+<label> Current value: </label> <span id="id_current_value"> </span> <p>
+<label> Current timestamp: </label> <span id="id_current_timestamp"> </span> <p>
 </div>
+
+<h4> Current sensors </h4>
+<div id="id_current_sensors"></div>
 
 <h3>This is the main page describing the friskby web API </h3>
 
@@ -271,7 +324,7 @@ Timestamps <a href="/sensor/api/timestamp/"> timestamp </a> <p>
 
 <h4> The info endpoints </h4>
 These are sensor INFO <a href="/sensor/api/sensorinfo/"> sensor info </a> <p>
-
+Current value <a href="/sensor/api/current/"> current value </a> Accepts url parameter <tt>mtype=</tt><p>
 
 <h4> How to add a new sensor </h4> This web application is a simple
 database backed web application. <a href="/admin/">The Django admin</a>

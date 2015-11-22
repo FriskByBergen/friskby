@@ -296,8 +296,13 @@ Main page for Friskby API
 </div>
 
 <h4> Current sensors </h4>
-<div id="id_current_sensors"></div>
+<div style="background-color:cadetblue">
+The table below comes from the endpoint: <tt><a href="/sensor/api/current/">/sensor/api/current/</a></tt>
+Data which is older than one hour will appear as a dash - and <tt>null</tt> in the API.
 
+<div id="id_current_sensors"></div>
+<a href="javascript:fetch_current_sensors()"> update table </a> 
+</div>
 <h3>This is the main page describing the friskby web API </h3>
 
 

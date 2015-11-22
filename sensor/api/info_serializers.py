@@ -7,10 +7,9 @@ from sensor.api.serializers import *
 # the related object.
 
 class DeviceTypeInfoSerializer(serializers.ModelSerializer):
-    company = CompanySerializer( read_only = True )
     class Meta:
         model = DeviceType
-        fields = ('id', 'name' , 'company')
+        fields = ('id', 'name')
 
 
 
@@ -27,7 +26,7 @@ class SensorTypeInfoSerializer(serializers.ModelSerializer):
     measurement_type = MeasurementTypeSerializer( read_only = True )
     class Meta:
         model = SensorType
-        fields = ('id', 'product_name','company','short_description','measurement_type','description','unit','min_value','max_value')
+        fields = ('id', 'product_name','short_description','measurement_type','description','unit','min_value','max_value')
 
 
 

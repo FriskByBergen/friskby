@@ -38,28 +38,6 @@ class MeasurementTypeTest(TestCase):
 
 
 
-class CompanyTest(TestCase):
-    def setUp(self):
-        Company.objects.create( name = "Texas Instruments" )
-        Company.objects.create( name = "Hewlett Packard" )
-
-
-    def test_get(self):
-        client = Client( )
-        response = client.get("/sensor/api/company/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
-        self.assertEqual( len(data) , 2 )
-
-        response = client.get("/sensor/api/company/9/")
-        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
-        
-        response = client.get("/sensor/api/company/2/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
-        self.assertTrue( isinstance( data , dict ))
-        self.assertEqual( data["id"] , 2 )
-        self.assertEqual( data["name"] , "Hewlett Packard" )
         
 
 class DeviceTypeTest(TestCase):
@@ -79,7 +57,6 @@ class DeviceTypeTest(TestCase):
         self.assertEqual( len(data) , 2 )
         
         dev0 = data[0]
-        self.assertEqual( dev0["company"] , self.hp.id )
 
 
 class DeviceTest(TestCase):

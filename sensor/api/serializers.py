@@ -20,16 +20,10 @@ class MeasurementTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
-        fields = ('id', 'name')
-
-
 class DeviceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceType
-        fields = ('id', 'name' , 'company')
+        fields = ('id', 'name')
 
 
 
@@ -61,7 +55,7 @@ class TimeStampSerializer(serializers.ModelSerializer):
 class SensorTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SensorType
-        fields = ('id', 'product_name','company','short_description','measurement_type','description','unit','min_value','max_value')
+        fields = ('id', 'product_name','short_description','measurement_type','description','unit','min_value','max_value')
 
 
 

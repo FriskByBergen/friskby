@@ -8,9 +8,6 @@ urlpatterns = [
     url(r'^measurement_type/$' , MeasurementTypeList.as_view()),
     url(r'^measurement_type/(?P<pk>[0-9]+)/$' , MeasurementType.as_view()),
     #
-    url(r'^company/$' , CompanyList.as_view()),
-    url(r'^company/(?P<pk>[0-9]+)/$' , Company.as_view()),
-    #
     url(r'^device_type/$' , DeviceTypeList.as_view()),
     url(r'^device_type/(?P<pk>[0-9]+)/$' , DeviceType.as_view()),
     #

@@ -31,18 +31,6 @@ class MeasurementType(generics.RetrieveAPIView):
 #################################################################
 
 
-class CompanyList(generics.ListCreateAPIView):
-    queryset = models.Company.objects.all()
-    serializer_class = CompanySerializer
-    
-
-
-class Company(generics.RetrieveAPIView):    
-    queryset = models.Company.objects.all()
-    serializer_class = CompanySerializer
-
-#################################################################
-
 class DeviceTypeList(generics.ListCreateAPIView):
     queryset = models.DeviceType.objects.all()
     serializer_class = DeviceTypeSerializer

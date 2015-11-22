@@ -42,11 +42,8 @@ class MeasurementTypeTest(TestCase):
 
 class DeviceTypeTest(TestCase):
     def setUp(self):
-        self.ti = Company.objects.create( name = "Texas Instrument" )
-        self.hp = Company.objects.create( name = "Hewlett Packard" )
-
-        DeviceType.objects.create( name = "HP-X12" , company = self.hp )
-        DeviceType.objects.create( name = "TI123" , company = self.ti )
+        DeviceType.objects.create( name = "HP-X12" )
+        DeviceType.objects.create( name = "TI123" )
 
 
     def test_get(self):
@@ -61,8 +58,7 @@ class DeviceTypeTest(TestCase):
 
 class DeviceTest(TestCase):
     def setUp(self):
-        ti = Company.objects.create( name = "Texas Instrument" )
-        dev_type = DeviceType.objects.create( name = "TI123" , company = ti )
+        dev_type = DeviceType.objects.create( name = "TI123" )
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev = Device( device_type = dev_type , 
                            location = self.loc , 

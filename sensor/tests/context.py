@@ -12,15 +12,13 @@ class TestContext(object):
         self.key = ApiKey.objects.create( description = "Newkey")
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
-        self.hp = Company.objects.create( name = "Hewlett Packard" )
-        self.dev_type = DeviceType.objects.create( name = "HP-X123" , company = self.hp)
+        self.dev_type = DeviceType.objects.create( name = "HP-X123" )
         self.dev = Device.objects.create( id = "DevXXX" , location = self.loc , device_type = self.dev_type , description = "Besrkivels")
         self.mtype = MeasurementType.objects.create( name = "Temperature" )
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
 
-        self.sensor_type_temp = SensorType.objects.create( company = self.hp,
-                                                           product_name = "XX12762 Turbo",
+        self.sensor_type_temp = SensorType.objects.create( product_name = "XX12762 Turbo",
                                                            measurement_type = self.mtype,
                                                            short_description = "Temp",
                                                            description = "Measurement of temperature",

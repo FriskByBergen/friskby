@@ -38,37 +38,12 @@ class MeasurementTypeTest(TestCase):
 
 
 
-class CompanyTest(TestCase):
-    def setUp(self):
-        Company.objects.create( name = "Texas Instruments" )
-        Company.objects.create( name = "Hewlett Packard" )
-
-
-    def test_get(self):
-        client = Client( )
-        response = client.get("/sensor/api/company/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
-        self.assertEqual( len(data) , 2 )
-
-        response = client.get("/sensor/api/company/9/")
-        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
-        
-        response = client.get("/sensor/api/company/2/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
-        self.assertTrue( isinstance( data , dict ))
-        self.assertEqual( data["id"] , 2 )
-        self.assertEqual( data["name"] , "Hewlett Packard" )
         
 
 class DeviceTypeTest(TestCase):
     def setUp(self):
-        self.ti = Company.objects.create( name = "Texas Instrument" )
-        self.hp = Company.objects.create( name = "Hewlett Packard" )
-
-        DeviceType.objects.create( name = "HP-X12" , company = self.hp )
-        DeviceType.objects.create( name = "TI123" , company = self.ti )
+        DeviceType.objects.create( name = "HP-X12" )
+        DeviceType.objects.create( name = "TI123" )
 
 
     def test_get(self):
@@ -79,13 +54,11 @@ class DeviceTypeTest(TestCase):
         self.assertEqual( len(data) , 2 )
         
         dev0 = data[0]
-        self.assertEqual( dev0["company"] , self.hp.id )
 
 
 class DeviceTest(TestCase):
     def setUp(self):
-        ti = Company.objects.create( name = "Texas Instrument" )
-        dev_type = DeviceType.objects.create( name = "TI123" , company = ti )
+        dev_type = DeviceType.objects.create( name = "TI123" )
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev = Device( device_type = dev_type , 
                            location = self.loc , 

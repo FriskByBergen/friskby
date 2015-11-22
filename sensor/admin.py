@@ -11,7 +11,6 @@ class DataValueAdmin(admin.ModelAdmin):
 
 admin.site.register(SensorType)
 admin.site.register(Sensor)
-admin.site.register(Company)
 admin.site.register(DeviceType)
 admin.site.register(Device)
 admin.site.register(MeasurementType)

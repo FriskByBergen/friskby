@@ -111,16 +111,8 @@ class DataType( Model ):
         return self.id
 
 
-class Company( Model ):
-    name = CharField("Device manufacturer" , max_length = 60)
-
-    def __unicode__(self):
-        return self.name
-
-
 class DeviceType( Model ):
     name = CharField("Name of the device" , max_length = 60 )
-    company = ForeignKey( Company )
 
     def __unicode__(self):
         return self.name
@@ -179,7 +171,6 @@ class TimeStamp( Model ):
 
 class SensorType( Model ):
     product_name = CharField( "Product name" , max_length = 256 )
-    company = ForeignKey( Company )
     short_description = CharField("Short description" , max_length = 40)
     measurement_type = ForeignKey( MeasurementType )
     description = CharField("Description" , max_length = 256 )

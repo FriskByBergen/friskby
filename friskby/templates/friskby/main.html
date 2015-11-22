@@ -164,7 +164,7 @@ function update_sensor_selection( result ) {
        var device_text;
        var parent_device = result.parent_device;
        var device_type = parent_device.device_type;
-       device_text = parent_device.id + " : " + device_type.company.name + " / " + device_type.name;
+       device_text = parent_device.id + " : " + " / " + device_type.name;
        $("#id_device_type").html( device_text );
    }
    $("#id_sensor_id").html( result.id );
@@ -316,7 +316,6 @@ The endpoints listed below are a pure serialization of the records
 from the database, in particular related objects are only represented
 with the primary key. 
 
-Each device is created by a <a href="/sensor/api/company/"> Company </a> <p>
 Each sensor is part of a <a href="/sensor/api/device/"> Device </a> <p>
 Several types of devices: <a href="/sensor/api/device_type/"> DeviceTypes </a> <p>
 There can be several <a href="/sensor/api/measurement_type/"> measurment types </a> <p>

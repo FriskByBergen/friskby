@@ -4,18 +4,13 @@ from sensor.models import *
 
 class SensorTypeTest(TestCase):
     def setUp(self):
-        company = Company(name = "Texas Instrument")
-        company.save()
-
         device_type = DeviceType(name = "Integrated temp/hum sensor:H1562")
-        device_type.company = company
         device_type.save()
 
         mtype = MeasurementType( name = "Temperature" )
         mtype.save()
 
-        self.sensor_type = SensorType.objects.create( company = company,
-                                                      product_name = "Product 123",
+        self.sensor_type = SensorType.objects.create( product_name = "Product 123",
                                                       measurement_type = mtype , 
                                                       short_description = "Temp",
                                                       description = "Temparture", 

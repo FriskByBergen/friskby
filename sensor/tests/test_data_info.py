@@ -8,11 +8,8 @@ class DataInfoTest(TestCase):
     
     def setUp(self):
         self.context = TestContext( )
-        company = Company(name = "Texas Instrument")
-        company.save()
-
+        
         device_type = DeviceType(name = "Integrated temp/hum sensor:H1562")
-        device_type.company = company
         device_type.save()
 
         device = Device.objects.create( id = "ID",

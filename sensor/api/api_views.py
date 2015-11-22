@@ -163,7 +163,16 @@ class SensorInfo(APIView):
         result = []
         for sensor in sensor_list:
             serialized = SensorInfoSerializer( sensor )
-            result.append( serialized.data )
+            data = serialized.data
+            current = sensor.get_current( CurrentValue.DEFAULT_TIMEOUT )
+            if current is None:
+                data["current_value"] = None
+                data["current_timestamp"] = None
+            else:
+                data["current_value"] = current["value"]
+                data["current_timestamp"] = current["timestamp"]
+
+            result.append( data )
             
         if sensor_id is None:
             return Response( result , status = status.HTTP_200_OK ) 
@@ -312,6 +321,57 @@ class Reading(APIView):
             return Response(ts , status = status.HTTP_200_OK )
             #return self.restdb_io_get( sensor_id , request.GET )
         except models.Sensor.DoesNotExist:
-            return Response("No such sensor:%s" % sensor_id , status = status.HTTP_200_OK )
+            return Response("No such sensor:%s" % sensor_id , status = status.HTTP_404_NOT_FOUND )
             
         
+
+
+class CurrentValue(APIView):
+    # Data which is older than the timeout is not considered
+    # 'current'; and None is returned for the value.
+    DEFAULT_TIMEOUT = 3600
+
+
+    def get(self , request , sensor_id = None):
+        if "mtype" in request.GET:
+            mtype_id = int(request.GET["mtype"])
+            try:
+                mtype = models.MeasurementType.objects.get( pk = mtype_id )
+            except models.MeasurementType.DoesNotExist:
+                return Response("No such measuremenent type id:%s" % mtype_id , status = status.HTTP_404_NOT_FOUND )
+        else:
+            mtype = None
+
+        timeout = CurrentValue.DEFAULT_TIMEOUT
+        if "timeout" in request.GET:
+            timeout = int( request.GET["timeout"])
+
+        if not sensor_id is None:
+            try:
+                sensor = models.Sensor.objects.get( pk = sensor_id )
+            except models.Sensor.DoesNotExist:
+                return Response("No such sensor:%s" % sensor_id , status = status.HTTP_404_NOT_FOUND )
+
+            if not mtype is None:
+                if sensor.sensor_type.measurement_type != mtype:
+                    return Response("Measurement type mismatch" , status = status.HTTP_400_BAD_REQUEST )
+
+            data = sensor.get_current( timeout )
+            if data is None:
+                return Response("No current data" , status = status.HTTP_404_NOT_FOUND)
+            else:
+                return Response( data )
+        else:
+            if mtype is None:
+                sensor_list = models.Sensor.objects.all( )
+            else:
+                sensor_list = models.Sensor.objects.filter( sensor_type__measurement_type = mtype )
+            
+            data = []
+            for sensor in sensor_list:
+                sensor_data = sensor.get_current( timeout ) 
+                if sensor_data is None:
+                    sensor_data = {"sensorid" : sensor.id }
+                data.append( sensor_data )
+                
+            return Response( data )

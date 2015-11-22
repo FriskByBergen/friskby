@@ -4,7 +4,7 @@ import datetime
 import pytz
 
 from django.conf import settings
-from django.utils import dateparse
+from django.utils import dateparse , timezone
 from django.db.models import *
 from django.core.validators import RegexValidator
 
@@ -146,6 +146,7 @@ class MeasurementType( Model ):
 
 
 class TimeStamp( Model ):
+    DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
     # When parsing a string the format should be as: "2015-10-10T10:10:00+01";
     # i.e. yyyy-mm-ddTHH:MM:SS+zz
     # Where the +zz is a timezone shift relative to UTC; i.e. +01 for Central European Time.
@@ -164,7 +165,16 @@ class TimeStamp( Model ):
         dt = dateparse.parse_datetime( time_string )
         return dt
 
-    
+    @classmethod
+    def create(cls , time = None):
+        if time is None:
+            time = timezone.now()
+        return time.strftime(cls.DATETIME_FORMAT)
+
+    @classmethod
+    def now(cls):
+        return timezone.now()
+
 
 
 class SensorType( Model ):
@@ -226,6 +236,26 @@ class Sensor( Model ):
 
         return ts
 
+    def get_current(self , timeout_seconds):
+        current = {}
+        data_value = DataValue.objects.select_related('data_info__timestamp').filter( data_info__sensor = self).order_by('data_info__timestamp__timestamp').last()
+        if data_value is None:
+            return None
+            
+        ts = data_value.data_info.timestamp.timestamp
+        value = data_value.value
+        if timeout_seconds > 0:
+            if timezone.now() - ts > datetime.timedelta( seconds = timeout_seconds ):
+                value = None
+                
+
+        location = data_value.data_info.location
+        return {"sensorid"  : self.id,
+                "timestamp" : data_value.data_info.timestamp.timestamp,
+                "value"     : value,
+                "location"  : {"latitude" : location.latitude , "longitude" : location.longitude}}
+
+
     def valid_post_key( self , key_string):
         return self.post_key.access( key_string )
 
@@ -266,3 +296,4 @@ class DataValue( Model ):
         else:
             raise ValueError("Tried to save invalid value:%s for sensor:%s" % (self.value , self.data_info.sensor))
         
+            

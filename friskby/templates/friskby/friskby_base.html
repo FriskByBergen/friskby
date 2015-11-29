@@ -1,0 +1,23 @@
+<html>
+<head>
+<title> {% block title %} {% endblock %} </title>
+{% block friskby_css %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/css/friskby.css">
+{% endblock %}
+
+<style type="text/css">
+{% block css %}
+{% endblock %}
+</style>
+
+{% block friskby_js %}
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+</head>
+<body>
+{% block body %}
+{% endblock %}
+</body>

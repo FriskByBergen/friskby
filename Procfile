@@ -1,1 +1,1 @@
-web: newrelic-admin run-program gunicorn friskby.wsgi
+web: gunicorn friskby.wsgi

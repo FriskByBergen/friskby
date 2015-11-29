@@ -15,5 +15,4 @@ django-filter
 django-storages
 pytz
 django-cors-headers
-newrelic
 pandas

@@ -1,6 +1,7 @@
-<html>
-<head>
+{% extends "friskby/friskby_base.html" %}
+{% block title %} Startside for friskby lagringsløsning {% endblock %}
 
+{% block js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"> </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="{{ STATIC_URL }}js/moment_2.10.6.js"></script>
@@ -230,11 +231,11 @@ window.onload = function() {
    init_canvas();			      
 }
 
-
 </script>
+{% endblock %}
 
 
-<style type="text/css">
+{% block css %}
 path {
     stroke-width: 2;
     fill: none;
@@ -267,13 +268,17 @@ rect {
     font-size: 11px;
 }
 
-</style>
+{% endblock %}
 
-<title>
-Main page for Friskby API
-</title>
-</head>
+
+{% block body %}
 <body>
+<h4> Links </h4>
+<ol>
+<li> <a href="/friskby/adm/">Links to manages sensors++ </li>
+<li> <a href="/admin/">Auto generated Django Admin interface </li>
+</ol>
+
 <div id="plot">
 </div>
 
@@ -374,6 +379,4 @@ The code for the web project is at GitHub - will move to the FriskbyBergen accou
 
 The code is currently deployed on heroku. 
 
-
-</body>
-</html>
+{% endblock %}

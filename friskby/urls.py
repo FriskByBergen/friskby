@@ -22,7 +22,7 @@ import friskby_urls
 
 urlpatterns = [
     url(r'^accounts/login/$'  , auth_views.login,{'template_name': 'admin/login.html'}),
-    url(r'^admin/'            , include(admin.site.urls)),
+    url(r'yadmin/'            , include(admin.site.urls)),
     url(r'^sensor/'           , include(sensor.urls)),
     url(r'^friskby/'          , include(friskby_urls))
 ]

@@ -33,6 +33,10 @@ function getLimits(data) {
        if (y < ymin)
           ymin = y;			      
    }
+   if (ymax == ymin) {
+      ymax = ymax + 0.05*ymax;
+      ymin = ymin - 0.05*ymin;
+   } 	       
    return [xmin , xmax , ymin , ymax];
 }
 

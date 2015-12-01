@@ -227,15 +227,15 @@ class Sensor( Model ):
                 ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
         else:
             qs = DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp').reverse()
-            if len(qs) <= num:            
-                start = 0
+            if len(qs) >= num:            
+                end = num
             else:
-                start = len(qs) - num
+                end = len(qs)
 
-            for data_value in qs[start:]:
+            for data_value in qs[0:end]:
                 ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
 
-            #ts.reverse( )
+            ts.reverse( )
 
         return ts
 

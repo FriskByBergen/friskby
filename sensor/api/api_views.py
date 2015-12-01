@@ -304,8 +304,13 @@ class Reading(APIView):
             return Response("Must supply sensorid when querying" , status = status.HTTP_400_BAD_REQUEST )
             
         try:
+            if "num" in request.GET:
+                num = int(request.GET["num"])
+            else:
+                num = None
+
             sensor = models.Sensor.objects.get( pk = sensor_id )
-            ts = sensor.get_ts( )
+            ts = sensor.get_ts( num = num )
             return Response(ts , status = status.HTTP_200_OK )
             #return self.restdb_io_get( sensor_id , request.GET )
         except models.Sensor.DoesNotExist:

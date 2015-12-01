@@ -217,13 +217,25 @@ class Sensor( Model ):
         return self.sensor_type.valid_input( input_value )
 
 
-    def get_ts(self, data_type = None):
+    def get_ts(self, data_type = None , num = None):
         if data_type is None:
             data_type = self.data_type
 
         ts = []
-        for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
-            ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
+        if num is None:
+            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
+                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
+        else:
+            qs = DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp').reverse()
+            if len(qs) <= num:            
+                start = 0
+            else:
+                start = len(qs) - num
+
+            for data_value in qs[start:]:
+                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
+
+            #ts.reverse( )
 
         return ts
 

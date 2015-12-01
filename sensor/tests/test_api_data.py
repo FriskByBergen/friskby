@@ -147,5 +147,27 @@ class Readingtest(TestCase):
             ts = TimeStamp.parse_datetime( d["timestamp"] )
             self.assertEqual( ts , res[0] )
             self.assertEqual( float(d["value"]) , res[1] )
-        
-        response = client.get("/sensor/api/reading/%s/" % sensor_id , )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"num" : 10})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+
+        self.assertEqual( 3 , len(result) )
+        for res,d in zip(result , data_list):
+            ts = TimeStamp.parse_datetime( d["timestamp"] )
+            self.assertEqual( ts , res[0] )
+            self.assertEqual( float(d["value"]) , res[1] )
+
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"num" : 1})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+
+        self.assertEqual( 1 , len(result) )
+        res = result[0]
+        d = data_list[2]
+        ts = TimeStamp.parse_datetime( d["timestamp"] )
+        self.assertEqual( ts , res[0] )
+        self.assertEqual( float(d["value"]) , res[1] )
+
+

@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 import sensor.urls
+import time_series.urls
 import friskby_urls
 
 urlpatterns = [
     url(r'^accounts/login/$'  , auth_views.login,{'template_name': 'admin/login.html'}),
     url(r'^admin/'            , include(admin.site.urls)),
     url(r'^sensor/'           , include(sensor.urls)),
+    url(r'^time_series/'      , include(time_series.urls)),
     url(r'^friskby/'          , include(friskby_urls))
 ]

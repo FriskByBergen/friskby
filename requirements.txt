@@ -16,3 +16,4 @@ django-storages
 pytz
 django-cors-headers
 pandas
+numpy

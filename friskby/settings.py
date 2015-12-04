@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'sensor'
+    'sensor',
+    'time_series'
 )
 
 MIDDLEWARE_CLASSES = (

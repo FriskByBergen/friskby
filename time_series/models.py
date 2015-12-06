@@ -42,18 +42,21 @@ class TimeSeries(Model):
     data = NumpyArrayField( )
 
 
+    def __unicode__(self):
+        return "TimeSeries: %s" % self.id
+
     @classmethod
     def createArray(cls , size = 0):
         return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.dtype)
 
     @classmethod
-    def create(cls , start , step):
+    def new(cls , start , step):
         if step <= 0:
             raise ValueError("The step variable must be positive")
 
-        ts = cls.objects.create( start = start , 
-                                 step = step ,
-                                 data = TimeSeries.createArray( ) )
+        ts = cls( start = start , 
+                  step = step ,
+                  data = TimeSeries.createArray( ) )
         return ts
 
 
@@ -128,3 +131,4 @@ class TimeSeries(Model):
     def lastTime(self):
         last = self.start
         return self.start + datetime.timedelta( seconds = len(self.data) * self.step )
+        

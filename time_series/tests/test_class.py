@@ -9,12 +9,12 @@ class TimeSeriesTest(TestCase):
     def test_create(self):
 
         with self.assertRaises(ValueError):
-            TimeSeries.create( timezone.now( ) , 0)
+            TimeSeries.new( timezone.now( ) , 0)
 
         with self.assertRaises(ValueError):
-            TimeSeries.create( timezone.now( ) , -1)
+            TimeSeries.new( timezone.now( ) , -1)
 
-        ts = TimeSeries.create( timezone.now( ) , 100)
+        ts = TimeSeries.new( timezone.now( ) , 100)
 
         self.assertEqual( len(ts) , 0 )
         with self.assertRaises(IndexError):

@@ -217,15 +217,14 @@ class Sensor( Model ):
         return self.sensor_type.valid_input( input_value )
 
 
-    def get_ts(self, data_type = None , num = None):
+    # Can speicify *either* a start or number of values with keyword
+    # arguments 'start' and 'num', but not both.
+    def get_ts(self, data_type = None , num = None , start = None):
         if data_type is None:
             data_type = self.data_type
 
         ts = []
-        if num is None:
-            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
-                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
-        else:
+        if num:
             qs = DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp').reverse()
             if len(qs) >= num:            
                 end = num
@@ -236,7 +235,14 @@ class Sensor( Model ):
                 ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
 
             ts.reverse( )
+        elif start:
+            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self , data_info__timestamp__timestamp__gte = start).order_by('data_info__timestamp__timestamp'):
+                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
 
+        else:
+            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
+                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
+        
         return ts
 
     def get_current(self , timeout_seconds):

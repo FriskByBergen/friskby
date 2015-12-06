@@ -171,3 +171,29 @@ class Readingtest(TestCase):
         self.assertEqual( float(d["value"]) , res[1] )
 
 
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"start" : "2015-10-10T12:11:00+01"})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+        self.assertEqual( 3 , len(result) )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"start" : "2015-10-10T12:12:00+01"})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+        self.assertEqual( 3 , len(result) )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"start" : "2015-10-10T12:12:30+01"})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+        self.assertEqual( 2 , len(result) )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"start" : "2015-10-10T12:13:30+01"})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+        self.assertEqual( 1 , len(result) )
+
+        response = client.get("/sensor/api/reading/%s/" % sensor_id , {"start" : "2015-10-10T12:14:30+01"})
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        result = response.data
+        self.assertEqual( 0 , len(result) )
+
+

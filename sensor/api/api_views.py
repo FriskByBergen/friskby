@@ -309,8 +309,13 @@ class Reading(APIView):
             else:
                 num = None
 
+            if "start" in request.GET:
+                start = models.TimeStamp.parse_datetime( request.GET["start"] )
+            else:
+                start = None
+
             sensor = models.Sensor.objects.get( pk = sensor_id )
-            ts = sensor.get_ts( num = num )
+            ts = sensor.get_ts( num = num , start = start )
             return Response(ts , status = status.HTTP_200_OK )
             #return self.restdb_io_get( sensor_id , request.GET )
         except models.Sensor.DoesNotExist:

@@ -53,7 +53,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'api_key',
     'time_series',
-    'sensor'
+    'sensor',
+    'filter'
 )
 
 MIDDLEWARE_CLASSES = (

@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
+import filter.urls
 import sensor.urls
 import time_series.urls
 import friskby_urls
@@ -26,5 +27,6 @@ urlpatterns = [
     url(r'^admin/'            , include(admin.site.urls)),
     url(r'^sensor/'           , include(sensor.urls)),
     url(r'^time_series/'      , include(time_series.urls)),
+    url(r'^filter/'           , include(filter.urls)),
     url(r'^friskby/'          , include(friskby_urls))
 ]

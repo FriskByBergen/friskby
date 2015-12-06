@@ -13,6 +13,9 @@ class TestContext(object):
         code_max = PythonCode.objects.create( description = "XY" , 
                                               python_callable = "filter.filter.blockedMax")
 
+        code_min = PythonCode.objects.create( description = "XY" , 
+                                              python_callable = "filter.filter.blockedMin")
+
 
         
         self.f_mean = Filter.objects.create( id = "MEAN_1HOUR",
@@ -24,6 +27,12 @@ class TestContext(object):
                                             width = 3600,
                                             description = "Average from 1Hour" , 
                                             code = code_max )
+
+
+        self.f_min = Filter.objects.create( id = "MIN_1HOUR",
+                                            width = 3600,
+                                            description = "Average from 1Hour" , 
+                                            code = code_min )
         
 
 

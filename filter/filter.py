@@ -70,6 +70,22 @@ def blockedMax(start , width , data):
     return max_value
 
 
+def blockedMin(start , width , data):
+
+    bins , index = createIndex( start , width , data)
+    size = len(bins) - 1
+    min_value = numpy.zeros( shape = [size] , dtype = numpy.float32)    
+    min_value.fill( 10000000 )
+    for i in range(len(data)):
+        bin_index = index[i]
+
+        value = data[i][1]
+        if value < min_value[bin_index]:
+            min_value[bin_index] = value
+
+    return min_value
+
+
 
 
 

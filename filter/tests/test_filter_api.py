@@ -68,6 +68,6 @@ class FilterApiTest(TestCase):
         response = client.get("/filter/api/data/TEMP:XX/MEAN_1HOUR/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
-        response = client.get("/filter/api/data/TEMP:XX/MAX_1HOUR/")
+        response = client.get("/filter/api/data/TEMP:XX/MIN_1HOUR/")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
         

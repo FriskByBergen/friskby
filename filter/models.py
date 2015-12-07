@@ -105,12 +105,13 @@ class FilterData(Model):
             filtered_ts = RegularTimeSeries.new( data_start , filter_.width)
             filtered_ts.addList( func( data_start , filter_.width , ts ) )
 
-        if new_fd:
-            filtered_ts.save( )
-            fd.ts = filtered_ts
-        else:
-            fd.ts.addTimeSeries( filtered_ts )
+            if new_fd:
+                filtered_ts.save( )
+                fd.ts = filtered_ts
+            else:
+                fd.ts.addTimeSeries( filtered_ts )
 
-        fd.save( )
+            fd.save( )
+
         return fd
 

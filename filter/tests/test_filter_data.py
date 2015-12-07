@@ -33,3 +33,4 @@ class FilterDataTest(TestCase):
         fd2 = FilterData.objects.get( sensor = self.sensor_context.temp_sensor, 
                                       filter_code = self.filter_context.f_mean )
 
+        fd = FilterData.update( self.sensor_context.temp_sensor , self.filter_context.f_mean )

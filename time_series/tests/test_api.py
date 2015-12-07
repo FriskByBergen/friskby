@@ -20,14 +20,14 @@ class RegularTimeSeriesTest(TestCase):
         client = Client( )
 
         #Invalid ID
-        response = client.get("/time_series/api/X123/")
+        response = client.get("/time_series/api/regular/X123/")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
 
         #Valid ID form - but not existing element
-        response = client.get("/time_series/api/100/")
+        response = client.get("/time_series/api/regular/100/")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
         
-        response = client.get("/time_series/api/1/")
+        response = client.get("/time_series/api/regular/1/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         for (a,b) in zip(data["data"] , self.context.ts.data):

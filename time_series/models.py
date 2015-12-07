@@ -36,7 +36,7 @@ def createArray(size = 0):
     return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.dtype)
 
 
-class TimeSeries(Model):
+class RegularTimeSeries(Model):
     start = DateTimeField( )
     step = IntegerField( )
     data = NumpyArrayField( )
@@ -56,7 +56,7 @@ class TimeSeries(Model):
 
         ts = cls( start = start , 
                   step = step ,
-                  data = TimeSeries.createArray( ) )
+                  data = RegularTimeSeries.createArray( ) )
         return ts
 
 

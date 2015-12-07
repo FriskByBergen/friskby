@@ -14,14 +14,14 @@ import json
 from time_series.models import *
 
 
-class TimeSeriesView(APIView):
+class RegularTimeSeriesView(APIView):
 
 
     def get(self, request , ts_id = None):
         if not ts_id is None:
             try:
-                ts = TimeSeries.objects.get( pk = int(ts_id) )
-            except TimeSeries.DoesNotExist:
+                ts = RegularTimeSeries.objects.get( pk = int(ts_id) )
+            except RegularTimeSeries.DoesNotExist:
                 return Response("No such timeseries:%s" % ts_id , status = status.HTTP_404_NOT_FOUND )
 
             return Response( ts.export( ) )

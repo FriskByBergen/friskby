@@ -10,7 +10,7 @@ from .context import TestContext
         
 
 
-class TimeSeriesTest(TestCase):
+class RegularTimeSeriesTest(TestCase):
     pass
     def setUp(self):
         self.context = TestContext()

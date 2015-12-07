@@ -5,8 +5,8 @@ import time_series.models as models
 from .api_views import *
 
 urlpatterns = [
-    url(r'^$'                   , TimeSeriesView.as_view()),
-    url(r'^(?P<ts_id>[0-9]+)/$' , TimeSeriesView.as_view()),
+    url(r'^$'                   , RegularTimeSeriesView.as_view()),
+    url(r'^(?P<ts_id>[0-9]+)/$' , RegularTimeSeriesView.as_view()),
 ]
 
 

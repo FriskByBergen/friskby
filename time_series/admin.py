@@ -1,5 +1,5 @@
 from django.contrib import admin
 
-from models import TimeSeries
+from models import *
 
-admin.site.register( TimeSeries )
+admin.site.register( RegularTimeSeries )

@@ -103,7 +103,7 @@ class RegularTimeSeries(Model):
             raise ValueError("The two timeseries must have the same step length")
 
         last = self.lastTime()
-        if ts.start <= last:
+        if ts.start < last:
             raise ValueError("The next timeseries must come _after_ self in time")
 
         diff = ts.start - last

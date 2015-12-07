@@ -98,6 +98,8 @@ class FilterData(Model):
                     
                 fd = FilterData( sensor = sensor , 
                                  filter_code = filter_ )
+            else:
+                data_start = fd.ts.lastTime( )
                                  
 
                 

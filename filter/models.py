@@ -66,7 +66,7 @@ class Filter(Model):
 class FilterData(Model):
     sensor = ForeignKey( Sensor )
     filter_code = ForeignKey( Filter )
-    ts = ForeignKey( TimeSeries )
+    ts = ForeignKey( RegularTimeSeries )
 
     def __unicode__(self):
         return "%s : %s" % (self.sensor , self.filter_code)
@@ -102,7 +102,7 @@ class FilterData(Model):
 
                 
             func = fd.filter_code.getCallable( )
-            filtered_ts = TimeSeries.new( data_start , filter_.width)
+            filtered_ts = RegularTimeSeries.new( data_start , filter_.width)
             filtered_ts.addList( func( data_start , filter_.width , ts ) )
 
         if new_fd:

@@ -8,15 +8,15 @@ from .numpy_field import *
 class RegularTimeSeries(Model):
     start = DateTimeField( )
     step = IntegerField( )
-    data = NumpyArrayField( )
+    data = NumpyArrayField( dtype = NumpyArrayField.value_type )
 
 
     def __unicode__(self):
         return "TimeSeries: %s" % self.id
 
     @classmethod
-    def createArray(cls , size = 0):
-        return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.dtype)
+    def createArray(cls , dtype , size = 0 ):
+        return numpy.ndarray( shape = [size] , dtype = dtype)
 
     @classmethod
     def new(cls , start , step):
@@ -25,7 +25,7 @@ class RegularTimeSeries(Model):
 
         ts = cls( start = start , 
                   step = step ,
-                  data = RegularTimeSeries.createArray( ) )
+                  data = RegularTimeSeries.createArray( NumpyArrayField.value_type ) )
         return ts
 
 

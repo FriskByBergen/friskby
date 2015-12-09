@@ -1,15 +1,20 @@
 import numpy
 from django.db.models import *
 
-class NumpyArrayField(BinaryField):
-    dtype = numpy.float32
 
-    @classmethod
-    def load_numpy_array(cls , blob):
-        return numpy.fromstring(blob , NumpyArrayField.dtype)
+class NumpyArrayField(BinaryField):
+    value_type = numpy.float32
+
+    def load_numpy_array(self , blob):
+        return numpy.fromstring(blob , self.dtype)
 
     def __init__(self , *args , **kwargs):
         kwargs['default'] = None
+        if "dtype" in kwargs:
+            self.dtype = kwargs["dtype"]
+            del kwargs["dtype"]
+        else:
+            self.dtype = self.value_type
         super(NumpyArrayField , self).__init__(*args , **kwargs)
 
 

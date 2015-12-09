@@ -1,11 +1,152 @@
 import math
 import datetime
 import numpy
+from django.utils import timezone, dateparse
 from django.db.models import *
+from django.db import IntegrityError
 from .numpy_field import *
 
+class OperatorMixin(object):
 
-class RegularTimeSeries(Model):
+    def __getitem__(self , index):
+        if self.data is None:
+            raise IndexError
+        else:
+            return self.data[index]
+        
+    def __setitem__(self , index , value):
+        if self.data is None:
+            raise IndexError
+        else:
+            self.data[index] = value
+        
+    def __len__(self):
+        if self.data is None:
+            return 0
+        else:
+            return len(self.data)
+
+
+    def resize(self , new_size):
+        self.data.resize( [ new_size ] )
+
+
+    def addValue(self , value):
+        if self.data is None:
+            new_size = 1
+            self.data = self.createArray( size = new_size )
+        else:
+            new_size = self.data.shape[0] + 1
+            self.resize( new_size )
+
+        self.data[new_size -1] = value
+
+
+    
+    def addList(self , data):
+        if len(data) > 0:
+            if self.data is None:
+                new_size = len(data)
+                self.data = RegularTimeSeries.createArray( size = new_size )
+                old_size = 0
+            else:
+                old_size = self.data.shape[0]
+                new_size = old_size + len(data)
+                self.resize( new_size )
+
+            index = old_size
+            for v in data:
+                self.data[index] = v
+                index += 1
+
+
+
+
+class TimeArray(Model, OperatorMixin):
+    DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+    # When parsing a string the format should be as: "2015-10-10T10:10:00+01";
+    # i.e. yyyy-mm-ddTHH:MM:SS+z
+    # Where the +zz is a timezone shift relative to UTC; i.e. +01 for Central European Time.
+    increasing = True
+    data = NumpyArrayField( dtype = NumpyArrayField.date_type )
+
+
+    @classmethod
+    def createArray(cls, size = 0):
+        return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.date_type )
+        
+
+    @classmethod
+    def new(cls , increasing = True):
+        ts = cls( data = TimeArray.createArray( ) )
+        ts.increasing = increasing
+        return ts
+
+
+    
+    # This takes a time_string which is supposed to be in the time
+    # zone given by the settings.TIME_ZONE variable. The resulting
+    # dt variable is a time zone aware datetime instance.
+    @classmethod
+    def parse_datetime(cls , time_string ):
+        dt = dateparse.parse_datetime( time_string )
+        return dt
+
+    @classmethod
+    def create(cls , time = None):
+        if time is None:
+            time = timezone.now()
+        return time.strftime(cls.DATETIME_FORMAT)
+
+
+    @classmethod
+    def now(cls):
+        return numpy.datetime64( timezone.now( ) ).astype(NumpyArrayField.date_type)
+
+
+    def addValue(self , value):
+        if self.data is None:
+            new_size = 1
+            self.data = self.createArray( size = new_size )
+        else:
+            new_size = self.data.shape[0] + 1
+            if new_size >= 2:
+                prev_value = self.data[ new_size - 2 ]
+                if self.increasing and value < prev_value:
+                    raise ValueError("Elements must be weakly increasing")
+                
+            self.resize( new_size )
+            
+        self.data[new_size -1] = value
+
+
+    
+    def addList(self , data):
+        if len(data) > 0:
+            if self.data is None:
+                new_size = len(data)
+                self.data = RegularTimeSeries.createArray( size = new_size )
+                old_size = 0
+            else:
+                old_size = self.data.shape[0]
+                new_size = old_size + len(data)
+                self.resize( new_size )
+
+            index = old_size
+            for v in data:
+                if index > 0 and self.increasing:
+                    if v < self.data[index - 1]:
+                        self.resize( old_size )
+                        raise ValueError("Elements must be weakly increasing")
+
+                self.data[index] = v
+                index += 1
+                
+
+    
+
+
+class RegularTimeSeries(Model, OperatorMixin):
     start = DateTimeField( )
     step = IntegerField( )
     data = NumpyArrayField( dtype = NumpyArrayField.value_type )
@@ -15,8 +156,8 @@ class RegularTimeSeries(Model):
         return "TimeSeries: %s" % self.id
 
     @classmethod
-    def createArray(cls , dtype , size = 0 ):
-        return numpy.ndarray( shape = [size] , dtype = dtype)
+    def createArray(cls , size = 0 ):
+        return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.value_type )
 
     @classmethod
     def new(cls , start , step):
@@ -25,47 +166,10 @@ class RegularTimeSeries(Model):
 
         ts = cls( start = start , 
                   step = step ,
-                  data = RegularTimeSeries.createArray( NumpyArrayField.value_type ) )
+                  data = RegularTimeSeries.createArray(  ))
         return ts
 
 
-    def __getitem__(self , index):
-        if self.data is None:
-            raise IndexError
-        else:
-            return self.data[index]
-
-    def __setitem__(self , index , value):
-        if self.data is None:
-            raise IndexError
-        else:
-            self.data[index] = value
-
-
-    def __len__(self):
-        if self.data is None:
-            return 0
-        else:
-            shape = self.data.shape
-            return shape[0]
-    
-
-    def addValue(self , value):
-        new_size = self.data.shape[0] + 1
-        self.data.resize( [ new_size ] )
-        self.data[new_size -1] = value
-        
-
-    def addList(self , data):
-        if len(data) > 0:
-            old_size = self.data.shape[0]
-            new_size = old_size + len(data)
-            self.data.resize( [ new_size ] )
-
-            index = old_size
-            for v in data:
-                self.data[index] = v
-                index += 1
 
     def addTimeSeries(self , ts):
         if self.step != ts.step:
@@ -100,4 +204,59 @@ class RegularTimeSeries(Model):
     def lastTime(self):
         last = self.start
         return self.start + datetime.timedelta( seconds = len(self.data) * self.step )
+
+
+
+class SampledTimeSeries(Model, OperatorMixin):        
+    timestamp = ForeignKey( TimeArray )
+    data = NumpyArrayField( dtype = NumpyArrayField.value_type )
+
+    @classmethod
+    def new(cls , timestamp , size = 0):
+        ts = cls( timestamp = timestamp , 
+                  data = numpy.ndarray( shape = [size] , dtype = NumpyArrayField.value_type ))
+        return ts
+
+
+    def assertSize(self):
+        if len(self.timestamp) != len(self):
+            raise IntegrityError("Timestamp and data not equally long");
         
+
+    def addPair(self , ts , value):
+        self.assertSize( )
+        size0 = len(self)
+        try:
+            self.timestamp.addValue( ts )
+            self.addValue( value )
+        except ValueError:
+            self.resize( size0 )
+            self.timestamp.resize( size0 )
+            raise ValueError
+        
+
+
+    def addPairList(self , ts , values):
+        self.assertSize( )
+        if len(ts) != len(values):
+            raise ValueError( )
+
+        size0 = len(self)
+        try:
+            self.timestamp.addList( ts )
+            self.addList( values )
+        except ValueError:
+            self.resize( size0 )
+            self.timestamp.resize( size0 )
+            raise ValueError
+
+    
+    def __getitem__(self, index):
+        self.assertSize( )
+        if self.data is None:
+            return None
+        else:
+            if index < len(self):
+                return (self.timestamp[index] , self.data[index])
+            else:
+                raise IndexError

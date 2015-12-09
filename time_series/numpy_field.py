@@ -4,6 +4,7 @@ from django.db.models import *
 
 class NumpyArrayField(BinaryField):
     value_type = numpy.float32
+    date_type = "datetime64[s]"
 
     def load_numpy_array(self , blob):
         return numpy.fromstring(blob , self.dtype)

@@ -40,7 +40,7 @@ class RegularTimeSeriesTest(TestCase):
         self.assertEqual( ts[14] , 110 )
         self.assertEqual( len(ts) , 15 )
 
-        data = RegularTimeSeries.createArray( NumpyArrayField.value_type , size = 3 )
+        data = RegularTimeSeries.createArray( size = 3 )
         self.assertEqual( data.shape[0] , 3 )
         data[0] = 99
         data[1] = 99

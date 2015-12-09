@@ -3,7 +3,7 @@ from time_series.models import *
 
 class TestContext(object):
     def __init__(self):
-        self.ts = RegularTimeSeries.new( timezone.now(), 100 )
+        self.ts = RegularTimeSeries.new( timezone.now() , 100 )
         self.ts.addList( range(10) )
         self.ts.save()
     

@@ -62,6 +62,23 @@ class Filter(Model):
         return self.code.getCallable( )
 
 
+class Transform(Model):
+    IDPattern = "[-_:a-zA-Z0-9]+"
+    
+    id = CharField(max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
+    description = CharField( max_length= 256 )
+    code = ForeignKey( PythonCode )
+
+
+    def __unicode__(self):
+        return self.description
+
+
+    def getCallable(self):
+        return self.code.getCallable( )
+
+
+
 
 class FilterData(Model):
     sensor = ForeignKey( Sensor )

@@ -64,3 +64,12 @@ class FilterDataTest(TestCase):
                                     description = "XY2" , 
                                     width = 100,
                                     code = code_mean)
+        
+
+    def test_create_transform(self):
+        code_sin = PythonCode.objects.create( description = "XY" , 
+                                               python_callable = "math.sin")
+
+        tr = Transform.objects.create( id = "sinx",
+                                       description = "XYZ",
+                                       code = code_sin )

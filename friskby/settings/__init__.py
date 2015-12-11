@@ -52,9 +52,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'rest_framework',
     'api_key',
-    'time_series',
-    'sensor',
-    'filter'
+    'sensor'
 )
 
 MIDDLEWARE_CLASSES = (

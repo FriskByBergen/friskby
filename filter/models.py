@@ -171,7 +171,6 @@ class SampledData(Model):
             start = None
             
         ts = sensor.get_ts( start = start )
-        print ts,start
         if len(ts):
             if sd is None:
                 timestamp = TimeArray.new( )

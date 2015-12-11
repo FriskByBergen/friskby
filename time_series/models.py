@@ -255,7 +255,6 @@ class SampledTimeSeries(Model, OperatorMixin):
             self.timestamp.addList( ts )
             self.addList( values )
         except ValueError as e:
-            print e
             self.resize( size0 )
             self.timestamp.resize( size0 )
             raise ValueError

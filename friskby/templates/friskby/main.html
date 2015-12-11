@@ -82,9 +82,6 @@ function plot_data( result ) {
 
 }
 
-function plot_data( result ) {
-   
-}
 
 function init_sensor_selection( result ) {
     sensor_select = document.getElementById('id_sensor_id_select');
@@ -205,14 +202,9 @@ function sensor_select_event( ev ) {
       var data_post = { type 	   : "GET",
                         dataType   : "json",
                         url        : "/sensor/api/reading/" + sensor_id.toString() + "/", 
-<<<<<<< Updated upstream
 			data       : {"num" : 100 },
                         success    : plot_data };
       $.ajax( data_post );
-=======
-                        success    : plot_data };
-      $.ajax( meta_post );
->>>>>>> Stashed changes
    }
    return false; 
 }

@@ -33,8 +33,9 @@ class RegularTimeSeriesTest(TestCase):
         self.assertEqual( ts[4] , 5 )
 
         ts.addList( [6,7,8,9,10] )
-        self.assertEqual( ts[9] , 10 )
         self.assertEqual( len(ts) , 10 )
+        self.assertEqual( ts[8] , 9 )
+        self.assertEqual( ts[9] , 10 )
 
         ts.addList( (16,17,18,19,110) )
         self.assertEqual( ts[14] , 110 )

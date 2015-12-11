@@ -139,8 +139,9 @@ class TimeArray(Model, OperatorMixin):
             for v in data:
                 if index > 0 and self.increasing:
                     if v < self.data[index - 1]:
+                        msg = "Elements must be weakly increasing %s < %s" % (v , self.data[index - 1])
                         self.resize( old_size )
-                        raise ValueError("Elements must be weakly increasing %s < %s" % (v , self.data[index - 1]))
+                        raise ValueError( msg )
 
                 self.data[index] = v
                 index += 1

@@ -40,9 +40,10 @@ class TimeArrayTest(TestCase):
 
         ta1 = TimeArray.new( )
         ta1.addValue( numpy.datetime64('2013-09-22T03:30Z') )
+        self.assertEqual( len(ta1) , 1 )
         with self.assertRaises(ValueError):
             ta1.addList( [ numpy.datetime64('2013-11-22T03:30Z') , numpy.datetime64('2013-10-22T03:30Z')]) 
-
+        self.assertEqual( len(ta1) , 1 )
 
 
 

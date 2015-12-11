@@ -12,6 +12,15 @@ from api_key.models import ApiKey
 
 
 class RawData(Model):
+    RAWDATA = 0
+    PROCESSED = 1
+    INVALID_KEY = 2
+
+    choices = ((RAWDATA , "Rawdata") , 
+               (PROCESSED , "Processed data"),
+               (INVALID_KEY , "Invalid key"))
+
+    
     apikey = CharField(max_length=128)
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
@@ -19,7 +28,7 @@ class RawData(Model):
     value = CharField( max_length = 128 )
     extra_data = TextField( null = True , blank = True )
     parsed = BooleanField(default = False)
-
+    status = IntegerField( default = RAWDATA , choices = choices)
     
     def save(self,*args, **kwargs):
         if self.timestamp_recieved is None:
@@ -236,7 +245,7 @@ class Sensor( Model ):
 
             ts.reverse( )
         elif start:
-            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self , data_info__timestamp__timestamp__gte = start).order_by('data_info__timestamp__timestamp'):
+            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self , data_info__timestamp__timestamp__gt = start).order_by('data_info__timestamp__timestamp'):
                 ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
 
         else:

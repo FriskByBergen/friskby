@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import time_series.models
+import time_series.numpy_field
 
 
 class Migration(migrations.Migration):
@@ -12,12 +12,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='TimeSeries',
+            name='RegularTimeSeries',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start', models.DateTimeField()),
                 ('step', models.IntegerField()),
-                ('data', time_series.models.NumpyArrayField()),
+                ('data', time_series.numpy_field.NumpyArrayField(default=None)),
             ],
         ),
     ]

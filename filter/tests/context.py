@@ -16,7 +16,7 @@ class TestContext(object):
         code_min = PythonCode.objects.create( description = "XY" , 
                                               python_callable = "filter.filter.blockedMin")
 
-
+        
         
         self.f_mean = Filter.objects.create( id = "MEAN_1HOUR",
                                              width = 3600,
@@ -34,6 +34,11 @@ class TestContext(object):
                                             description = "Average from 1Hour" , 
                                             code = code_min )
         
+        
+        code_sin = PythonCode.objects.create( description = "XY" , 
+                                              python_callable = "math.sin")
 
 
-
+        self.t_sin = Transform.objects.create( id = "SIN",
+                                               description = "Sinus ...",
+                                               code = code_sin )

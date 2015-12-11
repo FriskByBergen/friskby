@@ -1,10 +1,13 @@
 import importlib
+import datetime
+import pytz
 
 from django.db.models import *
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
 from time_series.models import *
+from time_series.numpy_field import * 
 from sensor.models import *
 
 
@@ -134,3 +137,63 @@ class FilterData(Model):
 
         return fd
 
+
+
+class SampledData(Model):
+    sensor = ForeignKey( Sensor )
+    data = ForeignKey( SampledTimeSeries )
+    parent_data = ForeignKey( "SampledData" , null = True )
+    transform = ForeignKey( Transform , null = True )
+    
+    def __unicode__(self):
+        return "%s : %s" % (self.sensor , self.transform)
+
+    class Meta:
+        unique_together = ('sensor' , 'transform')
+
+    def __len__(self):
+        return len(self.data)
+
+    def save(self , *args , **kwargs):
+        self.data.save( )
+        super(SampledData , self).save( *args , **kwargs)
+
+
+
+    @classmethod
+    def updateRawData( cls , sensor ):
+        try:
+            sd = SampledData.objects.get( sensor = sensor , transform = None)
+            start = sd.data.lastTime( ).astype( datetime.datetime )
+            start = start.replace( tzinfo = pytz.UTC )
+        except SampledData.DoesNotExist:
+            sd = None
+            start = None
+            
+        ts = sensor.get_ts( start = start )
+        print ts,start
+        if len(ts):
+            if sd is None:
+                timestamp = TimeArray.new( )
+                timestamp.save( ) 
+                data = SampledTimeSeries.new( timestamp )
+                data.save( )
+
+                sd = SampledData( sensor = sensor , 
+                                  data = data , 
+                                  parent_data = None,
+                                  transform = None )
+
+            ts_list = [ 0 ] * len(ts)
+            values = [ 0 ] * len(ts)
+
+            for i in range(len(ts)):
+                ts_list[i] = numpy.datetime64( ts[i][0] )# , NumpyArrayField.date_type )
+                values[i] = ts[i][1]
+
+
+            data = sd.data
+            data.addPairList( ts_list , values )
+            sd.save()
+        
+        return sd

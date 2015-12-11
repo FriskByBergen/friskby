@@ -245,7 +245,7 @@ class Sensor( Model ):
 
             ts.reverse( )
         elif start:
-            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self , data_info__timestamp__timestamp__gte = start).order_by('data_info__timestamp__timestamp'):
+            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self , data_info__timestamp__timestamp__gt = start).order_by('data_info__timestamp__timestamp'):
                 ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
 
         else:

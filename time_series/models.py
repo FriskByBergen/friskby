@@ -26,6 +26,9 @@ class OperatorMixin(object):
         else:
             return len(self.data)
 
+    def last(self):
+        return self[-1]
+
 
     def resize(self , new_size):
         self.data.resize( [ new_size ] )
@@ -137,7 +140,7 @@ class TimeArray(Model, OperatorMixin):
                 if index > 0 and self.increasing:
                     if v < self.data[index - 1]:
                         self.resize( old_size )
-                        raise ValueError("Elements must be weakly increasing")
+                        raise ValueError("Elements must be weakly increasing %s < %s" % (v , self.data[index - 1]))
 
                 self.data[index] = v
                 index += 1
@@ -218,6 +221,11 @@ class SampledTimeSeries(Model, OperatorMixin):
         return ts
 
 
+    def save(self, *args, **kwargs):
+        self.timestamp.save()
+        super(SampledTimeSeries , self).save( *args , **kwargs )
+
+
     def assertSize(self):
         if len(self.timestamp) != len(self):
             raise IntegrityError("Timestamp and data not equally long");
@@ -245,7 +253,8 @@ class SampledTimeSeries(Model, OperatorMixin):
         try:
             self.timestamp.addList( ts )
             self.addList( values )
-        except ValueError:
+        except ValueError as e:
+            print e
             self.resize( size0 )
             self.timestamp.resize( size0 )
             raise ValueError
@@ -260,3 +269,12 @@ class SampledTimeSeries(Model, OperatorMixin):
                 return (self.timestamp[index] , self.data[index])
             else:
                 raise IndexError
+    
+    def export(self):
+        self.assertSize()
+        return {"timestamp" : self.timestamp.data.tolist(),
+                "data" : self.data.tolist() }
+        
+
+    def lastTime(self):
+        return self.timestamp.last() 

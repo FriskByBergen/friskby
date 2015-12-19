@@ -9,8 +9,8 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import json
 
+import json
 import sensor.models as models
 from sensor.api.serializers import *
 from sensor.api.info_serializers import *
@@ -375,3 +375,31 @@ class CurrentValueView(APIView):
                 
             return Response( data )
 
+
+class RawDataView(APIView):
+
+    def get(self , request , sensor_id = None):
+        try:
+            sensor = models.Sensor.objects.get( pk = sensor_id )
+        except models.Sensor.DoesNotExist:
+            return Response("The sensorID:%s is not found" % sensor_id , status = 404)#status.HTTP_404_NOT_FOUND)
+
+        if "status" in request.GET:
+            try:
+                data_status = int( request.GET["status"] )
+            except ValueError:
+                return Response("The status: %s is invalid" % request.GET["status"] , status = 400)#status.HTTP_400_BAD_REQUEST )
+
+            if not models.RawData.valid_status( data_status ):
+                return Response("The status: %s is invalid" % request.GET["status"] , status = 400)#status.HTTP_400_BAD_REQUEST )
+        else:
+            data_status = models.RawData.RAWDATA
+        
+        query = models.RawData.objects.filter( sensor_id = sensor.id , 
+                                               status = data_status )
+        data = []
+        for row in query:
+            data.append( (row.timestamp_data , row.value ))
+        
+        return Response( data )
+                                       

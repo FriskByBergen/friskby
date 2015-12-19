@@ -36,6 +36,13 @@ class RawData(Model):
         super(RawData , self).save(*args , **kwargs)
         
 
+    @classmethod
+    def valid_status( cls , status ):
+        if status in [cls.RAWDATA , cls.PROCESSED , cls.INVALID_KEY]:
+            return True
+        else:
+            return False
+
 
     @classmethod
     def is_valid(cls , data):
@@ -90,6 +97,10 @@ class RawData(Model):
                           sensor_id = data["sensorid"],
                           timestamp_data = TimeStamp.parse_datetime( data["timestamp"]),
                           value = data["value"] )
+
+            if not ApiKey.valid( data["key"] ):
+                rd.status = RawData.INVALID_KEY
+                
             del data["key"]
             del data["sensorid"]
             del data["value"]

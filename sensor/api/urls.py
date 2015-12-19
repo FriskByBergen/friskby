@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^reading/$'            , ReadingView.as_view()),
     url(r'^reading/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , ReadingView.as_view()),
     #
-    #url(r'^rawdata/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , RawDataView.as_view()),
+    url(r'^rawdata/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , RawDataView.as_view()),
     #
     url(r'^current/$'   , CurrentValueView.as_view()),
     url(r'^current/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , CurrentValueView.as_view())

@@ -164,7 +164,7 @@ class SampledData(Model):
     def updateRawData( cls , sensor ):
         try:
             sd = SampledData.objects.get( sensor = sensor , transform = None)
-            start = sd.data.lastTime( ).astype( datetime.datetime )
+            start = sd.data.lastTime( )
             start = start.replace( tzinfo = pytz.UTC )
         except SampledData.DoesNotExist:
             sd = None
@@ -187,7 +187,7 @@ class SampledData(Model):
             values = [ 0 ] * len(qs)
 
             for i in range(len(qs)):
-                ts_list[i] = numpy.datetime64( qs[i][1] )# , NumpyArrayField.date_type )
+                ts_list[i] = qs[i][1]
                 values[i] = qs[i][2]
 
 

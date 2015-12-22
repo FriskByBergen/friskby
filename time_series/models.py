@@ -1,7 +1,10 @@
 import datetime
+import time
+import calendar
 import math
 import pytz
 import numpy
+from django.conf import settings
 from django.utils import timezone, dateparse
 from django.db.models import *
 from django.db import IntegrityError
@@ -69,10 +72,12 @@ class OperatorMixin(object):
 class TimeArray(Model, OperatorMixin):
     DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
     # When parsing a string the format should be as: "2015-10-10T10:10:00+01";
-    # i.e. yyyy-mm-ddTHH:MM:SS+z
+    # i.e. yyyy-mm-ddTHH:MM:SS+z1
     # Where the +zz is a timezone shift relative to UTC; i.e. +01 for Central European Time.
     increasing = True
     data = NumpyArrayField( dtype = NumpyArrayField.date_type )
+    time_zone = pytz.timezone( settings.TIME_ZONE )
+
 
 
     @classmethod
@@ -86,6 +91,9 @@ class TimeArray(Model, OperatorMixin):
         ts.increasing = increasing
         return ts
 
+
+    def save(self, *args, **kwargs):
+        super(TimeArray , self).save( *args , **kwargs )
 
     
     # This takes a time_string which is supposed to be in the time
@@ -105,21 +113,46 @@ class TimeArray(Model, OperatorMixin):
 
     @classmethod
     def now(cls):
-        return numpy.datetime64( timezone.now( ) ).astype(NumpyArrayField.date_type)
+        return timezone.now( )
+
+
+    @classmethod
+    def datetime2EpochSeconds(cls , dt):
+        return int(calendar.timegm( dt.timetuple() ))
+
+
+    @classmethod
+    def epochSeconds2Datetime(cls , dt):
+        return datetime.datetime.fromtimestamp( epoch_seconds , self.time_zone )
+
+
+    def __getitem__(self , index):
+        if self.data is None:
+            raise IndexError
+        else:
+            epoch_seconds = self.data[index]
+            dt = datetime.datetime.fromtimestamp( epoch_seconds , self.time_zone )
+            return dt
+
+
+    def __setitem__(self , index , dt):
+        if self.data is None:
+            raise IndexError
+        else:
+            self.data[index] = self.datetime2EpochSeconds( dt )
 
 
     def export(self):
         l = [0] * len(self)
-        utc = pytz.utc
         index = 0
         for t in self:
-            dt = numpy.datetime64( t ).astype(datetime.datetime)
-            l[index] = utc.localize( dt )
+            l[index] = t
             index += 1
         return l
 
 
     def addValue(self , value):
+        value = self.datetime2EpochSeconds(value)
         if self.data is None:
             new_size = 1
             self.data = self.createArray( size = new_size )
@@ -131,7 +164,7 @@ class TimeArray(Model, OperatorMixin):
                     raise ValueError("Elements must be weakly increasing")
                 
             self.resize( new_size )
-            
+
         self.data[new_size -1] = value
 
 
@@ -149,13 +182,14 @@ class TimeArray(Model, OperatorMixin):
 
             index = old_size
             for v in data:
+                s = self.datetime2EpochSeconds(v)
                 if index > 0 and self.increasing:
-                    if v < self.data[index - 1]:
-                        msg = "Elements must be weakly increasing %s < %s" % (v , self.data[index - 1])
+                    if s < self.data[index - 1]:
+                        msg = "Elements must be weakly increasing %s < %s" % (s , self.data[index - 1])
                         self.resize( old_size )
                         raise ValueError( msg )
 
-                self.data[index] = v
+                self.data[index] = s
                 index += 1
                 
 

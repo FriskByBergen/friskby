@@ -25,13 +25,14 @@ class SampledTimeSeriesTest(TestCase):
         time.sleep( 1 )
         ts.addValue( 100 )
         now3 = TimeArray.now( )
+        now3 = now3.replace( microsecond = 0 )
         ts.addPair( now3 , 119 )
         self.assertEqual( len(ts) , 3 )
         self.assertEqual( ts[2] , (now3 , 119 ))
 
         # Must be increasing 
         with self.assertRaises(ValueError):
-            ts.addPair( numpy.datetime64('2013-10-22T03:30Z') , 119 )
+            ts.addPair( TimeArray.parse_datetime('2013-10-22T03:30Z') , 119 )
         self.assertEqual( len(ts) , 3 )
 
         ts.addPairList( [now3 , now3] , [119,120] )
@@ -42,7 +43,7 @@ class SampledTimeSeriesTest(TestCase):
         self.assertEqual( len(ts) , 5 )
 
         with self.assertRaises(ValueError):
-            ts.addPair( numpy.datetime64('2013-10-22T03:30Z') , 119 )
+            ts.addPair( TimeArray.parse_datetime('2013-10-22T03:30Z') , 119 )
         self.assertEqual( len(ts) , 5 )
 
         x = range(10)

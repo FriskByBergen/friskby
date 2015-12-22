@@ -1,3 +1,4 @@
+import sys
 import datetime
 from django.utils import dateparse , timezone
 from django.test import TestCase, Client
@@ -35,3 +36,33 @@ class SampledDataTest(TestCase):
         
         sd = SampledData.updateRawData( self.sensor_context.temp_sensor )
         self.assertEqual( len(sd) , 3 )
+
+        response = client.get("/filter/api/sample_data/")
+        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
+                              
+        # The root endpoint should return a dict {'sensor_id' :
+        # ["transform1","transform2"]} of the available sensor/transformation
+        # combinations
+        response = client.get("/filter/api/sampled_data/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        d = response.data
+        self.assertEqual( len(d) , 1 )
+        self.assertTrue( "TEMP:XX" in d )
+        
+        l = d["TEMP:XX"]
+        self.assertEqual( len(l) , 0 )
+
+        response = client.get("/filter/api/sampled_data/TEMP:XX/")
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        d = response.data
+        data = d["data"]
+        timestamp = d["timestamp"]
+
+
+        self.assertEqual( data[0] , 60 )
+        self.assertEqual( data[1] , 10 )
+        self.assertEqual( data[2] , 20 )
+
+        self.assertEqual( timestamp[0] , TimeArray.parse_datetime( "2015-10-10T12:12:00+01" ))
+        self.assertEqual( timestamp[1] , TimeArray.parse_datetime( "2015-10-10T12:13:00+01" ))
+        self.assertEqual( timestamp[2] , TimeArray.parse_datetime( "2015-10-10T12:14:00+01" ))

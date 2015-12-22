@@ -9,21 +9,21 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import json
 
+import json
 import sensor.models as models
 from sensor.api.serializers import *
 from sensor.api.info_serializers import *
 
         
 
-class MeasurementTypeList(generics.ListCreateAPIView):
+class MeasurementTypeListView(generics.ListCreateAPIView):
     queryset = models.MeasurementType.objects.all()
     serializer_class = MeasurementTypeSerializer
     
 
 
-class MeasurementType(generics.RetrieveAPIView):    
+class MeasurementTypeView(generics.RetrieveAPIView):    
     queryset = models.MeasurementType.objects.all()
     serializer_class = MeasurementTypeSerializer
     
@@ -31,81 +31,81 @@ class MeasurementType(generics.RetrieveAPIView):
 #################################################################
 
 
-class DeviceTypeList(generics.ListCreateAPIView):
+class DeviceTypeListView(generics.ListCreateAPIView):
     queryset = models.DeviceType.objects.all()
     serializer_class = DeviceTypeSerializer
     
 
-class DeviceType(generics.RetrieveAPIView):    
+class DeviceTypeView(generics.RetrieveAPIView):    
     queryset = models.DeviceType.objects.all()
     serializer_class = DeviceTypeSerializer
 
 #################################################################
 
-class DeviceList(generics.ListCreateAPIView):
+class DeviceListView(generics.ListCreateAPIView):
     queryset = models.Device.objects.all()
     serializer_class = DeviceSerializer
     
 
-class Device(generics.RetrieveAPIView):    
+class DeviceView(generics.RetrieveAPIView):    
     queryset = models.Device.objects.all()
     serializer_class = DeviceSerializer
 
 #################################################################
 
-class LocationList(generics.ListCreateAPIView):
+class LocationListView(generics.ListCreateAPIView):
     queryset = models.Location.objects.all()
     serializer_class = LocationSerializer
     
 
-class Location(generics.RetrieveAPIView):    
+class LocationView(generics.RetrieveAPIView):    
     queryset = models.Location.objects.all()
     serializer_class = LocationSerializer
 
 #################################################################
 
 
-class DataTypeList(generics.ListCreateAPIView):
+class DataTypeListView(generics.ListCreateAPIView):
     queryset = models.DataType.objects.all()
     serializer_class = DataTypeSerializer
     
 
-class DataType(generics.RetrieveAPIView):    
+class DataTypeView(generics.RetrieveAPIView):    
     queryset = models.DataType.objects.all()
     serializer_class = DataTypeSerializer
 
 
 #################################################################
 
-class DataInfoList(generics.ListCreateAPIView):
+class DataInfoListView(generics.ListCreateAPIView):
     queryset = models.DataInfo.objects.all()
     serializer_class = DataInfoSerializer
     
 
-class DataInfo(generics.RetrieveAPIView):    
+class DataInfoView(generics.RetrieveAPIView):    
     queryset = models.DataInfo.objects.all()
     serializer_class = DataInfoSerializer
 
 #################################################################
 
-class DataValueList(generics.ListCreateAPIView):
+class DataValueListView(generics.ListCreateAPIView):
     queryset = models.DataValue.objects.all()
     serializer_class = DataValueSerializer
     
 
-class DataValue(generics.RetrieveAPIView):    
+class DataValueView(generics.RetrieveAPIView):    
     queryset = models.DataValue.objects.all()
     serializer_class = DataValueSerializer
 
 #################################################################
 
 
-class TimeStampList(generics.ListCreateAPIView):
+class TimeStampListView(generics.ListCreateAPIView):
     queryset = models.TimeStamp.objects.all()
     serializer_class = TimeStampSerializer
     
 
-class TimeStamp(generics.RetrieveAPIView):    
+class TimeStampView(generics.RetrieveAPIView):    
     queryset = models.TimeStamp.objects.all()
     serializer_class = TimeStampSerializer
 
@@ -113,24 +113,24 @@ class TimeStamp(generics.RetrieveAPIView):
 #################################################################
 
 
-class SensorList(generics.ListCreateAPIView):
+class SensorListView(generics.ListCreateAPIView):
     queryset = models.Sensor.objects.all()
     serializer_class = SensorSerializer
     
 
-class Sensor(generics.RetrieveAPIView):    
+class SensorView(generics.RetrieveAPIView):    
     queryset = models.Sensor.objects.all()
     serializer_class = SensorSerializer
 
 
 #################################################################
 
-class SensorTypeList(generics.ListCreateAPIView):
+class SensorTypeListView(generics.ListCreateAPIView):
     queryset = models.SensorType.objects.all()
     serializer_class = SensorTypeSerializer
     
 
-class SensorType(generics.RetrieveAPIView):    
+class SensorTypeView(generics.RetrieveAPIView):    
     queryset = models.SensorType.objects.all()
     serializer_class = SensorTypeSerializer
 
@@ -138,7 +138,7 @@ class SensorType(generics.RetrieveAPIView):
 #################################################################
 
 
-class SensorInfo(APIView):
+class SensorInfoView(APIView):
     def get(self , request , sensor_id = None):
         if sensor_id is None:
             sensor_list = models.Sensor.objects.all()
@@ -152,7 +152,7 @@ class SensorInfo(APIView):
         for sensor in sensor_list:
             serialized = SensorInfoSerializer( sensor )
             data = serialized.data
-            current = sensor.get_current( CurrentValue.DEFAULT_TIMEOUT )
+            current = sensor.get_current( CurrentValueView.DEFAULT_TIMEOUT )
             if current is None:
                 data["current_value"] = None
                 data["current_timestamp"] = None
@@ -168,7 +168,7 @@ class SensorInfo(APIView):
             return Response( result[0] , status = status.HTTP_200_OK ) 
 
 
-class Reading(APIView):
+class ReadingView(APIView):
 
     def cleanPayload(self , data):
         if "sensorid" in data:
@@ -217,7 +217,7 @@ class Reading(APIView):
             raw_data = RawData.create( request.data )
         except ValueError:
             return Response(RawData.error( request.data ) , status = status.HTTP_400_BAD_REQUEST )
-
+        
 
         key = raw_data.apikey
         sensorid = raw_data.sensor_id
@@ -324,7 +324,8 @@ class Reading(APIView):
         
 
 
-class CurrentValue(APIView):
+
+class CurrentValueView(APIView):
     # Data which is older than the timeout is not considered
     # 'current'; and None is returned for the value.
     DEFAULT_TIMEOUT = 3600
@@ -340,7 +341,7 @@ class CurrentValue(APIView):
         else:
             mtype = None
 
-        timeout = CurrentValue.DEFAULT_TIMEOUT
+        timeout = CurrentValueView.DEFAULT_TIMEOUT
         if "timeout" in request.GET:
             timeout = int( request.GET["timeout"])
 
@@ -373,3 +374,32 @@ class CurrentValue(APIView):
                 data.append( sensor_data )
                 
             return Response( data )
+
+
+class RawDataView(APIView):
+
+    def get(self , request , sensor_id = None):
+        try:
+            sensor = models.Sensor.objects.get( pk = sensor_id )
+        except models.Sensor.DoesNotExist:
+            return Response("The sensorID:%s is not found" % sensor_id , status = 404)#status.HTTP_404_NOT_FOUND)
+
+        if "status" in request.GET:
+            try:
+                data_status = int( request.GET["status"] )
+            except ValueError:
+                return Response("The status: %s is invalid" % request.GET["status"] , status = 400)#status.HTTP_400_BAD_REQUEST )
+
+            if not models.RawData.valid_status( data_status ):
+                return Response("The status: %s is invalid" % request.GET["status"] , status = 400)#status.HTTP_400_BAD_REQUEST )
+        else:
+            data_status = models.RawData.RAWDATA
+        
+        query = models.RawData.objects.filter( sensor_id = sensor.id , 
+                                               status = data_status )
+        data = []
+        for row in query:
+            data.append( (row.timestamp_data , row.value ))
+        
+        return Response( data )
+                                       

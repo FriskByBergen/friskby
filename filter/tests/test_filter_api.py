@@ -18,7 +18,6 @@ class FilterApiTest(TestCase):
     def test_get(self):
         client = Client( )
         
-        
         sensor_id = "TEMP:XX"
         data_list = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "2015-10-10T12:12:00+01", "key" : self.sensor_context.external_key},
                      {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.sensor_context.external_key},
@@ -36,7 +35,7 @@ class FilterApiTest(TestCase):
         # The root endpoint should return a dict {'sensor_id' :
         # ["filter1","filter2"]} of the available sensor/filter
         # combinations.
-        response = client.get("/filter/api/data/")
+        response = client.get("/filter/api/filter_data/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         d = response.data
         self.assertEqual( len(d) , 1 )
@@ -48,26 +47,20 @@ class FilterApiTest(TestCase):
         self.assertEqual( len(l) , 2 )
 
         
-        response = client.get("/filter/api/data/missing_sensor/")
+        response = client.get("/filter/api/filter_data/missing_sensor/")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
 
-        response = client.get("/filter/api/data/TEMP:XX/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-
-        self.assertEqual( len(d) , 1 )
-        self.assertTrue( "TEMP:XX" in d )
-
-        l = d["TEMP:XX"]
-        self.assertTrue( "MEAN_1HOUR" in l)
-        self.assertTrue( "MAX_1HOUR" in l)
-        self.assertEqual( len(l) , 2 )
-
-        response = client.get("/filter/api/data/TEMP:XX/missing_filter/")
+        # Missing filter:
+        response = client.get("/filter/api/filter_data/TEMP:XX/")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
 
-        response = client.get("/filter/api/data/TEMP:XX/MEAN_1HOUR/")
+        # Missing filter:
+        response = client.get("/filter/api/filter_data/TEMP:XX/missing_filter/")
+        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
+
+        response = client.get("/filter/api/filter_data/TEMP:XX/MEAN_1HOUR/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
-        response = client.get("/filter/api/data/TEMP:XX/MIN_1HOUR/")
+        response = client.get("/filter/api/filter_data/TEMP:XX/MIN_1HOUR/")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
         

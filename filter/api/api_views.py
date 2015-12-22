@@ -17,12 +17,9 @@ from sensor.models import *
 
 class FilterDataView(APIView):
 
-    def listView(self , sensor = None):
+    def listView(self):
         data = {}
-        if sensor is None:
-            qs =  FilterData.objects.all()
-        else:
-            qs =  FilterData.objects.filter( sensor = sensor )
+        qs =  FilterData.objects.all()
 
         for fd in qs:
             sensor_id = fd.sensor.id
@@ -47,9 +44,6 @@ class FilterDataView(APIView):
         except Sensor.DoesNotExist:
             return Response( "Sensor:%s not found" % sensor_id , status = status.HTTP_404_NOT_FOUND )
         
-        if filter_id is None:
-            return self.listView( sensor = sensor )
-        
         try:
             filter = Filter.objects.get( pk = filter_id )
         except Filter.DoesNotExist:
@@ -60,3 +54,49 @@ class FilterDataView(APIView):
             return Response( fd.ts.export() )
         except FilterData.DoesNotExist:
             return Response( "FilterData %s/%s not found" % (sensor_id , filter_id) , status = status.HTTP_404_NOT_FOUND )
+
+
+##################################################################
+
+
+class SampledDataView(APIView):
+
+    def listView(self):
+        data = {}
+        qs =  SampledData.objects.all()
+
+        for sd in qs:
+            sensor_id = sd.sensor.id
+            if not sensor_id in data:
+                data[sensor_id] = []
+
+            transform = sd.transform
+            if not transform is None:
+                data[sensor_id].append( transform.id )
+
+        return Response( data )
+
+
+
+
+    def get(self, request , sensor_id = None , transform_id = None):
+        if sensor_id is None:
+            return self.listView( )
+            
+        try:
+            sensor = Sensor.objects.get( pk = sensor_id )
+        except Sensor.DoesNotExist:
+            return Response( "Sensor:%s not found" % sensor_id , status = status.HTTP_404_NOT_FOUND )
+
+        transform = None
+        if not transform_id is None:
+            try:
+                transform = Transform.objects.get( pk = transform_id )
+            except Transform.DoesNotExist:
+                return Response( "Transform:%s not found" % transform_id , status = status.HTTP_404_NOT_FOUND )
+
+        try:
+            sd = SampledData.objects.get( transform = transform , sensor = sensor )
+            return Response( sd.data.export() )
+        except SampledData.DoesNotExist:
+            return Response( "SampledData %s/%s not found" % (sensor_id , transform_id) , status = status.HTTP_404_NOT_FOUND )

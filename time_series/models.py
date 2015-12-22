@@ -1,5 +1,6 @@
-import math
 import datetime
+import math
+import pytz
 import numpy
 from django.utils import timezone, dateparse
 from django.db.models import *
@@ -105,6 +106,17 @@ class TimeArray(Model, OperatorMixin):
     @classmethod
     def now(cls):
         return numpy.datetime64( timezone.now( ) ).astype(NumpyArrayField.date_type)
+
+
+    def export(self):
+        l = [0] * len(self)
+        utc = pytz.utc
+        index = 0
+        for t in self:
+            dt = numpy.datetime64( t ).astype(datetime.datetime)
+            l[index] = utc.localize( dt )
+            index += 1
+        return l
 
 
     def addValue(self , value):
@@ -257,7 +269,7 @@ class SampledTimeSeries(Model, OperatorMixin):
         except ValueError as e:
             self.resize( size0 )
             self.timestamp.resize( size0 )
-            raise ValueError
+            raise ValueError( str(e) )
 
     
     def __getitem__(self, index):
@@ -272,7 +284,7 @@ class SampledTimeSeries(Model, OperatorMixin):
     
     def export(self):
         self.assertSize()
-        return {"timestamp" : self.timestamp.data.tolist(),
+        return {"timestamp" : self.timestamp.export(),
                 "data" : self.data.tolist() }
         
 

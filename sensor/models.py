@@ -7,7 +7,6 @@ from django.conf import settings
 from django.utils import dateparse , timezone
 from django.db.models import *
 from django.core.validators import RegexValidator
-
 from api_key.models import ApiKey
 
 
@@ -42,6 +41,8 @@ class RawData(Model):
             return True
         else:
             return False
+
+
 
 
     @classmethod
@@ -288,6 +289,15 @@ class Sensor( Model ):
     def valid_post_key( self , key_string):
         return self.post_key.access( key_string )
 
+
+    # This method returns a QuerySet - because that query set is
+    # subsequently used to update the status of all the relevant
+    # RawData records.
+    def get_rawdata(self , status = RawData.RAWDATA ):
+        qs = RawData.objects.filter( sensor_id = self.id , 
+                                     status = status ).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
+        
+        return qs
 
 
 class DataInfo( Model ):

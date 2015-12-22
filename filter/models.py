@@ -170,8 +170,8 @@ class SampledData(Model):
             sd = None
             start = None
             
-        ts = sensor.get_ts( start = start )
-        if len(ts):
+        qs = sensor.get_rawdata(  )
+        if len(qs):
             if sd is None:
                 timestamp = TimeArray.new( )
                 timestamp.save( ) 
@@ -183,16 +183,17 @@ class SampledData(Model):
                                   parent_data = None,
                                   transform = None )
 
-            ts_list = [ 0 ] * len(ts)
-            values = [ 0 ] * len(ts)
+            ts_list = [ 0 ] * len(qs)
+            values = [ 0 ] * len(qs)
 
-            for i in range(len(ts)):
-                ts_list[i] = numpy.datetime64( ts[i][0] )# , NumpyArrayField.date_type )
-                values[i] = ts[i][1]
+            for i in range(len(qs)):
+                ts_list[i] = numpy.datetime64( qs[i][1] )# , NumpyArrayField.date_type )
+                values[i] = qs[i][2]
 
 
             data = sd.data
             data.addPairList( ts_list , values )
             sd.save()
-        
+            qs.update( status = RawData.PROCESSED )
+
         return sd

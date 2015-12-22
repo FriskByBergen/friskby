@@ -5,6 +5,7 @@ from django.test import TestCase, Client
 from rest_framework import status
 
 from sensor.models import *
+from filter.models import SampledData 
 
 from .context import TestContext
 
@@ -77,12 +78,12 @@ class RawDataTest(TestCase):
 
     def test_get_api(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
-        Sensor.objects.create( id = sensor_id,
-                               post_key = self.context.key , 
-                               location = self.context.loc,
-                               parent_device = self.context.dev,
-                               sensor_type = self.context.sensor_type_temp , 
-                               description = "Measurement of ..")
+        sensor = Sensor.objects.create( id = sensor_id,
+                                        post_key = self.context.key , 
+                                        location = self.context.loc,
+                                        parent_device = self.context.dev,
+                                        sensor_type = self.context.sensor_type_temp , 
+                                        description = "Measurement of ..")
 
         client = Client( )
 
@@ -146,3 +147,30 @@ class RawDataTest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 1 )
+
+        sd = SampledData.updateRawData( sensor )
+        self.assertEqual(len(sd) , 3)
+        
+        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.RAWDATA })
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads(response.content)
+        self.assertEqual( len(data) , 0 )
+
+        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.PROCESSED })
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads(response.content)
+        self.assertEqual( len(data) , 3 )
+
+        sd = SampledData.updateRawData( sensor )
+        self.assertEqual(len(sd) , 3)
+        
+        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.RAWDATA })
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads(response.content)
+        self.assertEqual( len(data) , 0 )
+
+        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.PROCESSED })
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads(response.content)
+        self.assertEqual( len(data) , 3 )
+

@@ -18,6 +18,10 @@ class TimeArrayTest(TestCase):
         self.assertEqual(len(ta) , 1)
         self.assertEqual( ta[0], now )
 
+        self.assertEqual( ta.length() , 1 )
+        self.assertEqual( ta.end() , now )
+        self.assertEqual( ta.start() , now )
+
         now2 = TimeArray.now( )
         now2 = now2.replace( microsecond = 0 )
         ta[0] = now2

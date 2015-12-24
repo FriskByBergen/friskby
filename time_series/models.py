@@ -11,6 +11,30 @@ from django.db.models import *
 from django.db import IntegrityError
 from .numpy_field import *
 
+class StatMixin(object):
+
+    def avg(self):
+        if len(self.data) == 0:
+            return "---"
+        else:
+            return self.data.mean( )
+
+
+    def max(self):
+        if len(self.data) == 0:
+            return "---"
+        else:
+            return self.data.max( )
+
+
+    def min(self):
+        if len(self.data) == 0:
+            return "---"
+        else:
+            return self.data.min( )
+
+        
+
 class OperatorMixin(object):
 
     def __getitem__(self , index):
@@ -30,6 +54,10 @@ class OperatorMixin(object):
             return 0
         else:
             return len(self.data)
+
+    def length(self):
+        return len(self)
+
 
     def last(self):
         return self[-1]
@@ -80,6 +108,8 @@ class TimeArray(Model, OperatorMixin):
     data = NumpyArrayField( dtype = NumpyArrayField.date_type )
 
 
+    def __unicode__(self):
+        return "TimeArray:%s" % self.id
 
     @classmethod
     def createArray(cls, size = 0):
@@ -119,6 +149,20 @@ class TimeArray(Model, OperatorMixin):
     @classmethod
     def epochSeconds2Datetime(cls , dt):
         return datetime.datetime.fromtimestamp( epoch_seconds , self.time_zone )
+
+
+    def start(self):
+        if len(self) == 0:
+            return "---"
+        else:
+            return self[0]
+
+    def end(self):
+        if len(self) == 0:
+            return "---"
+        else:
+            return self[-1]
+
 
 
     def __getitem__(self , index):
@@ -191,7 +235,7 @@ class TimeArray(Model, OperatorMixin):
     
 
 
-class RegularTimeSeries(Model, OperatorMixin):
+class RegularTimeSeries(Model, OperatorMixin, StatMixin):
     start = DateTimeField( )
     step = IntegerField( )
     data = NumpyArrayField( dtype = NumpyArrayField.value_type )
@@ -247,7 +291,7 @@ class RegularTimeSeries(Model, OperatorMixin):
 
 
 
-class SampledTimeSeries(Model, OperatorMixin):        
+class SampledTimeSeries(Model, OperatorMixin, StatMixin):        
     timestamp = ForeignKey( TimeArray )
     data = NumpyArrayField( dtype = NumpyArrayField.value_type )
 

@@ -9,7 +9,7 @@ from .context import TestContext
 class TimeArrayTest(TestCase):
 
     def test_create(self):
-        ta = TimeArray.new( )
+        ta = TimeArray( )
         self.assertEqual(len(ta) , 0)
         
         now = TimeArray.now( )
@@ -25,9 +25,10 @@ class TimeArrayTest(TestCase):
 
 
     def test_increasing(self):
-        ta1 = TimeArray.new( )
+        ta1 = TimeArray(  )
         ta1.save( )
-        ta2= TimeArray.new( increasing = False )
+        ta2= TimeArray(  )
+        ta2.increasing = False
         
         now0 = TimeArray.now( )
         ta1.addValue( now0 )
@@ -41,7 +42,7 @@ class TimeArrayTest(TestCase):
         with self.assertRaises(ValueError):
             ta1.addList( [ TimeArray.parse_datetime('2013-10-22T03:30Z') , TimeArray.parse_datetime('2013-11-22T03:30Z')]) 
 
-        ta1 = TimeArray.new( )
+        ta1 = TimeArray( )
         ta1.addValue( TimeArray.parse_datetime('2013-09-22T03:30Z') )
         self.assertEqual( len(ta1) , 1 )
         with self.assertRaises(ValueError):

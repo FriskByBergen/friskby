@@ -4,6 +4,7 @@ import calendar
 import math
 import pytz
 import numpy
+
 from django.conf import settings
 from django.utils import timezone, dateparse
 from django.db.models import *
@@ -68,15 +69,15 @@ class OperatorMixin(object):
 
 
 
-
 class TimeArray(Model, OperatorMixin):
     DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
     # When parsing a string the format should be as: "2015-10-10T10:10:00+01";
     # i.e. yyyy-mm-ddTHH:MM:SS+z1
     # Where the +zz is a timezone shift relative to UTC; i.e. +01 for Central European Time.
     increasing = True
-    data = NumpyArrayField( dtype = NumpyArrayField.date_type )
     time_zone = pytz.timezone( settings.TIME_ZONE )
+
+    data = NumpyArrayField( dtype = NumpyArrayField.date_type )
 
 
 
@@ -84,12 +85,6 @@ class TimeArray(Model, OperatorMixin):
     def createArray(cls, size = 0):
         return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.date_type )
         
-
-    @classmethod
-    def new(cls , increasing = True):
-        ts = cls( data = TimeArray.createArray( ) )
-        ts.increasing = increasing
-        return ts
 
 
     def save(self, *args, **kwargs):
@@ -209,15 +204,10 @@ class RegularTimeSeries(Model, OperatorMixin):
     def createArray(cls , size = 0 ):
         return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.value_type )
 
-    @classmethod
-    def new(cls , start , step):
-        if step <= 0:
-            raise ValueError("The step variable must be positive")
-
-        ts = cls( start = start , 
-                  step = step ,
-                  data = RegularTimeSeries.createArray(  ))
-        return ts
+    def save(self, *args, **kwargs):
+        if self.step <= 0:
+            raise IntegrityError("Step must be > 0");
+        super(RegularTimeSeries , self).save( *args , **kwargs )
 
 
 
@@ -262,11 +252,8 @@ class SampledTimeSeries(Model, OperatorMixin):
     data = NumpyArrayField( dtype = NumpyArrayField.value_type )
 
     @classmethod
-    def new(cls , timestamp , size = 0):
-        ts = cls( timestamp = timestamp , 
-                  data = numpy.ndarray( shape = [size] , dtype = NumpyArrayField.value_type ))
-        return ts
-
+    def createArray(cls, size = 0):
+        return numpy.ndarray( shape = [size] , dtype = NumpyArrayField.value_type )
 
     def save(self, *args, **kwargs):
         self.timestamp.save()

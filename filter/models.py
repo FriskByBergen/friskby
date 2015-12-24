@@ -124,7 +124,8 @@ class FilterData(Model):
 
                 
             func = fd.filter_code.getCallable( )
-            filtered_ts = RegularTimeSeries.new( data_start , filter_.width)
+            filtered_ts = RegularTimeSeries( start = data_start , 
+                                             step = filter_.width)
             filtered_ts.addList( func( data_start , filter_.width , ts ) )
 
             if new_fd:
@@ -146,7 +147,10 @@ class SampledData(Model):
     transform = ForeignKey( Transform , null = True )
     
     def __unicode__(self):
-        return "%s : %s" % (self.sensor , self.transform)
+        if self.transform is None:
+            return "<%s : Rawdata>" % self.sensor 
+        else:
+            return "<%s : %s>" % (self.sensor , self.transform)
 
     class Meta:
         unique_together = ('sensor' , 'transform')
@@ -170,12 +174,11 @@ class SampledData(Model):
             sd = None
             start = None
             
-        qs = sensor.get_rawdata(  )
+        qs = sensor.get_rawdata( )
         if len(qs):
             if sd is None:
-                timestamp = TimeArray.new( )
-                timestamp.save( ) 
-                data = SampledTimeSeries.new( timestamp )
+                timestamp = TimeArray.objects.create( )
+                data = SampledTimeSeries( timestamp = timestamp )
                 data.save( )
 
                 sd = SampledData( sensor = sensor , 
@@ -189,8 +192,7 @@ class SampledData(Model):
             for i in range(len(qs)):
                 ts_list[i] = qs[i][1]
                 values[i] = qs[i][2]
-
-
+            
             data = sd.data
             data.addPairList( ts_list , values )
             sd.save()

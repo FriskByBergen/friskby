@@ -33,3 +33,11 @@ class NumpyArrayField(BinaryField):
             return value
 
         return self.load_numpy_array( value )
+
+
+    def max(self):
+        return numpy.max( self )
+
+
+    def min(self):
+        return numpy.min( self )

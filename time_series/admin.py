@@ -2,6 +2,18 @@ from django.contrib import admin
 
 from models import *
 
-admin.site.register( SampledTimeSeries )
-admin.site.register( RegularTimeSeries )
-admin.site.register( TimeArray )
+
+
+@admin.register(TimeArray)
+class TimearrayAdmin(admin.ModelAdmin):
+    readonly_fields = ('id','start','end','length')
+
+
+@admin.register(SampledTimeSeries)
+class SampledTimeSeriesAdmin(admin.ModelAdmin):
+    readonly_fields = ('id','length','min','max','avg')
+
+
+@admin.register(RegularTimeSeries)
+class RegularTimeSeriesAdmin(admin.ModelAdmin):
+    readonly_fields = ('id','length','min','max','avg')

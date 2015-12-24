@@ -38,6 +38,11 @@ class SampledTimeSeriesTest(TestCase):
         ts.addPairList( [now3 , now3] , [119,120] )
         self.assertEqual( len(ts) , 5 )
         
+        self.assertEqual( ts.length( ) , 5 )
+        self.assertEqual( ts.max( ) , 120 )
+        self.assertEqual( ts.min( ) , 100 )
+        self.assertTrue( abs(ts.avg( )  -  (100 + 100 + 119 + 119 + 120)/5.0) < 1e-5)
+        
         with self.assertRaises(ValueError):
             ts.addPairList( [now0 , now0] , [119,120] )
         self.assertEqual( len(ts) , 5 )

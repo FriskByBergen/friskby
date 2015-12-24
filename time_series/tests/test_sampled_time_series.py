@@ -9,9 +9,9 @@ from .context import TestContext
 class SampledTimeSeriesTest(TestCase):
 
     def test_create(self):
-        stamp = TimeArray.new( )
+        stamp = TimeArray( )
         stamp.save( ) 
-        ts = SampledTimeSeries.new( stamp )
+        ts = SampledTimeSeries( timestamp = stamp )
         self.assertEqual( len(ts) , 0 )
 
         now0 = TimeArray.now( )

@@ -1,6 +1,7 @@
 import datetime
 from django.utils import dateparse , timezone
 from django.test import TestCase
+from django.db import IntegrityError
 from time_series.models import *
 from .context import TestContext
 
@@ -8,13 +9,17 @@ class RegularTimeSeriesTest(TestCase):
 
     def test_create(self):
 
-        with self.assertRaises(ValueError):
-            RegularTimeSeries.new( timezone.now( ) , 0)
+        ts = RegularTimeSeries( start = timezone.now( ) , 
+                                step = 0)
+        with self.assertRaises(IntegrityError):
+            ts.save()
 
-        with self.assertRaises(ValueError):
-            RegularTimeSeries.new( timezone.now( ) , -1)
-
-        ts = RegularTimeSeries.new( timezone.now( ) , 100)
+        ts.step = -1
+        with self.assertRaises(IntegrityError):
+            ts.save()
+            
+        ts = RegularTimeSeries( start = timezone.now( ) , 
+                                step = 100)
 
         self.assertEqual( len(ts) , 0 )
         with self.assertRaises(IndexError):
@@ -68,11 +73,13 @@ class RegularTimeSeriesTest(TestCase):
         dt = last_time - start
         self.assertEqual( dt.seconds + dt.days * 3600 * 24 , context.ts.step * len( context.ts ))
     
-        ts1 = RegularTimeSeries.new( timezone.now( ) , 100)
+        ts1 = RegularTimeSeries( start = timezone.now( ) , 
+                                 step = 100)
         ts1.addList( [0 , 1 , 2 , 3 , 4 ] )
 
         delta_600 = datetime.timedelta( seconds = 600 )
-        ts2 = RegularTimeSeries.new( ts1.start + delta_600 , 99 )
+        ts2 = RegularTimeSeries( start = ts1.start + delta_600 , 
+                                 step = 99 )
         ts2.addList( [0 , 1 , 2 , 3 , 4 ] )
 
         # ts1 and ts2 are not commensurable - different step
@@ -80,7 +87,8 @@ class RegularTimeSeriesTest(TestCase):
             ts1.addTimeSeries( ts2 )
 
         delta_m600 = datetime.timedelta( seconds = -600 )
-        ts2 = RegularTimeSeries.new( ts1.start + delta_m600 , 100 )
+        ts2 = RegularTimeSeries( start = ts1.start + delta_m600 , 
+                                 step = 100 )
         ts2.addList( [0 , 1 , 2 , 3 , 4 ] )
 
         # ts2 must come after ts1
@@ -90,7 +98,8 @@ class RegularTimeSeriesTest(TestCase):
         
         
         delta_550 = datetime.timedelta( seconds = 550 )
-        ts2 = RegularTimeSeries.new( ts1.start + delta_550 , 100 )
+        ts2 = RegularTimeSeries( start = ts1.start + delta_550 , 
+                                 step = 100 )
         ts2.addList( [0 , 1 , 2 , 3 , 4 ] )
 
         # ts1 and ts2 are not commensurable
@@ -98,7 +107,8 @@ class RegularTimeSeriesTest(TestCase):
             ts1.addTimeSeries( ts2 )
 
         delta_800 = datetime.timedelta( seconds = 800 )            
-        ts2 = RegularTimeSeries.new( ts1.start + delta_800 , 100 )
+        ts2 = RegularTimeSeries( start = ts1.start + delta_800 , 
+                                 step = 100 )
         ts2.addList( [100 , 10 , 20 , 30 , 40 ] )
         ts1.addTimeSeries( ts2 )
         self.assertEqual( len( ts1 ) , 12 )

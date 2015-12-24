@@ -124,7 +124,8 @@ class FilterData(Model):
 
                 
             func = fd.filter_code.getCallable( )
-            filtered_ts = RegularTimeSeries.new( data_start , filter_.width)
+            filtered_ts = RegularTimeSeries( start = data_start , 
+                                             step = filter_.width)
             filtered_ts.addList( func( data_start , filter_.width , ts ) )
 
             if new_fd:
@@ -176,9 +177,8 @@ class SampledData(Model):
         qs = sensor.get_rawdata( )
         if len(qs):
             if sd is None:
-                timestamp = TimeArray.new( )
-                timestamp.save( ) 
-                data = SampledTimeSeries.new( timestamp )
+                timestamp = TimeArray.objects.create( )
+                data = SampledTimeSeries( timestamp = timestamp )
                 data.save( )
 
                 sd = SampledData( sensor = sensor , 

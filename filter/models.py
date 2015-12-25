@@ -163,6 +163,13 @@ class SampledData(Model):
         super(SampledData , self).save( *args , **kwargs)
 
 
+    @classmethod
+    def updateSampledData( cls , sensor , transform):    
+        if transform is None:
+            cls.updateRawData( sensor )
+        else:
+            raise NotImplementedError("not implemented...")
+
 
     @classmethod
     def updateRawData( cls , sensor ):

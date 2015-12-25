@@ -28,11 +28,11 @@ while offset < 2000000:
         if rd.status in [RawData.RAWDATA , RawData.PROCESSED]:
             try:
                 rd.value = float(rd.string_value)
-
-                rd.string_value = None
                 if sensor.sensor_type.valid_range( rd.value ):
                     rd.status = RawData.RAWDATA
+                    rd.string_value = None
                 else:
+                    rd.value = -1
                     rd.status = RawData.RANGE_ERROR
                     print "\nRange error: %d" % rd.id
             except ValueError:

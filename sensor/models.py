@@ -118,7 +118,7 @@ class RawData(Model):
                 sensor = None
                 rd.status = RawData.INVALID_SENSOR
                 try:
-                    rd.value = int(string_value)
+                    rd.value = float(string_value)
                 except ValueError:
                     rd.string_value = string_value
 
@@ -126,7 +126,7 @@ class RawData(Model):
             #      and that the numerical value is in the allowed range.
             if rd.status == RawData.RAWDATA:
                 try:
-                    rd.value = int(string_value)
+                    rd.value = float(string_value)
                     if not sensor.sensor_type.valid_range( rd.value ):
                         rd.status = RawData.RANGE_ERROR
                 except ValueError:

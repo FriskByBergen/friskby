@@ -31,7 +31,6 @@ class RawData(Model):
     timestamp_data = DateTimeField( )
     string_value = CharField( max_length = 128 , null = True , blank = True)
     value = FloatField( default = -1 )
-    extra_data = TextField( null = True , blank = True )
     parsed = BooleanField(default = False)
     status = IntegerField( default = RAWDATA , choices = choices)
     
@@ -119,7 +118,7 @@ class RawData(Model):
                 sensor = None
                 rd.status = RawData.INVALID_SENSOR
                 try:
-                    rd.value = int(string_value)
+                    rd.value = float(string_value)
                 except ValueError:
                     rd.string_value = string_value
 
@@ -127,7 +126,7 @@ class RawData(Model):
             #      and that the numerical value is in the allowed range.
             if rd.status == RawData.RAWDATA:
                 try:
-                    rd.value = int(string_value)
+                    rd.value = float(string_value)
                     if not sensor.sensor_type.valid_range( rd.value ):
                         rd.status = RawData.RANGE_ERROR
                 except ValueError:
@@ -139,12 +138,6 @@ class RawData(Model):
                 if not sensor.valid_post_key( data["key"] ):
                     rd.status = RawData.INVALID_KEY
 
-            del data["key"]
-            del data["sensorid"]
-            del data["value"]
-            del data["timestamp"]
-            if data:
-                rd.extra_data = json.dumps( data )
             rd.save()
             
             return rd

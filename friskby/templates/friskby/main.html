@@ -97,8 +97,9 @@ function init_sensor_selection( result ) {
 
 
 function current_sensor_update_event( ev ) {
-   fetch_current_sensors( );
+   //fetch_current_sensors( );
 }
+
 
 function fetch_current_sensors( ev ) {
    var post = { type     : "GET", 
@@ -174,7 +175,7 @@ function update_sensor_selection( result ) {
    }
    $("#id_sensor_id").html( result.id );
    $("#id_current_timestamp").html( result.current_timestamp );
-   $("#id_current_value").html( result.current_value );
+   //$("#id_current_value").html( result.current_value );
    $("#id_description").html( result.description );
    $("#id_data_type").html( result.data_type );			      
    if (result.on_line) {
@@ -201,7 +202,7 @@ function sensor_select_event( ev ) {
    {
       var data_post = { type 	   : "GET",
                         dataType   : "json",
-                        url        : "/sensor/api/reading/" + sensor_id.toString() + "/", 
+                        url        : "/filter/api/sampled_data/" + sensor_id.toString() + "/", 
 			data       : {"num" : 100 },
                         success    : plot_data };
       $.ajax( data_post );
@@ -305,6 +306,7 @@ rect {
 <label> Current timestamp: </label> <span id="id_current_timestamp"> </span> <p>
 </div>
 
+<!--
 <h4> Current sensors </h4>
 <div style="background-color:cadetblue">
 The table below comes from the endpoint: <tt><a href="/sensor/api/current/">/sensor/api/current/</a></tt>
@@ -313,6 +315,8 @@ Data which is older than one hour will appear as a dash - and <tt>null</tt> in t
 <div id="id_current_sensors"></div>
 <a href="javascript:fetch_current_sensors()"> update table </a> 
 </div>
+-->
+
 <h3>This is the main page describing the friskby web API </h3>
 
 

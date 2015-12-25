@@ -349,9 +349,11 @@ class SampledTimeSeries(Model, OperatorMixin, StatMixin):
     
     def export(self):
         self.assertSize()
-        return {"timestamp" : self.timestamp.export(),
-                "data" : self.data.tolist() }
-        
+        l = [ 0 ] * len(self)
+        for index in range(len(self)):
+            l[index] = (self.timestamp[index] , self.data[index])
+            
+        return l
 
     def lastTime(self):
         return self.timestamp.last() 

@@ -17,12 +17,24 @@ from time_series.models import *
 class RegularTimeSeriesView(APIView):
 
 
-    def get(self, request , ts_id = None):
-        if not ts_id is None:
-            try:
-                ts = RegularTimeSeries.objects.get( pk = int(ts_id) )
-            except RegularTimeSeries.DoesNotExist:
-                return Response("No such timeseries:%s" % ts_id , status = status.HTTP_404_NOT_FOUND )
+    def get(self, request , ts_id):
+        try:
+            ts = RegularTimeSeries.objects.get( pk = int(ts_id) )
+        except RegularTimeSeries.DoesNotExist:
+            return Response("No such timeseries:%s" % ts_id , status = status.HTTP_404_NOT_FOUND )
 
-            return Response( ts.export( ) )
+        return Response( ts.export( ) )
+            
+
+
+class SampledTimeSeriesView(APIView):
+
+
+    def get(self, request , ts_id):
+        try:
+            ts = SampledTimeSeries.objects.get( pk = int(ts_id) )
+        except SampledTimeSeries.DoesNotExist:
+            return Response("No such timeseries:%s" % ts_id , status = status.HTTP_404_NOT_FOUND )
+
+        return Response( ts.export( ) )
             

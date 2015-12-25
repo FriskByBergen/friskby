@@ -14,17 +14,23 @@ class RawData(Model):
     RAWDATA = 0
     PROCESSED = 1
     INVALID_KEY = 2
+    FORMAT_ERROR = 3
+    RANGE_ERROR = 4
+    INVALID_SENSOR = 5
 
     choices = ((RAWDATA , "Rawdata") , 
                (PROCESSED , "Processed data"),
-               (INVALID_KEY , "Invalid key"))
-
+               (INVALID_KEY , "Invalid key"),
+               (FORMAT_ERROR , "Format error in value"),
+               (RANGE_ERROR , "Value out of range"),
+               (INVALID_SENSOR , "Invalid sensor ID"))
     
     apikey = CharField(max_length=128)
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
     string_value = CharField( max_length = 128 , null = True , blank = True)
+    value = FloatField( default = -1 )
     extra_data = TextField( null = True , blank = True )
     parsed = BooleanField(default = False)
     status = IntegerField( default = RAWDATA , choices = choices)
@@ -63,7 +69,7 @@ class RawData(Model):
 
         if valid and settings.FORCE_VALID_KEY:
             valid = ApiKey.valid( data["key"] )
-            
+
         return valid
 
     
@@ -93,15 +99,46 @@ class RawData(Model):
 
     @classmethod
     def create(cls , data):
+        # If the is_valid() check passes we are guaranteed to store a
+        # record in the rawdata table; however there might still be
+        # (minor) problems with the data - that will be indicated by
+        # the status flag.
         if cls.is_valid(data):
-            rd = RawData( apikey = data["key"],
-                          sensor_id = data["sensorid"],
-                          timestamp_data = TimeStamp.parse_datetime( data["timestamp"]),
-                          string_value = data["value"] )
+            sensor_id = data["sensorid"]
+            string_value = data["value"]
 
-            if not ApiKey.valid( data["key"] ):
-                rd.status = RawData.INVALID_KEY
-                
+
+            rd = RawData( apikey = data["key"],
+                          sensor_id = sensor_id,
+                          timestamp_data = TimeStamp.parse_datetime( data["timestamp"]))
+            
+            # 1: Check that the sensor_id is valid.
+            try:
+                sensor = Sensor.objects.get( pk = sensor_id )
+            except Sensor.DoesNotExist:
+                sensor = None
+                rd.status = RawData.INVALID_SENSOR
+                try:
+                    rd.value = int(string_value)
+                except ValueError:
+                    rd.string_value = string_value
+
+            # 2,3: Check that value can be correctly parsed as float,
+            #      and that the numerical value is in the allowed range.
+            if rd.status == RawData.RAWDATA:
+                try:
+                    rd.value = int(string_value)
+                    if not sensor.sensor_type.valid_range( rd.value ):
+                        rd.status = RawData.RANGE_ERROR
+                except ValueError:
+                    rd.status = RawData.FORMAT_ERROR
+                    rd.string_value = string_value
+                    
+            # 4: Check that the API key is valid.
+            if rd.status == RawData.RAWDATA:
+                if not sensor.valid_post_key( data["key"] ):
+                    rd.status = RawData.INVALID_KEY
+
             del data["key"]
             del data["sensorid"]
             del data["value"]
@@ -112,7 +149,7 @@ class RawData(Model):
             
             return rd
         else:
-            raise ValueError("Invalid input data")
+            raise ValueError("Invalid input data:%s " % data)
 
 
 class Location( Model ):
@@ -201,7 +238,14 @@ class SensorType( Model ):
 
     def __unicode__(self):
         return self.short_description
-        
+
+
+    def valid_range(self , value):
+        if self.min_value <= value <= self.max_value:
+            return True
+        else:
+            return False
+
 
     def valid_input(self , value):
         if not isinstance(value,float):
@@ -209,12 +253,8 @@ class SensorType( Model ):
                 value = float(value)
             except:
                 return False
-                
-        if self.min_value <= value <= self.max_value:
-            return True
-
-        return False
-
+            
+        return self.valid_range( value )
 
 
 
@@ -295,7 +335,7 @@ class Sensor( Model ):
     # RawData records.
     def get_rawdata(self , status = RawData.RAWDATA ):
         qs = RawData.objects.filter( sensor_id = self.id , 
-                                     status = status ).values_list( 'id', 'timestamp_data' , 'string_value').order_by('timestamp_data')
+                                     status = status ).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
         
         return qs
 

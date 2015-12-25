@@ -174,3 +174,38 @@ class RawDataTest(TestCase):
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
 
+
+    def test_create(self):
+        sensor_id = self.context.temp_sensor.id
+        data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}                
+        data["value"] = "XXX"
+        rd = RawData.create( data )
+        self.assertEqual( rd.value , -1 )
+        self.assertEqual( rd.string_value , "XXX" )
+        self.assertEqual( rd.status , RawData.FORMAT_ERROR )
+
+        data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
+        rd = RawData.create( data )
+        self.assertEqual( rd.value , 10 )
+        self.assertEqual( rd.string_value , None )
+        self.assertEqual( rd.status , RawData.RAWDATA )
+
+        data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
+        rd = RawData.create( data )
+        self.assertEqual( rd.value , 150 )
+        self.assertEqual( rd.string_value , None )
+        self.assertEqual( rd.status , RawData.INVALID_SENSOR )
+
+        data = {"sensorid" : sensor_id , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
+        rd = RawData.create( data )
+        self.assertEqual( rd.value , 150 )
+        self.assertEqual( rd.string_value , None )
+        self.assertEqual( rd.status , RawData.RANGE_ERROR )
+
+        data = {"sensorid" : sensor_id , "value" : 15, "timestamp" : "2015-10-10T12:13:00+01", "key" : "InvalidKey" }
+        rd = RawData.create( data )
+        self.assertEqual( rd.value , 15 )
+        self.assertEqual( rd.string_value , None )
+        self.assertEqual( rd.status , RawData.INVALID_KEY )
+
+        

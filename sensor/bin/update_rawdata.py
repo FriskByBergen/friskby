@@ -27,7 +27,9 @@ while offset < 2000000:
     for rd in qs:
         if rd.status in [RawData.RAWDATA , RawData.PROCESSED]:
             try:
-                rd.value = float(rd.string_value)
+                if not rd.string_value is None:
+                    rd.value = float(rd.string_value)
+
                 if sensor.sensor_type.valid_range( rd.value ):
                     rd.status = RawData.RAWDATA
                     rd.string_value = None

@@ -221,7 +221,7 @@ class ReadingView(APIView):
 
         key = raw_data.apikey
         sensorid = raw_data.sensor_id
-        value = raw_data.value
+        value = raw_data.string_value
         timestamp = raw_data.timestamp_data
         location = None
         try:
@@ -399,7 +399,7 @@ class RawDataView(APIView):
                                                status = data_status )
         data = []
         for row in query:
-            data.append( (row.timestamp_data , row.value ))
+            data.append( (row.timestamp_data , row.string_value ))
         
         return Response( data )
                                        

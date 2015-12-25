@@ -201,7 +201,7 @@ function sensor_select_event( ev ) {
    {
       var data_post = { type 	   : "GET",
                         dataType   : "json",
-                        url        : "/sensor/api/reading/" + sensor_id.toString() + "/", 
+                        url        : "/filter/api/sampled_data/" + sensor_id.toString() + "/", 
 			data       : {"num" : 100 },
                         success    : plot_data };
       $.ajax( data_post );

@@ -2,8 +2,9 @@ import time
 import datetime
 from django.db import IntegrityError
 from django.utils import dateparse , timezone
-from django.test import TestCase
+from django.test import TestCase, Client
 from time_series.models import *
+from rest_framework import status
 from .context import TestContext
 
 class SampledTimeSeriesTest(TestCase):
@@ -58,3 +59,10 @@ class SampledTimeSeriesTest(TestCase):
 
         ts2 = SampledTimeSeries.objects.get( pk = id )
         
+
+        client = Client( )
+        #Invalid ID
+        response = client.get("/time_series/api/sampled/%s/" % id )
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+
+

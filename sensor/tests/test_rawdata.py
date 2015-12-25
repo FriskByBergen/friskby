@@ -47,16 +47,13 @@ class RawDataTest(TestCase):
         self.assertTrue( RawData.error( data ) is None )
         rd = RawData.create( data )
         self.assertEqual( False , rd.parsed )
-        self.assertTrue( rd.extra_data is None )
 
         # Valid 
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 , "extra_key" : "extra_value"}
+        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 }
         rd = RawData.create( data )
-        extra_data = json.loads( rd.extra_data )
-        self.assertEqual( extra_data , {"extra_key" : "extra_value"} )
         
         # Force recognized key:
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 , "extra_key" : "extra_value"}
+        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
 
         try:
             tmp = settings.FORCE_VALID_KEY

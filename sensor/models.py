@@ -31,7 +31,6 @@ class RawData(Model):
     timestamp_data = DateTimeField( )
     string_value = CharField( max_length = 128 , null = True , blank = True)
     value = FloatField( default = -1 )
-    extra_data = TextField( null = True , blank = True )
     parsed = BooleanField(default = False)
     status = IntegerField( default = RAWDATA , choices = choices)
     
@@ -139,12 +138,6 @@ class RawData(Model):
                 if not sensor.valid_post_key( data["key"] ):
                     rd.status = RawData.INVALID_KEY
 
-            del data["key"]
-            del data["sensorid"]
-            del data["value"]
-            del data["timestamp"]
-            if data:
-                rd.extra_data = json.dumps( data )
             rd.save()
             
             return rd

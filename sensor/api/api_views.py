@@ -221,7 +221,7 @@ class ReadingView(APIView):
 
         key = raw_data.apikey
         sensorid = raw_data.sensor_id
-        value = raw_data.string_value
+        value = raw_data.value
         timestamp = raw_data.timestamp_data
         location = None
         try:

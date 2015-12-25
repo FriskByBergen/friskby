@@ -34,6 +34,7 @@ while offset < 2000000:
                     rd.status = RawData.RAWDATA
                     rd.string_value = None
                 else:
+                    rd.string_value = "%s" % rd.value
                     rd.value = -1
                     rd.status = RawData.RANGE_ERROR
                     print "\nRange error: %d" % rd.id

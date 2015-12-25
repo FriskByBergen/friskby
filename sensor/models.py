@@ -24,7 +24,7 @@ class RawData(Model):
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
-    value = CharField( max_length = 128 )
+    string_value = CharField( max_length = 128 , null = True , blank = True)
     extra_data = TextField( null = True , blank = True )
     parsed = BooleanField(default = False)
     status = IntegerField( default = RAWDATA , choices = choices)
@@ -97,7 +97,7 @@ class RawData(Model):
             rd = RawData( apikey = data["key"],
                           sensor_id = data["sensorid"],
                           timestamp_data = TimeStamp.parse_datetime( data["timestamp"]),
-                          value = data["value"] )
+                          string_value = data["value"] )
 
             if not ApiKey.valid( data["key"] ):
                 rd.status = RawData.INVALID_KEY
@@ -295,7 +295,7 @@ class Sensor( Model ):
     # RawData records.
     def get_rawdata(self , status = RawData.RAWDATA ):
         qs = RawData.objects.filter( sensor_id = self.id , 
-                                     status = status ).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
+                                     status = status ).values_list( 'id', 'timestamp_data' , 'string_value').order_by('timestamp_data')
         
         return qs
 

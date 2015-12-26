@@ -27,18 +27,24 @@ while offset < 2000000:
     for rd in qs:
         if rd.status in [RawData.RAWDATA , RawData.PROCESSED]:
             try:
-                rd.value = float(rd.string_value)
+                if not rd.string_value is None:
+                    rd.value = float(rd.string_value)
 
-                rd.string_value = None
                 if sensor.sensor_type.valid_range( rd.value ):
                     rd.status = RawData.RAWDATA
+                    rd.string_value = None
                 else:
+                    rd.string_value = "%s" % rd.value
+                    rd.value = -1
                     rd.status = RawData.RANGE_ERROR
                     print "\nRange error: %d" % rd.id
             except ValueError:
                 rd.status = RawData.FORMAT_ERROR
                 print "\nFormat error: %d" % rd.id
         
+            if rd.status == RawData.RAWDATA:
+                assert( sensor.sensor_type.valid_range( rd.value ) )
+
             rd.save()
 
     offset += qs_size            

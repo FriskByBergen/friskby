@@ -42,6 +42,9 @@ while offset < 2000000:
                 rd.status = RawData.FORMAT_ERROR
                 print "\nFormat error: %d" % rd.id
         
+            if rd.status == RawData.RAWDATA:
+                assert( sensor.sensor_type.valid_range( rd.value ) )
+
             rd.save()
 
     offset += qs_size            

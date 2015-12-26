@@ -3,7 +3,7 @@ from django.db.models import *
 
 
 class NumpyArrayField(BinaryField):
-    value_type = numpy.float32
+    value_type = numpy.float64
     date_type = numpy.int64
 
     def load_numpy_array(self , blob):

@@ -26,6 +26,7 @@ while offset < 2000000:
     qs = make_qs( offset , qs_size)
     for rd in qs:
         if rd.status in [RawData.RAWDATA , RawData.PROCESSED]:
+            sensor = sensor_map[rd.sensor_id]
             try:
                 if not rd.string_value is None:
                     rd.value = float(rd.string_value)

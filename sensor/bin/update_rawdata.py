@@ -48,7 +48,10 @@ while offset < 2000000:
                     assert( sensor.sensor_type.valid_range( rd.value ) )
             else:
                 rd.status = RawData.INVALID_SENSOR
-                
+                if rd.value != -1:
+                    rd.string_value = "%s" % rd.value
+                    rd.value = -1
+                    
             rd.save()
 
     offset += qs_size            

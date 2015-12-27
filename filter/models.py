@@ -86,7 +86,7 @@ class Transform(Model):
 class FilterData(Model):
     sensor = ForeignKey( Sensor )
     filter_code = ForeignKey( Filter )
-    ts = ForeignKey( RegularTimeSeries )
+    ts = OneToOneField( RegularTimeSeries , on_delete = CASCADE)
 
     def __unicode__(self):
         return "%s : %s" % (self.sensor , self.filter_code)
@@ -142,7 +142,7 @@ class FilterData(Model):
 
 class SampledData(Model):
     sensor = ForeignKey( Sensor )
-    data = ForeignKey( SampledTimeSeries )
+    data = OneToOneField( SampledTimeSeries , on_delete = CASCADE )
     parent_data = ForeignKey( "SampledData" , null = True )
     transform = ForeignKey( Transform , null = True )
     

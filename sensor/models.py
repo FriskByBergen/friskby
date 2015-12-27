@@ -61,6 +61,12 @@ class RawData(Model):
                 if not key in data:
                     valid = False
         
+        if valid and settings.FORCE_VALID_SENSOR:
+            try:
+                sensor = Sensor.objects.get( pk = data["sensorid"] )
+            except Sensor.DoesNotExist:
+                valid = False
+
         if valid:
             ts = TimeStamp.parse_datetime( data["timestamp"] )
             if ts is None:
@@ -104,7 +110,7 @@ class RawData(Model):
         # the status flag.
         if cls.is_valid(data):
             sensor_id = data["sensorid"]
-            string_value = data["value"]
+            string_value = str(data["value"])
 
 
             rd = RawData( apikey = data["key"],
@@ -117,18 +123,19 @@ class RawData(Model):
             except Sensor.DoesNotExist:
                 sensor = None
                 rd.status = RawData.INVALID_SENSOR
-                try:
-                    rd.value = float(string_value)
-                except ValueError:
-                    rd.string_value = string_value
+                rd.string_value = string_value
+
 
             # 2,3: Check that value can be correctly parsed as float,
             #      and that the numerical value is in the allowed range.
             if rd.status == RawData.RAWDATA:
                 try:
-                    rd.value = float(string_value)
-                    if not sensor.sensor_type.valid_range( rd.value ):
+                    value = float(string_value)
+                    if not sensor.sensor_type.valid_range( value ):
                         rd.status = RawData.RANGE_ERROR
+                        rd.string_value = string_value
+                    else:
+                        rd.value = value
                 except ValueError:
                     rd.status = RawData.FORMAT_ERROR
                     rd.string_value = string_value

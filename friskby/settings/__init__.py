@@ -181,6 +181,18 @@ if os.getenv("FORCE_VALID_KEY"):
         FORCE_VALID_KEY = True
 
 
+# By default all posted measurements will be stored in the RAWDATA
+# table even if the sensor can not be recognized. If the
+# FORCE_VALID_SENSOR setting is set to True, only readings
+# corresponding a existing valid sensor will be stored.
+FORCE_VALID_SENSOR = False
+if os.getenv("FORCE_VALID_SENSOR"):
+    value = os.getenv("FORCE_VALID_SENSOR").lower()
+    if value == "true":
+        FORCE_VALID_SENSOR = True
+
+
+
 CORS_ORIGIN_ALLOW_ALL = True
 #CORS_URLS_REGEX = r'^/friskby/api/.*$'
 

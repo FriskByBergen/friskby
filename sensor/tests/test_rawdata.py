@@ -48,6 +48,20 @@ class RawDataTest(TestCase):
         rd = RawData.create( data )
         self.assertEqual( False , rd.parsed )
 
+        #Force recognized sensor
+        tmp = settings.FORCE_VALID_SENSOR
+        settings.FORCE_VALID_SENSOR = True
+        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        self.assertFalse( RawData.is_valid( data ))
+
+        settings.FORCE_VALID_SENSOR = False
+        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        self.assertTrue( RawData.is_valid( data ))
+        rd = RawData.create( data )
+        self.assertEqual( rd.status , RawData.INVALID_SENSOR )
+        self.assertEqual( rd.value , -1 )
+        self.assertEqual( rd.string_value , "100")
+
         # Valid 
         data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 }
         rd = RawData.create( data )
@@ -189,14 +203,14 @@ class RawDataTest(TestCase):
 
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
-        self.assertEqual( rd.value , 150 )
-        self.assertEqual( rd.string_value , None )
+        self.assertEqual( rd.value , -1 )
+        self.assertEqual( rd.string_value , "150" )
         self.assertEqual( rd.status , RawData.INVALID_SENSOR )
 
         data = {"sensorid" : sensor_id , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
-        self.assertEqual( rd.value , 150 )
-        self.assertEqual( rd.string_value , None )
+        self.assertEqual( rd.value , -1 )
+        self.assertEqual( rd.string_value , "150" )
         self.assertEqual( rd.status , RawData.RANGE_ERROR )
 
         data = {"sensorid" : sensor_id , "value" : 15, "timestamp" : "2015-10-10T12:13:00+01", "key" : "InvalidKey" }

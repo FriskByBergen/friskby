@@ -181,13 +181,6 @@ class TimeArray(Model, OperatorMixin):
             self.data[index] = self.datetime2EpochSeconds( dt )
 
 
-    def export(self):
-        l = [0] * len(self)
-        index = 0
-        for t in self:
-            l[index] = t
-            index += 1
-        return l
 
 
     def addValue(self , value):
@@ -347,11 +340,18 @@ class SampledTimeSeries(Model, OperatorMixin, StatMixin):
             else:
                 raise IndexError
     
-    def export(self):
+    def export(self , num = None):
         self.assertSize()
-        l = [ 0 ] * len(self)
-        for index in range(len(self)):
-            l[index] = (self.timestamp[index] , self.data[index])
+        offset = 0
+        size = len(self)
+        if not num is None:
+            if num < len(self):
+                offset = len(self) - num
+                size = num
+                
+        l = [ 0 ] * size
+        for index in range(size):
+            l[index] = (self.timestamp[index + offset] , self.data[index + offset])
             
         return l
 

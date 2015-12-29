@@ -95,8 +95,15 @@ class SampledDataView(APIView):
             except Transform.DoesNotExist:
                 return Response( "Transform:%s not found" % transform_id , status = status.HTTP_404_NOT_FOUND )
 
+        num = None
+        if "num" in request.GET:
+            try:
+                num = int(request.GET["num"])
+            except ValueError:
+                pass
+
         try:
             sd = SampledData.objects.get( transform = transform , sensor = sensor )
-            return Response( sd.data.export() )
+            return Response( sd.data.export( num = num ) )
         except SampledData.DoesNotExist:
             return Response( "SampledData %s/%s not found" % (sensor_id , transform_id) , status = status.HTTP_404_NOT_FOUND )

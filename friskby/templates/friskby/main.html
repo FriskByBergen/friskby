@@ -203,7 +203,7 @@ function sensor_select_event( ev ) {
       var data_post = { type 	   : "GET",
                         dataType   : "json",
                         url        : "/filter/api/sampled_data/" + sensor_id.toString() + "/", 
-			data       : {"num" : 100 },
+			data       : {"num" : 1000 },
                         success    : plot_data };
       $.ajax( data_post );
    }

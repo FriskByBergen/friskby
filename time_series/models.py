@@ -340,20 +340,30 @@ class SampledTimeSeries(Model, OperatorMixin, StatMixin):
             else:
                 raise IndexError
     
-    def export(self , num = None):
+    def export(self , num = None , start = None):
         self.assertSize()
-        offset = 0
-        size = len(self)
-        if not num is None:
-            if num < len(self):
-                offset = len(self) - num
-                size = num
+        if start is None:
+            offset = 0
+            size = len(self)
+            if not num is None:
+                if num < len(self):
+                    offset = len(self) - num
+                    size = num
                 
-        l = [ 0 ] * size
-        for index in range(size):
-            l[index] = (self.timestamp[index + offset] , self.data[index + offset])
+            l = [ 0 ] * size
+            for index in range(size):
+                l[index] = (self.timestamp[index + offset] , self.data[index + offset])
             
-        return l
+            return l
+        else:
+            l = []
+            for index in range(len(self)):
+                dt = self.timestamp[index]
+                if dt > start:
+                    l.append( (self.timestamp[index] , self.data[index]) )
+
+            return l
+
 
     def lastTime(self):
         return self.timestamp.last() 

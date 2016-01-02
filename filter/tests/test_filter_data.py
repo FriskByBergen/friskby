@@ -28,7 +28,7 @@ class FilterDataTest(TestCase):
             response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
 
-
+        SampledData.updateRawData( self.sensor_context.temp_sensor )
         fd  = FilterData.update( self.sensor_context.temp_sensor , self.filter_context.f_mean )
         fd2 = FilterData.objects.get( sensor = self.sensor_context.temp_sensor, 
                                       filter_code = self.filter_context.f_mean )

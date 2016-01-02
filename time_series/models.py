@@ -273,9 +273,14 @@ class RegularTimeSeries(Model, OperatorMixin, StatMixin):
 
                 
     def export(self):
-        return {"start" : self.start , 
-                "step"  : self.step ,
-                "data"  : self.data.tolist() }
+        l = []
+        dt = self.start
+        step = datetime.timedelta( seconds = self.step )
+        for d in self.data:
+            l.append( (dt , d) )
+            dt += step
+
+        return l
 
 
     def lastTime(self):

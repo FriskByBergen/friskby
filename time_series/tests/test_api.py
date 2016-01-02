@@ -29,6 +29,8 @@ class RegularTimeSeriesTest(TestCase):
         response = client.get("/time_series/api/regular/1/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
-        for (a,b) in zip(data["data"] , self.context.ts.data):
+        for i in range(len(self.context.ts.data)):
+            a = data[i][1]
+            b = self.context.ts.data[i]
             self.assertEqual(a,b)
         

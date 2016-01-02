@@ -277,7 +277,7 @@ class RegularTimeSeries(Model, OperatorMixin, StatMixin):
         dt = self.start
         step = datetime.timedelta( seconds = self.step )
         for d in self.data:
-            l.append( (dt , d) )
+            l.append( (TimeArray.create( time = dt ) , d) )
             dt += step
 
         return l

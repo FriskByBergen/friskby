@@ -28,7 +28,7 @@ class FilterApiTest(TestCase):
             string_data = json.dumps( data )
             response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
 
-
+        SampledData.updateRawData( self.sensor_context.temp_sensor )
         self.fd_mean  = FilterData.update( self.sensor_context.temp_sensor , self.context.f_mean )
         self.fd_max   = FilterData.update( self.sensor_context.temp_sensor , self.context.f_max )
 

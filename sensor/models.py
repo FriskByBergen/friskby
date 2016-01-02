@@ -278,6 +278,7 @@ class Sensor( Model ):
         return self.sensor_type.valid_input( input_value )
 
 
+
     # Can speicify *either* a start or number of values with keyword
     # arguments 'start' and 'num', but not both.
     def get_ts(self, data_type = None , num = None , start = None):
@@ -305,6 +306,8 @@ class Sensor( Model ):
                 ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
         
         return ts
+
+
 
     def get_current(self , timeout_seconds):
         current = {}

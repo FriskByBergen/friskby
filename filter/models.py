@@ -96,15 +96,24 @@ class FilterData(Model):
         
 
     @classmethod
-    def update(cls , sensor , filter_):
+    def update(cls , sensor , filter_ , transform = None ):
         try:
             fd = FilterData.objects.get( sensor = sensor , filter_code = filter_ )
             start = fd.ts.lastTime( )
         except FilterData.DoesNotExist:
             fd = None
             start = None
-        
-        ts = sensor.get_ts( start = start )
+            
+        try:
+            sd = SampledData.objects.get( sensor = sensor , 
+                                          transform = transform )
+        except SampledData.DoesNotExist:
+            sd = None
+            
+        if sd is None:
+            return None
+
+        ts = sd.data.export( start = start )
         if len(ts):
             new_fd = False
             if fd is None:
@@ -206,3 +215,5 @@ class SampledData(Model):
             qs.update( status = RawData.PROCESSED )
 
         return sd
+
+

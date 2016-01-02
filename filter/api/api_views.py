@@ -95,8 +95,27 @@ class SampledDataView(APIView):
             except Transform.DoesNotExist:
                 return Response( "Transform:%s not found" % transform_id , status = status.HTTP_404_NOT_FOUND )
 
+        num = None
+        if "num" in request.GET:
+            try:
+                num = int(request.GET["num"])
+            except ValueError:
+                pass
+
+        start = None
+        if "start" in request.GET:
+            if not num is None:
+                return Response( "Can not specify both start= and num=", status = status.HTTP_400_BAD_REQUEST  )
+                
+            try:
+                start = TimeArray.parse_datetime( request.GET["start"] )
+            except ValueError:
+                pass
+
+
+
         try:
             sd = SampledData.objects.get( transform = transform , sensor = sensor )
-            return Response( sd.data.export() )
+            return Response( sd.data.export( num = num , start = start) )
         except SampledData.DoesNotExist:
             return Response( "SampledData %s/%s not found" % (sensor_id , transform_id) , status = status.HTTP_404_NOT_FOUND )

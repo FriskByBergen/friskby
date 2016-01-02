@@ -117,3 +117,9 @@ class RegularTimeSeriesTest(TestCase):
         self.assertTrue( math.isnan( ts1[6] ))
         self.assertEqual( ts1[7] , 100 )
         self.assertEqual( ts1[11] ,  40 )
+
+        e_data = ts2.export( )
+        self.assertEqual(len(e_data) , 5)
+        self.assertEqual(e_data[0][0] , ts2.start)
+        self.assertEqual(e_data[0][1] , 100)
+        

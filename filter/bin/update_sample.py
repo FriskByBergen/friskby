@@ -13,7 +13,12 @@ django.setup()
 
 def update(sensor , transform = None):
     SampledData.updateSampledData( sensor , transform )
+    for f in Filter.objects.all():
+        FilterData.update( sensor , f , transform = transform)
+            
 
+
+    
 
 if len(sys.argv) == 1:
     sensor_list = Sensor.objects.all( )

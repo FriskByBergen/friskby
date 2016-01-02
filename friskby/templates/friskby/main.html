@@ -41,8 +41,6 @@ function getLimits(data) {
 }
 
 function plot_data( result ) {
-
-
    var limits = getLimits( result );
    var xmin = limits[0];
    var xmax = limits[1];
@@ -96,6 +94,23 @@ function init_sensor_selection( result ) {
 }
 
 
+
+function init_sensor_selection_filter( result ) {
+    sensor_select = document.getElementById('id_sensor_id_select_filter');
+    for (var sensor_id in result) {
+        var filter_list = result[ sensor_id ];
+        var l = filter_list.length;
+        for (var filter_index=0; filter_index < filter_list.length; filter_index++) {
+            var filter_id = filter_list[filter_index];
+   	    var option = document.createElement("option");
+   	    option.text = sensor_id + ": " + filter_id;
+            option.value = sensor_id + "/" + filter_id;
+  	    sensor_select.add(option, sensor_select[0]);
+        }
+   }
+}
+
+
 function current_sensor_update_event( ev ) {
    //fetch_current_sensors( );
 }
@@ -143,12 +158,18 @@ function update_current_sensors( result ) {
 
 
 function fetch_sensor_selection( ev ) {
-   var post = { type     : "GET", 
-	        dataType : "json" ,
-                url      : "/sensor/api/sensorinfo/",
-                success  : init_sensor_selection };
+   var post1 = { type     : "GET", 
+                 dataType : "json" ,
+		 url      : "/sensor/api/sensorinfo/",
+                 success  : init_sensor_selection };
+   $.ajax( post1 );
 
-   $.ajax( post );
+   var post2 = { type     : "GET", 
+                 dataType : "json" ,
+		 url      : "/filter/api/filter_data/",
+                 success  : init_sensor_selection_filter };
+   $.ajax( post2 );
+
    return false; 
 }
 
@@ -211,6 +232,19 @@ function sensor_select_event( ev ) {
 }
 
 
+function sensor_select_event_filter( ev ) {
+   var id = document.getElementById('id_sensor_id_select_filter').value;
+   {
+      var data_post = { type 	   : "GET",
+                        dataType   : "json",
+                        url        : "/filter/api/filter_data/" + id + "/", 
+                        success    : plot_data};
+      $.ajax( data_post );
+   }
+   return false; 
+}
+
+
 function init_canvas() {
    var plot_div = d3.select("#plot");
    var title = plot_div.append("h2").attr("id" , "title");
@@ -225,9 +259,6 @@ function init_canvas() {
 }
 
 
-
-
-
 window.onload = function() {
    sensor_select = document.getElementById('id_sensor_id_select');
    sensor_select.onchange = sensor_select_event;
@@ -235,7 +266,10 @@ window.onload = function() {
    sensor_select_event( );   
    current_sensor_update_event( );
    init_canvas();			      
+   sensor_select_filter = document.getElementById('id_sensor_id_select_filter');
+   sensor_select_filter.onchange = sensor_select_event_filter;
 }
+
 
 </script>
 {% endblock %}
@@ -290,9 +324,13 @@ rect {
 
 <h4> A simple javascript example </h4>
 <div id="id_sensor_select_box" style="background-color:lightgray">
-<label> Sensor: </sensor>
+<label> Rawdata: </sensor>
 <select id="id_sensor_id_select" name="Sensor">
 </select> <p>
+<label> Filtered data: </sensor>
+<select id="id_sensor_id_select_filter" name="Sensor">
+</select> <p>
+
 <label> Sensor: </label> <span id="id_sensor_id"> </span><p>
 <label> Description: </label> <span id="id_description"> </span><p>
 <label> Data type: </label> <span id="id_data_type"> </span><p>

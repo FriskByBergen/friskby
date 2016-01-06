@@ -27,4 +27,8 @@ else:
 
 for sensor in sensor_list:
     print "Updating: %s" % sensor.id
-    update( sensor )
+    try:
+        update( sensor )
+    except Exception as e:
+        print e
+

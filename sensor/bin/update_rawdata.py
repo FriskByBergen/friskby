@@ -16,7 +16,7 @@ def make_qs(offset , size):
     return RawData.objects.filter(id__gte = offset, id__lt = last_id) 
 
 qs_size = 2000
-offset = 2000000
+offset = 0
 
 sensor_map = {}
 for sensor in Sensor.objects.all():

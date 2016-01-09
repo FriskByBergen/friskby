@@ -137,6 +137,11 @@ class Readingtest(TestCase):
             response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
 
+        response = client.get("/sensor/api/sensorinfo/%s/" % sensor_id)
+        result = response.data
+        self.assertEqual( result["last_value"] , 20 )
+        self.assertEqual( TimeStamp.parse_datetime( result["last_timestamp"] ) , TimeStamp.parse_datetime("2015-10-10T12:14:00+01"))
+
         
         response = client.get("/sensor/api/reading/%s/" % sensor_id)
         self.assertEqual( response.status_code , status.HTTP_200_OK )

@@ -22,7 +22,7 @@ sensor_map = {}
 for sensor in Sensor.objects.all():
     sensor_map[sensor.id] = sensor
 
-while offset < 2000000:
+while offset < 3000000:
     qs = make_qs( offset , qs_size)
     for rd in qs:
         if rd.status in [RawData.RAWDATA , RawData.PROCESSED]:

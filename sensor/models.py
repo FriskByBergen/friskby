@@ -269,6 +269,8 @@ class Sensor( Model ):
     description = CharField("Description" , max_length = 256 )
     post_key = ForeignKey( ApiKey )
     on_line = BooleanField( default = True )
+    last_value = FloatField( null = True , blank = True)
+    last_timestamp = DateTimeField( null = True , blank = True) 
 
     def __unicode__(self):
         return self.id

@@ -73,7 +73,8 @@ class RegularTimeSeriesTest(TestCase):
         dt = last_time - start
         self.assertEqual( dt.seconds + dt.days * 3600 * 24 , context.ts.step * len( context.ts ))
     
-        ts1 = RegularTimeSeries( start = timezone.now( ) , 
+        start = timezone.now( ).replace( microsecond = 0 )
+        ts1 = RegularTimeSeries( start = start , 
                                  step = 100)
         ts1.addList( [0 , 1 , 2 , 3 , 4 ] )
 
@@ -120,6 +121,6 @@ class RegularTimeSeriesTest(TestCase):
 
         e_data = ts2.export( )
         self.assertEqual(len(e_data) , 5)
-        self.assertEqual(e_data[0][0] , ts2.start)
+        self.assertEqual(TimeArray.parse_datetime( e_data[0][0] ), ts2.start)
         self.assertEqual(e_data[0][1] , 100)
         

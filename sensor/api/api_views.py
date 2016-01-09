@@ -254,6 +254,10 @@ class ReadingView(APIView):
             data_value = models.DataValue.objects.create( data_info = data_info ,
                                                           data_type = sensor.data_type ,  
                                                           value = value )
+            sensor.last_value = value
+            sensor.last_timestamp = timestamp
+            sensor.save()
+
             raw_data.parsed = True
             raw_data.save( )
 

@@ -195,8 +195,6 @@ function update_sensor_selection( result ) {
        $("#id_device_type").html( device_text );
    }
    $("#id_sensor_id").html( result.id );
-   $("#id_current_timestamp").html( result.current_timestamp );
-   //$("#id_current_value").html( result.current_value );
    $("#id_description").html( result.description );
    $("#id_data_type").html( result.data_type );			      
    if (result.on_line) {
@@ -207,6 +205,8 @@ function update_sensor_selection( result ) {
 
    $("#id_unit").html( sensor_type.unit );
    $("#id_measurement_type").html( sensor_type.measurement_type.name );
+   $("#id_last_value").html( result.last_value );
+   $("#id_last_timestamp").html( result.last_timestamp );
 }
 
 
@@ -340,8 +340,8 @@ rect {
 <label> Measurement unit: </label> <span id="id_unit"> </span><p>
 <label> Range: </label> <span id="id_range"> </span><p>
 <label> Device type: </label> <span id="id_device_type"> </span><p>
-<label> Current value: </label> <span id="id_current_value"> </span> <p>
-<label> Current timestamp: </label> <span id="id_current_timestamp"> </span> <p>
+<label> Last value: </label> <span id="id_last_value"> </span> <p>
+<label> Last timestamp: </label> <span id="id_last_timestamp"> </span> <p>
 </div>
 
 <!--

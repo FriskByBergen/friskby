@@ -4,11 +4,14 @@ import sys
 import django
 from django.utils import dateparse , timezone
 from django.conf import settings
+
+django.setup()
+
 from time_series.models import *
 from sensor.models import *
 from filter.models import *
 
-django.setup()
+
 
 
 def update(sensor , transform = None):

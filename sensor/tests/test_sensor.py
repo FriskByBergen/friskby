@@ -21,23 +21,3 @@ class SensorTest(TestCase):
         
     
 
-    def test_get_ts( self ):
-        sensor = self.context.temp_sensor
-        ts_input = []
-        for i in range(10):
-            ts = datetime.datetime.now( pytz.utc )
-            ts_object = TimeStamp.objects.create( timestamp = ts )
-            value = i
-            ts_input.append( (ts , value) )
-
-            data_info = DataInfo.objects.create( timestamp = ts_object , 
-                                                 sensor = sensor )
-
-            data_value = DataValue.objects.create( data_info = data_info ,
-                                                   data_type = sensor.data_type ,  
-                                                   value = value )
-
-        ts = sensor.get_ts( )
-        self.assertEqual(len(ts) , 10)
-        self.assertEqual( ts , ts_input)
-

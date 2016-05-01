@@ -194,16 +194,5 @@ class SensorTest(TestCase):
 
 
 
-class DataInfoTest(TestCase):
-    def setUp(self):
-        self.context = TestContext()
-        
-
-    def test_get(self):
-        client = Client( )
-        response = client.get("/sensor/api/datainfo/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
-        info_list = response.data
-        self.assertEqual( len(info_list) , 2 )
 
 

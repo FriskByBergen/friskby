@@ -77,28 +77,6 @@ class DataTypeView(generics.RetrieveAPIView):
 
 #################################################################
 
-class DataInfoListView(generics.ListCreateAPIView):
-    queryset = models.DataInfo.objects.all()
-    serializer_class = DataInfoSerializer
-    
-
-class DataInfoView(generics.RetrieveAPIView):    
-    queryset = models.DataInfo.objects.all()
-    serializer_class = DataInfoSerializer
-
-#################################################################
-
-class DataValueListView(generics.ListCreateAPIView):
-    queryset = models.DataValue.objects.all()
-    serializer_class = DataValueSerializer
-    
-
-class DataValueView(generics.RetrieveAPIView):    
-    queryset = models.DataValue.objects.all()
-    serializer_class = DataValueSerializer
-
-#################################################################
-
 
 class TimeStampListView(generics.ListCreateAPIView):
     queryset = models.TimeStamp.objects.all()
@@ -245,15 +223,9 @@ class ReadingView(APIView):
 
         if sensor.on_line:
             ts = models.TimeStamp.objects.create( timestamp = timestamp )
-            data_info = models.DataInfo( timestamp = ts , 
-                                         sensor = sensor )
             if not location is None:
                 data_info.location = location
 
-            data_info.save()
-            data_value = models.DataValue.objects.create( data_info = data_info ,
-                                                          data_type = sensor.data_type ,  
-                                                          value = value )
             sensor.last_value = value
             sensor.last_timestamp = timestamp
             sensor.save()
@@ -322,7 +294,6 @@ class ReadingView(APIView):
             sensor = models.Sensor.objects.get( pk = sensor_id )
             ts = sensor.get_ts( num = num , start = start )
             return Response(ts , status = status.HTTP_200_OK )
-            #return self.restdb_io_get( sensor_id , request.GET )
         except models.Sensor.DoesNotExist:
             return Response("No such sensor:%s" % sensor_id , status = status.HTTP_404_NOT_FOUND )
             

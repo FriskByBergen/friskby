@@ -33,6 +33,10 @@ class RawData(Model):
     value = FloatField( default = -1 )
     parsed = BooleanField(default = False)
     status = IntegerField( default = RAWDATA , choices = choices)
+
+    def __unicode__(self):
+        return "Sensor:%s: Value:%s  status:%d" % (self.sensor_id , self.value , self.status)
+
     
     def save(self,*args, **kwargs):
         if self.timestamp_recieved is None:
@@ -100,6 +104,24 @@ class RawData(Model):
 
 
         return None
+
+    @classmethod
+    def get_ts(cls , sensor , num = None , start = None):
+        ts = []
+        if num is None:
+            if start is None:
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.PROCESSED)
+            else:
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.PROCESSED , timestamp_data__gte = start)
+        else:
+            if start is None:
+                qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = RawData.PROCESSED).order_by('-timestamp_data')[:num] )
+            else:
+                raise ValueError("Can not supply both num and start")
+            
+        for entry in qs:
+            ts.append( (entry.timestamp_data, entry.value) )
+        return ts
 
 
     @classmethod
@@ -282,33 +304,10 @@ class Sensor( Model ):
 
 
     # Can speicify *either* a start or number of values with keyword
-    # arguments 'start' and 'num', but not both.
-    def get_ts(self, data_type = None , num = None , start = None):
-        if data_type is None:
-            data_type = self.data_type
-
-        ts = []
-        if num:
-            qs = DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp').reverse()
-            if len(qs) >= num:            
-                end = num
-            else:
-                end = len(qs)
-
-            for data_value in qs[0:end]:
-                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
-
-            ts.reverse( )
-        elif start:
-            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self , data_info__timestamp__timestamp__gt = start).order_by('data_info__timestamp__timestamp'):
-                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
-
-        else:
-            for data_value in DataValue.objects.select_related('data_info__timestamp').filter( data_type = data_type , data_info__sensor = self).order_by('data_info__timestamp__timestamp'):
-                ts.append( (data_value.data_info.timestamp.timestamp , data_value.value))
-        
-        return ts
-
+    # arguments 'start' and 'num', but not both. Will search in the
+    # RawData table, only PROCESSED data is considered.
+    def get_ts(self, num = None , start = None):
+        return RawData.get_ts( self , num = num, start = start )
 
 
     def get_current(self , timeout_seconds):
@@ -345,39 +344,4 @@ class Sensor( Model ):
         return qs
 
 
-class DataInfo( Model ):
-    location = ForeignKey( Location )
-    timestamp = ForeignKey( TimeStamp )
-    sensor = ForeignKey( Sensor )
 
-    
-    def __unicode__(self):
-        return "%s @ %s" % ( self.sensor , self.timestamp )
-
-    
-    def save(self , *args, **kwargs):
-        # If the sensor indeed has a location you should not supply an
-        # extra location with the DataInfo() object. In case you the
-        # location from the sensor will override anyway.
-        if not self.sensor.location is None:
-            self.location = self.sensor.location
-        super(DataInfo , self).save(*args , **kwargs)
-
-
-
-
-class DataValue( Model ):
-    data_type = ForeignKey( DataType )
-    data_info = ForeignKey( DataInfo )
-    value = FloatField( )
-    
-    def __unicode__(self):
-        return "%s: %s" % (str(self.data_info) , str(self.value))
-
-    def save(self , *args , **kwargs):
-        if self.data_info.sensor.valid_input( self.value ):
-            super(DataValue , self).save(*args , **kwargs)
-        else:
-            raise ValueError("Tried to save invalid value:%s for sensor:%s" % (self.value , self.data_info.sensor))
-        
-            

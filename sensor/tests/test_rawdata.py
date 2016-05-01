@@ -186,6 +186,62 @@ class RawDataTest(TestCase):
         self.assertEqual( len(data) , 3 )
 
 
+    def test_ts(self):
+        ts = RawData.get_ts( self.context.temp_sensor )
+        self.assertEqual( len(ts) , 0 )
+
+        sensor_id = self.context.temp_sensor.id
+        for i in range(10):
+            data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % i, "key" : self.context.external_key}
+            RawData.create( data )
+            
+        qs = RawData.objects.all()
+        for rd in qs:
+            rd.status = RawData.PROCESSED
+            rd.save( )
+
+        ts = RawData.get_ts( self.context.temp_sensor )
+        self.assertEqual( len(ts) , 10 )
+        for index,pair in enumerate(ts):
+            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
+            self.assertEqual( pair[1] , index )
+        
+        ts = RawData.get_ts( self.context.temp_sensor , num = 100)
+        self.assertEqual( len(ts) , 10 )
+        for index,pair in enumerate(ts):
+            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
+            self.assertEqual( pair[1] , index )
+
+        ts = RawData.get_ts( self.context.temp_sensor , num = 2)
+        self.assertEqual( len(ts) , 2 )
+        pair = ts[0]
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        self.assertEqual( pair[1] , 8 )
+
+        pair = ts[1]
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
+        self.assertEqual( pair[1] , 9 )
+
+        # Illegal with both num and start
+        with self.assertRaises(ValueError):
+            ts = RawData.get_ts( self.context.temp_sensor , num = 2, start = TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
+
+        ts = RawData.get_ts( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        self.assertEqual( len(ts) , 2 )
+        pair = ts[0]
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        self.assertEqual( pair[1] , 8 )
+
+        pair = ts[1]
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
+        self.assertEqual( pair[1] , 9 )
+
+        ts = RawData.get_ts( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-11-10T12:13:08+01" ))
+        self.assertEqual( len(ts) , 0 )
+
+
+
+
     def test_create(self):
         sensor_id = self.context.temp_sensor.id
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}                

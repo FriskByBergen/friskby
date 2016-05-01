@@ -97,16 +97,6 @@ class Readingtest(TestCase):
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
-        response = client.get("/sensor/api/datainfo/")
-        self.assertEqual( len(response.data) , 3 )
-        last_info = response.data[2]
-        self.assertEqual( last_info["sensor"] , "TEMP:XX")
-
-        response = client.get("/sensor/api/datavalue/")
-        self.assertEqual( len(response.data) , 1 )
-        last_value = response.data[0]
-        self.assertEqual( last_value["value"] , 50)
-
 
         
     def test_get(self):
@@ -136,6 +126,12 @@ class Readingtest(TestCase):
             string_data = json.dumps( data )
             response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
+        
+        # Force processed STATUS for subsequent retriveal
+        for row in RawData.objects.all():
+            row.status = RawData.PROCESSED
+            row.save()
+
 
         response = client.get("/sensor/api/sensorinfo/%s/" % sensor_id)
         result = response.data

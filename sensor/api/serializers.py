@@ -69,15 +69,3 @@ class SensorSerializer(serializers.ModelSerializer):
 
 
 
-class DataInfoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DataInfo
-        fields = ('location','timestamp','sensor')
-
-
-class DataValueSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DataValue
-        fields = ('data_type','data_info','value')

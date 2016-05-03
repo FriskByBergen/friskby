@@ -23,12 +23,6 @@ urlpatterns = [
     url(r'^timestamp/$' , TimeStampListView.as_view()),
     url(r'^timestamp/(?P<pk>[0-9]+)/$' , TimeStampView.as_view()),
     #
-    url(r'^datainfo/$' , DataInfoListView.as_view()),
-    url(r'^datainfo/(?P<pk>[0-9]+)/$' , DataInfoView.as_view()),
-    #
-    url(r'^datavalue/$' , DataValueListView.as_view()),
-    url(r'^datavalue/(?P<pk>[0-9]+)/$' , DataValueView.as_view()),
-    #
     url(r'^sensortype/$' , SensorTypeListView.as_view()),
     url(r'^sensortype/(?P<pk>[0-9]+)/$' , SensorTypeView.as_view()),
     #

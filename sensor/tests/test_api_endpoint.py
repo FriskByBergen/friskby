@@ -180,7 +180,7 @@ class SensorTest(TestCase):
         response = client.get("/sensor/api/sensor/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads( response.content )
-        self.assertEqual( len(data) , 2 )
+        self.assertEqual( len(data) , 3 )
 
         response = client.get("/sensor/api/sensor/TEMP:XX/")
         self.assertEqual( response.status_code , status.HTTP_200_OK )

@@ -13,7 +13,7 @@ from .context import TestContext
 class Readingtest(TestCase):
     def setUp(self):
         self.context = TestContext()
-    
+        
     def test_post_key(self):
         client = Client( )
 
@@ -92,7 +92,7 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
 
         #No location - fails
-        data = {"sensorid" : "HUM:XX" , "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
+        data = {"sensorid" : "NO_LOC:XX" , "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
@@ -103,7 +103,6 @@ class Readingtest(TestCase):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
                                post_key = self.context.key , 
-                               location = self.context.loc,
                                parent_device = self.context.dev,
                                sensor_type = self.context.sensor_type_temp , 
                                description = "Measurement of ..")

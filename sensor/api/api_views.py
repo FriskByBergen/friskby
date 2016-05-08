@@ -169,7 +169,7 @@ class ReadingView(APIView):
             if not sensor.valid_input( value ):
                 return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
 
-            if sensor.location is None:
+            if sensor.parent_device.location is None:
                 if not "location" in data:
                     return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
                         
@@ -215,7 +215,7 @@ class ReadingView(APIView):
             return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
         value = float(value)
 
-        if sensor.location is None:
+        if sensor.parent_device.location is None:
             if not "location" in request.data:
                 return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
             location = request.data["location"]
@@ -223,8 +223,6 @@ class ReadingView(APIView):
 
         if sensor.on_line:
             ts = models.TimeStamp.objects.create( timestamp = timestamp )
-            if not location is None:
-                data_info.location = location
 
             sensor.last_value = value
             sensor.last_timestamp = timestamp

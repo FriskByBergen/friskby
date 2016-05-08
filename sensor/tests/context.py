@@ -14,6 +14,7 @@ class TestContext(object):
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
         self.dev = Device.objects.create( id = "DevXXX" , location = self.loc , device_type = self.dev_type , description = "Besrkivels")
+        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" , device_type = self.dev_type , description = "Besrkivels")
         self.mtype = MeasurementType.objects.create( name = "Temperature" )
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
@@ -27,18 +28,25 @@ class TestContext(object):
                                                            max_value = 100)
         
         self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
-                                                  location = self.loc,
                                                   parent_device = self.dev,
                                                   description = "tempm",
                                                   post_key = self.key,
                                                   sensor_type = self.sensor_type_temp)
-
+        
         self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
                                                  post_key = self.key,
                                                  sensor_type = self.sensor_type_temp)
+
+        self.loc0_sensor = Sensor.objects.create( id = "NO_LOC:XX",
+                                                 description = "Measurement humidity",
+                                                 data_type = self.raw_data ,
+                                                 parent_device = self.dev_loc0,
+                                                 post_key = self.key,
+                                                 sensor_type = self.sensor_type_temp)
+
 
         self.ts = TimeStamp.objects.create( timestamp = TimeStamp.parse_datetime("2015-10-10T10:10:00+01") )
         self.test_user_passwd = get_random_string( length = 10 ),

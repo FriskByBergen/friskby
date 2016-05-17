@@ -17,3 +17,4 @@ pytz
 django-cors-headers
 pandas
 numpy
+plotly

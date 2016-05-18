@@ -9,43 +9,9 @@ from django.core.exceptions import ValidationError
 from time_series.models import *
 from time_series.numpy_field import * 
 from sensor.models import *
+from pythoncall.models import * 
 
 
-
-
-class PythonCode(Model):
-    description = CharField( max_length= 256 )
-    python_callable = CharField( max_length = 128 )
-    
-
-    def __unicode__(self):
-        return self.python_callable
-
-
-    def getCallable(self):
-        name_list = self.python_callable.split(".")
-        module_name = ".".join( name_list[:-1] )
-        func_name = name_list[-1]
-        try:
-            module = importlib.import_module( module_name )
-        except ImportError:
-            raise ValidationError("Could not import symbol:%s" % self.python_callable)
-        
-        try:
-            func = getattr(module , func_name)
-            if not callable(func):
-                raise ValidationError("Symbol is not callable")
-        except Exception:
-            raise ValidationError("Could not import symbol:%s" % self.python_callable)
-            
-        return func
-
-    def save(self , *args , **kwargs):
-        func = self.getCallable( )
-        super(PythonCode, self).save( *args, **kwargs)
-
-
-    
 
     
 class Filter(Model):
@@ -54,15 +20,14 @@ class Filter(Model):
     id = CharField(max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
     description = CharField( max_length= 256 )
     width = IntegerField( )
-    code = ForeignKey( PythonCode )
-
+    python_code = ForeignKey( PythonCall )
 
     def __unicode__(self):
         return self.description
 
 
     def getCallable(self):
-        return self.code.getCallable( )
+        return self.python_code.getCallable( )
 
 
 class Transform(Model):
@@ -70,7 +35,7 @@ class Transform(Model):
     
     id = CharField(max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
     description = CharField( max_length= 256 )
-    code = ForeignKey( PythonCode )
+    python_code = ForeignKey( PythonCall )
 
 
     def __unicode__(self):
@@ -78,7 +43,7 @@ class Transform(Model):
 
 
     def getCallable(self):
-        return self.code.getCallable( )
+        return self.python_code.getCallable( )
 
 
 

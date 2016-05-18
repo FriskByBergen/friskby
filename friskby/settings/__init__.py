@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'rest_framework',
     'api_key',
+    'pythoncall',
     'time_series',
     'sensor',
     'filter'

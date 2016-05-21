@@ -125,6 +125,19 @@ class RawData(Model):
 
 
     @classmethod
+    def get_vectors(cls , sensor , num = None , start = None):
+        pairs = cls.get_ts( sensor , num = num , start = start )
+        ts = []
+        values = []
+        for (t,v) in pairs:
+            ts.append( t )
+            values.append( v )
+        
+        return ts,values
+
+
+
+    @classmethod
     def create(cls , data):
         # If the is_valid() check passes we are guaranteed to store a
         # record in the rawdata table; however there might still be
@@ -308,6 +321,10 @@ class Sensor( Model ):
     def get_ts(self, num = None , start = None):
         return RawData.get_ts( self , num = num, start = start )
 
+
+    def get_vectors(self , num = None , start = None):
+        return RawData.get_vectors( self , num = num , start = start )
+        
 
     def get_current(self , timeout_seconds):
         current = {}

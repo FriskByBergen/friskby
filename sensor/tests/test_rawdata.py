@@ -274,4 +274,59 @@ class RawDataTest(TestCase):
         self.assertEqual( rd.string_value , None )
         self.assertEqual( rd.status , RawData.INVALID_KEY )
 
+    def test_vectors(self):
+        (ts,values) = RawData.get_vectors( self.context.temp_sensor )
+        self.assertEqual( len(ts) , 0 )
+        self.assertEqual( len(values) , 0 )
+
+        sensor_id = self.context.temp_sensor.id
+        for i in range(10):
+            data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % i, "key" : self.context.external_key}
+            RawData.create( data )
+            
+        qs = RawData.objects.all()
+        for rd in qs:
+            rd.status = RawData.PROCESSED
+            rd.save( )
+
+        ts,values = RawData.get_vectors( self.context.temp_sensor )
+        self.assertEqual( len(ts) , 10 )
+        self.assertEqual( len(values) , 10 )
+        for index in range(len(ts)):
+            pair = (ts[idex] , value[index])
+            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
+            self.assertEqual( pair[1] , index )
         
+        ts,values = RawData.get_vectors( self.context.temp_sensor , num = 100)
+        self.assertEqual( len(ts) , 10 )
+        for index in range(len(ts)):
+            pair = (ts[idex] , value[index])
+            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
+            self.assertEqual( pair[1] , index )
+
+        ts,values = RawData.get_vectors( self.context.temp_sensor , num = 2)
+        self.assertEqual( len(ts) , 2 )
+        pair = (ts[0] , values[0])
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        self.assertEqual( pair[1] , 8 )
+
+        pair = (ts[1] , values[1])
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
+        self.assertEqual( pair[1] , 9 )
+
+        # Illegal with both num and start
+        with self.assertRaises(ValueError):
+            ts,values = RawData.get_vectors( self.context.temp_sensor , num = 2, start = TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
+
+        ts,values = RawData.get_vectors( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        self.assertEqual( len(ts) , 2 )
+        pair = (ts[0] , values[0])
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        self.assertEqual( pair[1] , 8 )
+
+        pair = (ts[1] , values[1])
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
+        self.assertEqual( pair[1] , 9 )
+
+        ts,values = RawData.get_vectors( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-11-10T12:13:08+01" ))
+        self.assertEqual( len(ts) , 0 )

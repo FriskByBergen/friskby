@@ -2,6 +2,7 @@
 {% block title %} Startside for friskby lagringsløsning {% endblock %}
 
 {% block js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"> </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"> </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="{{ STATIC_URL }}js/moment_2.10.6.js"></script>
@@ -422,8 +423,12 @@ for measurement in data:
 <h4> About the code </h4>
 
 The code for the web project is at GitHub - will move to the FriskbyBergen account: 
-<a href="https://github.com/joakim-hove/friskby/"> friskby <a/>
+<a href="https://github.com/joakim-hove/friskby/"> friskby </a>
 
-The code is currently deployed on heroku. 
+The code is currently deployed on heroku. <p>
+
+<div>
+{{ plot_div|safe }}
+</div>
 
 {% endblock %}

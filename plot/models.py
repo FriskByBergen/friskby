@@ -10,8 +10,8 @@ class Plot(Model):
     name = CharField( max_length = 32 )
     description = CharField( max_length = 256 )
     python_callable = ForeignKey( PythonCall )
-    html_code = TextField( )
-    last_update = DateTimeField( )
+    html_code = TextField( blank = True )
+    last_update = DateTimeField( blank = True)
 
     def __unicode__(self):
         return self.description

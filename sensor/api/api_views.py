@@ -130,15 +130,7 @@ class SensorInfoView(APIView):
         for sensor in sensor_list:
             serialized = SensorInfoSerializer( sensor )
             data = serialized.data
-            #current = sensor.get_current( CurrentValueView.DEFAULT_TIMEOUT )
-            current = None
-            if current is None:
-                data["current_value"] = None
-                data["current_timestamp"] = None
-            else:
-                data["current_value"] = current["value"]
-                data["current_timestamp"] = current["timestamp"]
-
+            
             result.append( data )
             
         if sensor_id is None:

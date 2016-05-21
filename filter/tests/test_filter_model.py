@@ -3,6 +3,7 @@ from django.utils import dateparse , timezone
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from filter.models import *
+from pythoncall.models import PythonCall
 
 var = "Not callable"
 
@@ -14,23 +15,23 @@ class FilterDataTest(TestCase):
 
     def test_create(self):
         with self.assertRaises(ValidationError):
-            code = PythonCode.objects.create( description = "XY" , 
+            code = PythonCall.objects.create( description = "XY" , 
                                               python_callable = "does.not.exist")
 
         with self.assertRaises(ValidationError):
-            code = PythonCode.objects.create( description = "XY" , 
+            code = PythonCall.objects.create( description = "XY" , 
                                               python_callable = "math.unknwon_function")
 
         with self.assertRaises(ValidationError):
-            fm = PythonCode.objects.create( description = "XY" , 
+            fm = PythonCall.objects.create( description = "XY" , 
                                             python_callable = "filter.tests.test_filter_model.var")
 
-        code = PythonCode.objects.create( description = "XY" , 
+        code = PythonCall.objects.create( description = "XY" , 
                                           python_callable = "filter.tests.test_filter_model.func")
 
         fm = Filter.objects.create( description = "XY",
                                     width = 1000,
-                                    code = code )
+                                    python_code = code )
                                     
         
         func = fm.getCallable( )
@@ -40,36 +41,36 @@ class FilterDataTest(TestCase):
         fm = Filter.objects.create( id = "filter1  []",
                                     description = "XY" , 
                                     width = 100,
-                                    code = code)
+                                    python_code = code)
         with self.assertRaises(ValidationError):
             fm.full_clean( )
             
-        code_exp = PythonCode.objects.create( description = "XY" , 
+        code_exp = PythonCall.objects.create( description = "XY" , 
                                               python_callable = "math.exp")
 
         fm = Filter.objects.create( id = "exp",
                                     description = "XY1" , 
                                     width = 100,
-                                    code = code_exp)
+                                    python_code = code_exp)
 
         func = fm.getCallable( )
         self.assertEqual( func(0) , 1 )
         
 
-        code_mean = PythonCode.objects.create( description = "XY" , 
+        code_mean = PythonCall.objects.create( description = "XY" , 
                                                python_callable = "filter.filter.blockedMean")
         
 
         fm = Filter.objects.create( id = "MEAN_1HOUR",
                                     description = "XY2" , 
                                     width = 100,
-                                    code = code_mean)
+                                    python_code = code_mean)
         
 
     def test_create_transform(self):
-        code_sin = PythonCode.objects.create( description = "XY" , 
+        code_sin = PythonCall.objects.create( description = "XY" , 
                                                python_callable = "math.sin")
 
         tr = Transform.objects.create( id = "sinx",
                                        description = "XYZ",
-                                       code = code_sin )
+                                       python_code = code_sin )

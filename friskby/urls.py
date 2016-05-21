@@ -19,8 +19,10 @@ from django.contrib.auth import views as auth_views
 
 import filter.urls
 import sensor.urls
+import plot.urls
 import time_series.urls
 import friskby_urls
+
 
 urlpatterns = [
     url(r'^accounts/login/$'  , auth_views.login,{'template_name': 'admin/login.html'}),
@@ -28,5 +30,6 @@ urlpatterns = [
     url(r'^sensor/'           , include(sensor.urls)),
     url(r'^time_series/'      , include(time_series.urls)),
     url(r'^filter/'           , include(filter.urls)),
-    url(r'^friskby/'          , include(friskby_urls))
+    url(r'^friskby/'          , include(friskby_urls)),
+    url(r'^plot/'             , include(plot.urls)) 
 ]

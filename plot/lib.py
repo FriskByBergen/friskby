@@ -1,3 +1,4 @@
+from datetime import timedelta
 import math
 import pandas as pd
 import plotly.plotly as py
@@ -23,13 +24,11 @@ def test():
 
 
 def get_trace(sensor):    
-    ts,values = sensor.get_vectors( )
-    datadict = []
-    if len(ts) > 0:
+    pair = sensor.get_vectors( status = RawData.RAWDATA )
+    if pair:
+        ts , values = pair
         df = pd.DataFrame().from_dict({"ts" : ts , "values" : values})
-        df = pd.DataFrame(datadict)
-        df['time'] = pd.to_datetime(df['ts'])
-        df.index = df['time']
+        df.index = df['ts']
 
         df.index = df.index + timedelta(hours=2)
         df = df.resample('10Min')
@@ -43,7 +42,6 @@ def get_trace(sensor):
 
 
 def trace_plot():
-    return test()
     #or sensor in Sensor.objects.all():
     #   if sensor.on_line:
 

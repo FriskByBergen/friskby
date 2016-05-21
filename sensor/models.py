@@ -106,16 +106,16 @@ class RawData(Model):
         return None
 
     @classmethod
-    def get_ts(cls , sensor , num = None , start = None):
+    def get_ts(cls , sensor , num = None , start = None , status = 1 ): # 1 == RawData.PROCESSED
         ts = []
         if num is None:
             if start is None:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.PROCESSED)
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = status )
             else:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.PROCESSED , timestamp_data__gte = start)
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = status , timestamp_data__gte = start)
         else:
             if start is None:
-                qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = RawData.PROCESSED).order_by('-timestamp_data')[:num] )
+                qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = status).order_by('-timestamp_data')[:num] )
             else:
                 raise ValueError("Can not supply both num and start")
             
@@ -125,15 +125,16 @@ class RawData(Model):
 
 
     @classmethod
-    def get_vectors(cls , sensor , num = None , start = None):
-        pairs = cls.get_ts( sensor , num = num , start = start )
+    def get_vectors(cls , sensor , num = None , start = None , status = 1 ):
+        pairs = cls.get_ts( sensor , num = num , start = start , status = status )
         ts = []
         values = []
         for (t,v) in pairs:
             ts.append( t )
             values.append( v )
-        
+
         return ts,values
+
 
 
 
@@ -318,12 +319,12 @@ class Sensor( Model ):
     # Can speicify *either* a start or number of values with keyword
     # arguments 'start' and 'num', but not both. Will search in the
     # RawData table, only PROCESSED data is considered.
-    def get_ts(self, num = None , start = None):
-        return RawData.get_ts( self , num = num, start = start )
+    def get_ts(self, num = None , start = None, status = RawData.PROCESSED ):
+        return RawData.get_ts( self , num = num, start = start , status = status)
 
 
-    def get_vectors(self , num = None , start = None):
-        return RawData.get_vectors( self , num = num , start = start )
+    def get_vectors(self , num = None , start = None, status = RawData.PROCESSED):
+        return RawData.get_vectors( self , num = num , start = start , status = status )
         
 
     def get_current(self , timeout_seconds):

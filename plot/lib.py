@@ -49,12 +49,13 @@ def trace_plot():
     DEVICEIDS = ["FriskPI01","FriskPI02","FriskPI03","FriskPI04","FriskPI05"]
     sensor_list = []
     for dev_id in DEVICEIDS:
-        sensor_id1 = "%s_PM10"
+        for pm in ["PM10" , "PM25"]:
+            sensor_id = "%s_%s" % (dev_id , pm)
 
-        try:
-            sensor_list.append( Sensor.objects.get( pk = sensor_id1 ) )
-        except Sensor.DoesNotExist:
-            pass
+            try:
+                sensor_list.append( Sensor.objects.get( pk = sensor_id ) )
+            except Sensor.DoesNotExist:
+                pass
         
     data = []
     for sensor in sensor_list:

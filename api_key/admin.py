@@ -1,6 +1,8 @@
 from django.contrib import admin
 from models import *
 
-admin.site.register(ApiKey)
-
+class ApiKeyAdmin(admin.ModelAdmin):
+    readonly_fields = ('external_key',)
+    
+admin.site.register(ApiKey, ApiKeyAdmin)
 

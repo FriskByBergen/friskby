@@ -43,6 +43,7 @@ def get_trace(sensor):
 
 
 def trace_plot():
+    return test()
     #or sensor in Sensor.objects.all():
     #   if sensor.on_line:
 

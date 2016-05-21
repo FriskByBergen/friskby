@@ -32,3 +32,5 @@ class PlotTest(TestCase):
         plot3.save( )
         with self.assertRaises(ValidationError):
             plot3.updatePlot( )
+            
+        

@@ -31,8 +31,8 @@ class RawData(Model):
     timestamp_data = DateTimeField( )
     string_value = CharField( max_length = 128 , null = True , blank = True)
     value = FloatField( default = -1 )
-    parsed = BooleanField(default = False)
     status = IntegerField( default = RAWDATA , choices = choices)
+    
 
     def __unicode__(self):
         return "Sensor:%s: Value:%s  status:%d" % (self.sensor_id , self.value , self.status)

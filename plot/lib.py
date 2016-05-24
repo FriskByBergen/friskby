@@ -41,10 +41,22 @@ def get_trace(sensor):
         return None
 
 
-def trace_plot():
-    #or sensor in Sensor.objects.all():
-    #   if sensor.on_line:
+def trace_plot(sensor_list):
+    data = []
+    for sensor in sensor_list:
+        trace = get_trace( sensor )
+        if trace:
+            data.append( trace )
 
+    if data:
+        return plotly.offline.plot( {"data" : data }, **default_kwargs )
+    else:
+        return None
+
+
+
+
+def trace_plot_FriskPI():
     DEVICEIDS = ["FriskPI01","FriskPI02","FriskPI03","FriskPI04","FriskPI05"]
     sensor_list = []
     for dev_id in DEVICEIDS:
@@ -56,14 +68,6 @@ def trace_plot():
             except Sensor.DoesNotExist:
                 pass
         
-    data = []
-    for sensor in sensor_list:
-        trace = get_trace( sensor )
-        if trace:
-            data.append( trace )
+    return trace_plot( sensor_list )
 
-    if data:
-        return plotly.offline.plot( {"data" : data }, **default_kwargs )
-    else:
-        return None
 

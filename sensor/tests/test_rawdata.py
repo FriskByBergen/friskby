@@ -46,7 +46,6 @@ class RawDataTest(TestCase):
         self.assertTrue( RawData.is_valid( data ))
         self.assertTrue( RawData.error( data ) is None )
         rd = RawData.create( data )
-        self.assertEqual( False , rd.parsed )
 
         #Force recognized sensor
         tmp = settings.FORCE_VALID_SENSOR
@@ -293,14 +292,14 @@ class RawDataTest(TestCase):
         self.assertEqual( len(ts) , 10 )
         self.assertEqual( len(values) , 10 )
         for index in range(len(ts)):
-            pair = (ts[idex] , value[index])
+            pair = (ts[index] , values[index])
             self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
             self.assertEqual( pair[1] , index )
         
         ts,values = RawData.get_vectors( self.context.temp_sensor , num = 100)
         self.assertEqual( len(ts) , 10 )
         for index in range(len(ts)):
-            pair = (ts[idex] , value[index])
+            pair = (ts[index] , values[index])
             self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
             self.assertEqual( pair[1] , index )
 

@@ -157,19 +157,6 @@ STATICFILES_DIRS = (
 )
 
 
-RESTDB_IO_URL = os.getenv("RESTDB_IO_URL")
-if not RESTDB_IO_URL is None:
-    
-    RESTDB_IO_POST_KEY = os.getenv("RESTDB_IO_POST_KEY")
-    if RESTDB_IO_POST_KEY is None:
-        raise Exception("Enviroment variable RESTDB_IO_POST_KEY has not been set")
-
-    RESTDB_IO_GET_KEY = os.getenv("RESTDB_IO_GET_KEY")
-    if RESTDB_IO_GET_KEY is None:
-        raise Exception("Enviroment variable RESTDB_IO_GET_KEY has not been set")
-
-
-
 # By default the application will store an entry in the RawData
 # database if the post has all the required fields, without actually
 # checking that the fields are valid. If the FORCE_VALID_KEY setting

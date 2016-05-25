@@ -171,17 +171,6 @@ class ReadingView(APIView):
         return (True , "")
 
 
-    def restdb_io_post( self , data ):
-        headers = {"Content-Type" : "application/json",
-                   "x-apikey" :  settings.RESTDB_IO_POST_KEY}
-
-        post_data = json.dumps( data )
-        response = requests.post( settings.RESTDB_IO_URL , data = post_data , headers = headers )
-        if response.status_code != status.HTTP_201_CREATED:
-            return (response.status_code , response.text)
-
-        return (status.HTTP_201_CREATED , 1)
-
 
     def post(self , request , format = None):
         try:
@@ -223,47 +212,10 @@ class ReadingView(APIView):
             raw_data.parsed = True
             raw_data.save( )
 
-            if settings.RESTDB_IO_URL is None:
-                return Response(1 , status.HTTP_201_CREATED)
-            else:
-                restdb_io_status , msg = self.restdb_io_post( {"key" : raw_data.apikey,
-                                                               "sensorid" : raw_data.sensor_id,
-                                                               "value" : value , 
-                                                               "timestamp" : raw_data.timestamp_data.strftime("%Y-%m-%dT%H:%M:%S") } )
-
-                if restdb_io_status == status.HTTP_201_CREATED:
-                    return Response(msg , status = restdb_io_status)
-                else:
-                    return Response("Posting to restdb.io failed: %s" % msg , status = status.HTTP_500_INTERNAL_SERVER_ERROR )
+            return Response(1 , status.HTTP_201_CREATED)
         else:
             return Response("Sensor: %s is offline - rawdata created and stored" % raw_data.sensor_id )
             
-
-
-
-    def restdb_io_get(self , sensor_id , request_params):
-        headers = {"Content-Type" : "application/json",
-                   "x-apikey" :  settings.RESTDB_IO_GET_KEY}
-        query_string = json.dumps( {"sensorid" : sensor_id} )
-
-        params = {"q" : query_string,
-                  "sort" : "timestamp",
-                  "dir" : 1 }
-        params.update( request_params )
-        if not "max" in params:
-            params["max"] = 99999999
-
-        response = requests.get( settings.RESTDB_IO_URL , headers = headers , params = params)
-
-        if response.status_code == status.HTTP_200_OK:
-            data = response.json()
-            time_series = []
-            for reading in data:
-                time_series.append( (reading["timestamp"] , reading["value"]) )
-            return Response( time_series , status = response.status_code ) 
-        else:
-            return Response( response.data , status = response.status_code ) 
-
         
 
     def get(self , request , sensor_id = None):
@@ -359,7 +311,7 @@ class RawDataView(APIView):
             if not models.RawData.valid_status( data_status ):
                 return Response("The status: %s is invalid" % request.GET["status"] , status = 400)#status.HTTP_400_BAD_REQUEST )
         else:
-            data_status = models.RawData.RAWDATA
+            data_status = models.RawData.VALID
         
         query = models.RawData.objects.filter( sensor_id = sensor.id , 
                                                status = data_status )

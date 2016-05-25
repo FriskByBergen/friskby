@@ -44,8 +44,8 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
         self.assertEqual( len(result) , 0 )
-
-    
+        self.assertEqual( 1 , len(self.context.temp_sensor.get_rawdata( status = RawData.SENSOR_OFFLINE )))
+        
 
     
     def test_post(self):
@@ -126,10 +126,6 @@ class Readingtest(TestCase):
             response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
         
-        # Force processed STATUS for subsequent retriveal
-        for row in RawData.objects.all():
-            row.status = RawData.PROCESSED
-            row.save()
 
 
         response = client.get("/sensor/api/sensorinfo/%s/" % sensor_id)

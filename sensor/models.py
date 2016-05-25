@@ -11,19 +11,19 @@ from api_key.models import ApiKey
 
 
 class RawData(Model):
-    RAWDATA = 0
-    PROCESSED = 1
-    INVALID_KEY = 2
-    FORMAT_ERROR = 3
-    RANGE_ERROR = 4
-    INVALID_SENSOR = 5
+    VALID = 0
+    INVALID_KEY = 1
+    FORMAT_ERROR = 2
+    RANGE_ERROR = 3
+    INVALID_SENSOR = 4
+    SENSOR_OFFLINE = 5
 
-    choices = ((RAWDATA , "Rawdata") , 
-               (PROCESSED , "Processed data"),
+    choices = ((VALID , "Valid") , 
                (INVALID_KEY , "Invalid key"),
                (FORMAT_ERROR , "Format error in value"),
                (RANGE_ERROR , "Value out of range"),
-               (INVALID_SENSOR , "Invalid sensor ID"))
+               (INVALID_SENSOR , "Invalid sensor ID"),
+               (SENSOR_OFFLINE , "Sensor offline"))
     
     apikey = CharField(max_length=128)
     sensor_id = CharField(max_length=128)
@@ -31,8 +31,8 @@ class RawData(Model):
     timestamp_data = DateTimeField( )
     string_value = CharField( max_length = 128 , null = True , blank = True)
     value = FloatField( default = -1 )
-    status = IntegerField( default = RAWDATA , choices = choices)
-    
+    status = IntegerField( default = VALID , choices = choices)
+    processed = BooleanField( default = False )
 
     def __unicode__(self):
         return "Sensor:%s: Value:%s  status:%d" % (self.sensor_id , self.value , self.status)
@@ -46,7 +46,7 @@ class RawData(Model):
 
     @classmethod
     def valid_status( cls , status ):
-        if status in [cls.RAWDATA , cls.PROCESSED , cls.INVALID_KEY]:
+        if status in [cls.VALID , cls.INVALID_KEY]:
             return True
         else:
             return False
@@ -106,16 +106,16 @@ class RawData(Model):
         return None
 
     @classmethod
-    def get_ts(cls , sensor , num = None , start = None , status = 1 ): # 1 == RawData.PROCESSED
+    def get_ts(cls , sensor , num = None , start = None ): 
         ts = []
         if num is None:
             if start is None:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = status )
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID )
             else:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = status , timestamp_data__gte = start)
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID, timestamp_data__gte = start)
         else:
             if start is None:
-                qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = status).order_by('-timestamp_data')[:num] )
+                qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID).order_by('-timestamp_data')[:num] )
             else:
                 raise ValueError("Can not supply both num and start")
             
@@ -125,8 +125,8 @@ class RawData(Model):
 
 
     @classmethod
-    def get_vectors(cls , sensor , num = None , start = None , status = 1 ):
-        pairs = cls.get_ts( sensor , num = num , start = start , status = status )
+    def get_vectors(cls , sensor , num = None , start = None):
+        pairs = cls.get_ts( sensor , num = num , start = start)
         ts = []
         values = []
         for (t,v) in pairs:
@@ -164,7 +164,7 @@ class RawData(Model):
 
             # 2,3: Check that value can be correctly parsed as float,
             #      and that the numerical value is in the allowed range.
-            if rd.status == RawData.RAWDATA:
+            if rd.status == RawData.VALID:
                 try:
                     value = float(string_value)
                     if not sensor.sensor_type.valid_range( value ):
@@ -177,9 +177,14 @@ class RawData(Model):
                     rd.string_value = string_value
                     
             # 4: Check that the API key is valid.
-            if rd.status == RawData.RAWDATA:
+            if rd.status == RawData.VALID:
                 if not sensor.valid_post_key( data["key"] ):
                     rd.status = RawData.INVALID_KEY
+
+            # 5: Check that sensor is online:
+            if rd.status == RawData.VALID:
+                if not sensor.on_line:
+                    rd.status = RawData.SENSOR_OFFLINE
 
             rd.save()
             
@@ -318,13 +323,13 @@ class Sensor( Model ):
 
     # Can speicify *either* a start or number of values with keyword
     # arguments 'start' and 'num', but not both. Will search in the
-    # RawData table, only PROCESSED data is considered.
-    def get_ts(self, num = None , start = None, status = RawData.PROCESSED ):
-        return RawData.get_ts( self , num = num, start = start , status = status)
+    # RawData table, only VALID data is considered.
+    def get_ts(self, num = None , start = None):
+        return RawData.get_ts( self , num = num, start = start)
 
 
-    def get_vectors(self , num = None , start = None, status = RawData.PROCESSED):
-        return RawData.get_vectors( self , num = num , start = start , status = status )
+    def get_vectors(self , num = None , start = None):
+        return RawData.get_vectors( self , num = num , start = start)
         
 
     def get_current(self , timeout_seconds):
@@ -354,8 +359,9 @@ class Sensor( Model ):
     # This method returns a QuerySet - because that query set is
     # subsequently used to update the status of all the relevant
     # RawData records.
-    def get_rawdata(self , status = RawData.RAWDATA ):
+    def get_rawdata(self, status = RawData.VALID):
         qs = RawData.objects.filter( sensor_id = self.id , 
+                                     processed = False ,
                                      status = status ).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
         
         return qs

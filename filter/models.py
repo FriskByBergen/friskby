@@ -177,7 +177,7 @@ class SampledData(Model):
             data = sd.data
             data.addPairList( ts_list , values )
             sd.save()
-            qs.update( status = RawData.PROCESSED )
+            qs.update( processed = True )
 
         return sd
 

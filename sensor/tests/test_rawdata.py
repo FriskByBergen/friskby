@@ -160,28 +160,14 @@ class RawDataTest(TestCase):
         sd = SampledData.updateRawData( sensor )
         self.assertEqual(len(sd) , 3)
         
-        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.RAWDATA })
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads(response.content)
-        self.assertEqual( len(data) , 0 )
-
-        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.PROCESSED })
+        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.VALID })
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
 
         sd = SampledData.updateRawData( sensor )
         self.assertEqual(len(sd) , 3)
-        
-        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.RAWDATA })
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads(response.content)
-        self.assertEqual( len(data) , 0 )
-
-        response = client.get("/sensor/api/rawdata/%s/" % sensor_id , {"status" : RawData.PROCESSED })
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads(response.content)
-        self.assertEqual( len(data) , 3 )
+        self.assertEqual( len(RawData.objects.filter( processed = True )) , 3)
 
 
     def test_ts(self):
@@ -194,9 +180,6 @@ class RawDataTest(TestCase):
             RawData.create( data )
             
         qs = RawData.objects.all()
-        for rd in qs:
-            rd.status = RawData.PROCESSED
-            rd.save( )
 
         ts = RawData.get_ts( self.context.temp_sensor )
         self.assertEqual( len(ts) , 10 )
@@ -253,7 +236,7 @@ class RawDataTest(TestCase):
         rd = RawData.create( data )
         self.assertEqual( rd.value , 10 )
         self.assertEqual( rd.string_value , None )
-        self.assertEqual( rd.status , RawData.RAWDATA )
+        self.assertEqual( rd.status , RawData.VALID )
 
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
@@ -284,9 +267,6 @@ class RawDataTest(TestCase):
             RawData.create( data )
             
         qs = RawData.objects.all()
-        for rd in qs:
-            rd.status = RawData.PROCESSED
-            rd.save( )
 
         ts,values = RawData.get_vectors( self.context.temp_sensor )
         self.assertEqual( len(ts) , 10 )

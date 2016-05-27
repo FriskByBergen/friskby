@@ -24,7 +24,7 @@ def test():
 
 
 def get_trace(sensor):    
-    pair = sensor.get_vectors( status = RawData.VALID )
+    pair = sensor.get_vectors( )
     if pair:
         ts , values = pair
         df = pd.DataFrame().from_dict({"ts" : ts , "values" : values})

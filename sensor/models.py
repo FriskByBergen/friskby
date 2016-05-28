@@ -212,7 +212,7 @@ class DataType( Model ):
 
 class DeviceType( Model ):
     name = CharField("Name of the device" , max_length = 60 )
-
+    
     def __unicode__(self):
         return self.name
 
@@ -224,6 +224,7 @@ class Device( Model ):
     location = ForeignKey( Location , null = True )
     device_type = ForeignKey( DeviceType )
     description = CharField("Description" , max_length = 256 )
+    post_key = ForeignKey( ApiKey )
 
     def __unicode__(self):
         return self.id

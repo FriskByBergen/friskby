@@ -229,6 +229,10 @@ class Device( Model ):
     def __unicode__(self):
         return self.id
 
+    def valid_post_key( self , key_string):
+        return self.post_key.access( key_string )
+
+
 
 class MeasurementType( Model ):
     name = CharField("Type of measurement" , max_length = 60)
@@ -308,7 +312,6 @@ class Sensor( Model ):
     parent_device = ForeignKey( Device )
     data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
-    post_key = ForeignKey( ApiKey )
     on_line = BooleanField( default = True )
     last_value = FloatField( null = True , blank = True)
     last_timestamp = DateTimeField( null = True , blank = True) 
@@ -354,7 +357,7 @@ class Sensor( Model ):
 
 
     def valid_post_key( self , key_string):
-        return self.post_key.access( key_string )
+        return self.parent_device.valid_post_key( key_string )
 
 
     # This method returns a QuerySet - because that query set is

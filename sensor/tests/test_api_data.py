@@ -102,7 +102,6 @@ class Readingtest(TestCase):
     def test_get(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
-                               post_key = self.context.key , 
                                parent_device = self.context.dev,
                                sensor_type = self.context.sensor_type_temp , 
                                description = "Measurement of ..")

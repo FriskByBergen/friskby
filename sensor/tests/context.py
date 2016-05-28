@@ -37,21 +37,18 @@ class TestContext(object):
         self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
                                                   parent_device = self.dev,
                                                   description = "tempm",
-                                                  post_key = self.key,
                                                   sensor_type = self.sensor_type_temp)
         
         self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
-                                                 post_key = self.key,
                                                  sensor_type = self.sensor_type_temp)
 
         self.loc0_sensor = Sensor.objects.create( id = "NO_LOC:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev_loc0,
-                                                 post_key = self.key,
                                                  sensor_type = self.sensor_type_temp)
 
 

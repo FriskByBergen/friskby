@@ -31,10 +31,11 @@ class DeviceTypeSerializer(serializers.ModelSerializer):
 class DeviceSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
     device_type = DeviceTypeSerializer( read_only = True )
+    client_config = serializers.ReadOnlyField( source = "clientConfig" )
 
     class Meta:
         model = Device
-        fields = ('id', 'location' , 'device_type','description')
+        fields = ('id', 'location' , 'device_type','description' , 'client_config')
 
 
 

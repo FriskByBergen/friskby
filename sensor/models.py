@@ -225,6 +225,8 @@ class Device( Model ):
     device_type = ForeignKey( DeviceType )
     description = CharField("Description" , max_length = 256 )
     post_key = ForeignKey( ApiKey )
+    client_version = CharField(max_length = 128 , blank = True , null = True)
+    
 
     def __unicode__(self):
         return self.id
@@ -232,6 +234,13 @@ class Device( Model ):
     def valid_post_key( self , key_string):
         return self.post_key.access( key_string )
 
+    def sensorList(self):
+        return Sensor.objects.filter( parent_device = self )
+    
+    def clientConfig(self):
+        config = {"post_key" : str(self.post_key.external_key),
+                  "sensor_list" : [ sensor.id for sensor in self.sensorList() ]}
+        return config
 
 
 class MeasurementType( Model ):

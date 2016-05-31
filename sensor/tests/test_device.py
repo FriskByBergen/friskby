@@ -32,4 +32,15 @@ class DeviceTest(TestCase):
         self.assertTrue( "TEMP:XX" in sensor_list )
         self.assertTrue( "HUM:XX" in sensor_list )
         
+        self.assertFalse( "git_repo" in client_config )
+        self.assertFalse( "git_ref" in client_config )
+        
+        self.context.dev.git_version = self.context.git_version
+        self.context.dev.save(  )
+        response = client.get("/sensor/api/device/%s/" % self.context.dev.id)
+        data = json.loads(response.content)
+        client_config = data["client_config"]
+
+        self.assertTrue( client_config["git_repo"] , self.context.git_version.repo )
+        self.assertTrue( client_config["git_ref"] , self.context.git_version.ref )
         

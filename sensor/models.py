@@ -8,6 +8,7 @@ from django.utils import dateparse , timezone
 from django.db.models import *
 from django.core.validators import RegexValidator
 from api_key.models import ApiKey
+from git_version.models import GitVersion
 
 
 class RawData(Model):
@@ -226,7 +227,7 @@ class Device( Model ):
     description = CharField("Description" , max_length = 256 )
     post_key = ForeignKey( ApiKey )
     client_version = CharField(max_length = 128 , blank = True , null = True)
-    
+    git_version = ForeignKey( GitVersion , blank = True , null = True)
 
     def __unicode__(self):
         return self.id
@@ -240,6 +241,11 @@ class Device( Model ):
     def clientConfig(self):
         config = {"post_key" : str(self.post_key.external_key),
                   "sensor_list" : [ sensor.id for sensor in self.sensorList() ]}
+        
+        if self.git_version:
+            config["git_repo"] = self.git_version.repo
+            config["git_ref"] = self.git_version.ref
+        
         return config
 
 

@@ -4,11 +4,13 @@ from django.conf import settings
 from django.contrib.auth.models import User 
 from django.utils.crypto import get_random_string
 
+from git_version.models import * 
 from api_key.models import *
 from sensor.models import *
 
 class TestContext(object):
     def __init__(self):
+        self.git_version = GitVersion.objects.create( ref = "master" , repo = "uri://git.no" , description = "description")
         self.key = ApiKey.objects.create( description = "Newkey")
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)

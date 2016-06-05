@@ -38,6 +38,7 @@ response = requests.get( restdb_url ,
                          params = {"max" : 10000000}, 
                          headers = {"x-apikey" : restdb_key , "Content-Type" : "application/json"})
 
+print response
 
 data = {}
 if response.status_code == 200:
@@ -74,7 +75,7 @@ for sensor_id in data.keys():
                 "timestamp" : ts }
         
         rd = RawData.create( post )
-        if rd.status != RawData.RAWDATA:
+        if rd.status != RawData.VALID:
             raise ValueError("Invalid RawData:%s " % rd)
             
         cnt += 1 

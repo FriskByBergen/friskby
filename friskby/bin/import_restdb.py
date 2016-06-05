@@ -2,14 +2,13 @@
 import os
 import requests
 import django
+import sys
 
 restdb_url = "https://friskbybergen-1d96.restdb.io/rest/posts"
-restdb_key = os.getenv("RESTDB_KEY")
+restdb_key = os.getenv("RESTDB_IMPORT_KEY")
 post_key = "407f1ef4-2eb2-4299-b977-464e26a094e7"
 
-#from django.utils import dateparse , timezone
-#from django.conf import settings
-#from filter.filter import *
+
 
 def update_env(*args):
     for arg in args:
@@ -19,14 +18,8 @@ def update_env(*args):
     if not os.environ.has_key("DJANGO_SETTINGS_MODULE"):
         os.environ["DJANGO_SETTINGS_MODULE"] = "friskby.settings"
 
-
     new_path = os.path.realpath( os.path.join( os.path.dirname(__file__) , "../../") )
-    if os.environ.has_key("PYTHONPATH"):
-        os.environ["PYTHONPATH"] = "%s:%s" % (new_path , os.environ["PYTHONPATH"])
-    else:
-        os.environ["PYTHONPATH"] = new_path
-    
-
+    sys.path.insert( 0 , new_path )
 
 
 def assert_env():

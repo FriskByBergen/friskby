@@ -118,7 +118,6 @@ if False:
         default_db["TEST"] = {"ENGINE" : "django.db.backends.sqlite3",
                               "NAME" : "friskby-test.sqlite" }
         DATABASES = { "default" : default_db }
-        print DATABASES
     else:
         raise Exception("The DATABASE_URL environment variable has not bee set")
 

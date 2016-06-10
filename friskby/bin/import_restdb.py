@@ -44,7 +44,7 @@ data = {}
 if response.status_code == 200:
     for line in response.json( ):
         device_id = line["deviceid"]
-        if device_id == "FriskPI03":
+        if device_id in  ["FriskPI03","FriskPI06"]:
             continue
 
         ts = line["timestamp"]

@@ -6,7 +6,7 @@ import sys
 
 restdb_url = "https://friskbybergen-1d96.restdb.io/rest/posts"
 restdb_key = os.getenv("RESTDB_IMPORT_KEY")
-post_key = "407f1ef4-2eb2-4299-b977-464e26a094e7"
+post_key   = os.getenv("RPI_IMPORT_KEY")
 
 
 
@@ -40,27 +40,26 @@ response = requests.get( restdb_url ,
 
 print response
 
+import_set = set(["FriskPI01" , "FriskPI02" , "FriskPI04" , "FriskPI05"])
 data = {}
 if response.status_code == 200:
     for line in response.json( ):
         device_id = line["deviceid"]
-        if device_id in  ["FriskPI03","FriskPI06"]:
-            continue
-
-        ts = line["timestamp"]
-        pm10 = line["data"]["PM10"]
-        pm25 = line["data"]["PM25"]
-
-        sensor_id_pm10 = "%s_PM10" % device_id
-        sensor_id_pm25 = "%s_PM25" % device_id
-        if not sensor_id_pm10 in data:
-            data[sensor_id_pm10] = []
-
-        if not sensor_id_pm25 in data:
-            data[sensor_id_pm25] = []
+        if device_id in import_set:
+            ts = line["timestamp"]
+            pm10 = line["data"]["PM10"]
+            pm25 = line["data"]["PM25"]
             
-        data[sensor_id_pm10].append( (ts , pm10 ))
-        data[sensor_id_pm25].append( (ts , pm25 ))
+            sensor_id_pm10 = "%s_PM10" % device_id
+            sensor_id_pm25 = "%s_PM25" % device_id
+            if not sensor_id_pm10 in data:
+                data[sensor_id_pm10] = []
+
+            if not sensor_id_pm25 in data:
+                data[sensor_id_pm25] = []
+            
+            data[sensor_id_pm10].append( (ts , pm10 ))
+            data[sensor_id_pm25].append( (ts , pm25 ))
 
 
 for sensor_id in data.keys():

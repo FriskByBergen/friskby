@@ -44,3 +44,50 @@ class DeviceTest(TestCase):
         self.assertTrue( client_config["git_repo"] , self.context.git_version.repo )
         self.assertTrue( client_config["git_ref"] , self.context.git_version.ref )
         
+
+
+
+
+    def test_post_version(self):
+        client = Client( )
+        device_id = self.context.dev.id
+
+        # Invalid key -> 403
+        data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
+        response = client.put("/sensor/api/device/%s/" % device_id , 
+                              data = json.dumps( data ) , 
+                              content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN ) 
+
+        # Missing key -> 403
+        data = {"git_ref" : "abcdef"}
+        response = client.put("/sensor/api/device/%s/" % device_id , 
+                              data = json.dumps( data ) , 
+                              content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN ) 
+
+
+        # Invalid sensor -> 404
+        data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
+        response = client.put("/sensor/api/device/missing_device/" , 
+                              data = json.dumps( data ) , 
+                              content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND ) 
+        
+
+        # No data -> 204
+        data = {"key" : str(self.context.dev.post_key.external_key)}
+        response = client.put("/sensor/api/device/%s/" % device_id , 
+                              data = json.dumps( data ) , 
+                              content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_204_NO_CONTENT ) 
+
+        # All good -> 200
+        data = {"key" : str(self.context.dev.post_key.external_key) , "git_ref" : "abcdef"}
+        response = client.put("/sensor/api/device/%s/" % device_id , 
+                              data = json.dumps( data ) , 
+                              content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_200_OK ) 
+        
+        device = Device.objects.get( pk = device_id )
+        self.assertEqual( device.client_version , "abcdef")

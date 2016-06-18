@@ -107,15 +107,28 @@ class RawData(Model):
         return None
 
     @classmethod
-    def get_ts(cls , sensor , num = None , start = None ): 
+    def get_ts(cls , sensor , num = None , start = None , end = None): 
         ts = []
         if num is None:
-            if start is None:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID ).order_by('timestamp_data')
+            if start is None and end is None:
+                qs = RawData.objects.filter( sensor_id = sensor.id , 
+                                             status = RawData.VALID ).order_by('timestamp_data')
             else:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID, timestamp_data__gte = start).order_by('timestamp_data')
+                if end is None:
+                    qs = RawData.objects.filter( sensor_id = sensor.id , 
+                                                 status = RawData.VALID, 
+                                                 timestamp_data__gte = start).order_by('timestamp_data')
+                elif start is None:
+                    qs = RawData.objects.filter( sensor_id = sensor.id , 
+                                                 status = RawData.VALID, 
+                                                 timestamp_data__lte = end).order_by('timestamp_data')
+                else:
+                    qs = RawData.objects.filter( sensor_id = sensor.id , 
+                                                 status = RawData.VALID, 
+                                                 timestamp_data__range = [start,end]).order_by('timestamp_data')
+
         else:
-            if start is None:
+            if start is None and end is None:
                 qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID).order_by('-timestamp_data')[:num] )
             else:
                 raise ValueError("Can not supply both num and start")
@@ -126,8 +139,8 @@ class RawData(Model):
 
 
     @classmethod
-    def get_vectors(cls , sensor , num = None , start = None):
-        pairs = cls.get_ts( sensor , num = num , start = start)
+    def get_vectors(cls , sensor , num = None , start = None, end = None):
+        pairs = cls.get_ts( sensor , num = num , start = start , end = end)
         ts = []
         values = []
         for (t,v) in pairs:
@@ -343,12 +356,12 @@ class Sensor( Model ):
     # Can speicify *either* a start or number of values with keyword
     # arguments 'start' and 'num', but not both. Will search in the
     # RawData table, only VALID data is considered.
-    def get_ts(self, num = None , start = None):
-        return RawData.get_ts( self , num = num, start = start)
+    def get_ts(self, num = None , start = None , end = None):
+        return RawData.get_ts( self , num = num, start = start , end = end)
 
 
-    def get_vectors(self , num = None , start = None):
-        return RawData.get_vectors( self , num = num , start = start)
+    def get_vectors(self , num = None , start = None , end = None):
+        return RawData.get_vectors( self , num = num , start = start , end = end)
         
 
     def get_current(self , timeout_seconds):

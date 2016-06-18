@@ -111,9 +111,9 @@ class RawData(Model):
         ts = []
         if num is None:
             if start is None:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID )
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID ).order_by('timestamp_data')
             else:
-                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID, timestamp_data__gte = start)
+                qs = RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID, timestamp_data__gte = start).order_by('timestamp_data')
         else:
             if start is None:
                 qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID).order_by('-timestamp_data')[:num] )

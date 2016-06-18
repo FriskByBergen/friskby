@@ -175,7 +175,7 @@ class RawDataTest(TestCase):
 
         sensor_id = self.context.temp_sensor.id
         for i in range(10):
-            data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % i, "key" : self.context.external_key}
+            data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % (30 - i), "key" : self.context.external_key}
             RawData.create( data )
             
         qs = RawData.objects.all()
@@ -183,38 +183,41 @@ class RawDataTest(TestCase):
         ts = RawData.get_ts( self.context.temp_sensor )
         self.assertEqual( len(ts) , 10 )
         for index,pair in enumerate(ts):
-            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
-            self.assertEqual( pair[1] , index )
+            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % (21 + index)))
+            self.assertEqual( pair[1] , 9 - index )
+
+            
+
         
         ts = RawData.get_ts( self.context.temp_sensor , num = 100)
         self.assertEqual( len(ts) , 10 )
         for index,pair in enumerate(ts):
-            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
-            self.assertEqual( pair[1] , index )
+            self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % (21 + index)))
+            self.assertEqual( pair[1] , 9 - index )
 
         ts = RawData.get_ts( self.context.temp_sensor , num = 2)
         self.assertEqual( len(ts) , 2 )
         pair = ts[0]
-        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
-        self.assertEqual( pair[1] , 8 )
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:29+01" ))
+        self.assertEqual( pair[1] , 1 )
 
         pair = ts[1]
-        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
-        self.assertEqual( pair[1] , 9 )
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:30+01" ))
+        self.assertEqual( pair[1] , 0 )
 
         # Illegal with both num and start
         with self.assertRaises(ValueError):
             ts = RawData.get_ts( self.context.temp_sensor , num = 2, start = TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
 
-        ts = RawData.get_ts( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
+        ts = RawData.get_ts( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-10-10T12:13:29+01" ))
         self.assertEqual( len(ts) , 2 )
         pair = ts[0]
-        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:08+01" ))
-        self.assertEqual( pair[1] , 8 )
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:29+01" ))
+        self.assertEqual( pair[1] , 1 )
 
         pair = ts[1]
-        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:09+01" ))
-        self.assertEqual( pair[1] , 9 )
+        self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:30+01" ))
+        self.assertEqual( pair[1] , 0 )
 
         ts = RawData.get_ts( self.context.temp_sensor , start = TimeStamp.parse_datetime( "2015-11-10T12:13:08+01" ))
         self.assertEqual( len(ts) , 0 )

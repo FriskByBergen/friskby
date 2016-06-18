@@ -4,17 +4,26 @@ from django.conf import settings
 from django.contrib.auth.models import User 
 from django.utils.crypto import get_random_string
 
+from git_version.models import * 
 from api_key.models import *
 from sensor.models import *
 
 class TestContext(object):
     def __init__(self):
+        self.git_version = GitVersion.objects.create( ref = "master" , repo = "uri://git.no" , description = "description")
         self.key = ApiKey.objects.create( description = "Newkey")
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
-        self.dev = Device.objects.create( id = "DevXXX" , location = self.loc , device_type = self.dev_type , description = "Besrkivels")
-        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" , device_type = self.dev_type , description = "Besrkivels")
+        self.dev = Device.objects.create( id = "DevXXX" , 
+                                          location = self.loc , 
+                                          device_type = self.dev_type , 
+                                          description = "Besrkivels",
+                                          post_key = self.key)
+
+        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" , device_type = self.dev_type , description = "Besrkivels",
+                                               post_key = self.key )
+
         self.mtype = MeasurementType.objects.create( name = "Temperature" )
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
@@ -30,21 +39,18 @@ class TestContext(object):
         self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
                                                   parent_device = self.dev,
                                                   description = "tempm",
-                                                  post_key = self.key,
                                                   sensor_type = self.sensor_type_temp)
         
         self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
-                                                 post_key = self.key,
                                                  sensor_type = self.sensor_type_temp)
 
         self.loc0_sensor = Sensor.objects.create( id = "NO_LOC:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev_loc0,
-                                                 post_key = self.key,
                                                  sensor_type = self.sensor_type_temp)
 
 

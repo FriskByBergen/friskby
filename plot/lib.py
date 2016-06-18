@@ -24,7 +24,7 @@ def test():
 
 
 def get_trace(sensor):    
-    pair = sensor.get_vectors( status = RawData.RAWDATA )
+    pair = sensor.get_vectors( )
     if pair:
         ts , values = pair
         df = pd.DataFrame().from_dict({"ts" : ts , "values" : values})
@@ -57,7 +57,7 @@ def trace_plot(sensor_list):
 
 
 def trace_plot_FriskPI():
-    DEVICEIDS = ["FriskPI01","FriskPI02","FriskPI03","FriskPI04","FriskPI05"]
+    DEVICEIDS = ["FriskPI01","FriskPI02","FriskPI03","FriskPI04","FriskPI05","FriskPI06"]
     sensor_list = []
     for dev_id in DEVICEIDS:
         for pm in ["PM10" , "PM25"]:

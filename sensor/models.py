@@ -8,6 +8,7 @@ from django.utils import dateparse , timezone
 from django.db.models import *
 from django.core.validators import RegexValidator
 from api_key.models import ApiKey
+from git_version.models import GitVersion
 
 
 class RawData(Model):
@@ -212,7 +213,7 @@ class DataType( Model ):
 
 class DeviceType( Model ):
     name = CharField("Name of the device" , max_length = 60 )
-
+    
     def __unicode__(self):
         return self.name
 
@@ -224,9 +225,28 @@ class Device( Model ):
     location = ForeignKey( Location , null = True )
     device_type = ForeignKey( DeviceType )
     description = CharField("Description" , max_length = 256 )
+    post_key = ForeignKey( ApiKey )
+    client_version = CharField(max_length = 128 , blank = True , null = True)
+    git_version = ForeignKey( GitVersion , blank = True , null = True)
 
     def __unicode__(self):
         return self.id
+
+    def valid_post_key( self , key_string):
+        return self.post_key.access( key_string )
+
+    def sensorList(self):
+        return Sensor.objects.filter( parent_device = self )
+    
+    def clientConfig(self):
+        config = {"post_key" : str(self.post_key.external_key),
+                  "sensor_list" : [ sensor.id for sensor in self.sensorList() ]}
+        
+        if self.git_version:
+            config["git_repo"] = self.git_version.repo
+            config["git_ref"] = self.git_version.ref
+        
+        return config
 
 
 class MeasurementType( Model ):
@@ -307,7 +327,6 @@ class Sensor( Model ):
     parent_device = ForeignKey( Device )
     data_type = ForeignKey( DataType , default = "TEST" )
     description = CharField("Description" , max_length = 256 )
-    post_key = ForeignKey( ApiKey )
     on_line = BooleanField( default = True )
     last_value = FloatField( null = True , blank = True)
     last_timestamp = DateTimeField( null = True , blank = True) 
@@ -353,7 +372,7 @@ class Sensor( Model ):
 
 
     def valid_post_key( self , key_string):
-        return self.post_key.access( key_string )
+        return self.parent_device.valid_post_key( key_string )
 
 
     # This method returns a QuerySet - because that query set is

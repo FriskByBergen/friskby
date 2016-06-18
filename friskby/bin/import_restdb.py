@@ -2,14 +2,13 @@
 import os
 import requests
 import django
+import sys
 
 restdb_url = "https://friskbybergen-1d96.restdb.io/rest/posts"
-restdb_key = os.getenv("RESTDB_KEY")
+restdb_key = os.getenv("RESTDB_IMPORT_KEY")
 post_key = "407f1ef4-2eb2-4299-b977-464e26a094e7"
 
-#from django.utils import dateparse , timezone
-#from django.conf import settings
-#from filter.filter import *
+
 
 def update_env(*args):
     for arg in args:
@@ -19,14 +18,8 @@ def update_env(*args):
     if not os.environ.has_key("DJANGO_SETTINGS_MODULE"):
         os.environ["DJANGO_SETTINGS_MODULE"] = "friskby.settings"
 
-
     new_path = os.path.realpath( os.path.join( os.path.dirname(__file__) , "../../") )
-    if os.environ.has_key("PYTHONPATH"):
-        os.environ["PYTHONPATH"] = "%s:%s" % (new_path , os.environ["PYTHONPATH"])
-    else:
-        os.environ["PYTHONPATH"] = new_path
-    
-
+    sys.path.insert( 0 , new_path )
 
 
 def assert_env():
@@ -45,12 +38,13 @@ response = requests.get( restdb_url ,
                          params = {"max" : 10000000}, 
                          headers = {"x-apikey" : restdb_key , "Content-Type" : "application/json"})
 
+print response
 
 data = {}
 if response.status_code == 200:
     for line in response.json( ):
         device_id = line["deviceid"]
-        if device_id == "FriskPI03":
+        if device_id in  ["FriskPI03","FriskPI06"]:
             continue
 
         ts = line["timestamp"]
@@ -81,7 +75,7 @@ for sensor_id in data.keys():
                 "timestamp" : ts }
         
         rd = RawData.create( post )
-        if rd.status != RawData.RAWDATA:
+        if rd.status != RawData.VALID:
             raise ValueError("Invalid RawData:%s " % rd)
             
         cnt += 1 

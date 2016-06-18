@@ -60,9 +60,11 @@ class DeviceTest(TestCase):
     def setUp(self):
         dev_type = DeviceType.objects.create( name = "TI123" )
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
+        self.post_key =  ApiKey.objects.create( description = "DeviceKey")
         self.dev = Device( device_type = dev_type , 
                            location = self.loc , 
-                           description = "desc")
+                           description = "desc",
+                           post_key = self.post_key )
 
 
     def test_id_pattern(self):

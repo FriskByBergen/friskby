@@ -8,6 +8,7 @@ from django.conf import settings
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework import status
 
 import json
@@ -47,9 +48,43 @@ class DeviceListView(generics.ListCreateAPIView):
     serializer_class = DeviceSerializer
     
 
-class DeviceView(generics.RetrieveAPIView):    
+class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin):    
     queryset = models.Device.objects.all()
     serializer_class = DeviceSerializer
+
+    
+    def get(self , request , *args, **kwargs):
+        return self.retrieve( request , *args , **kwargs)
+        
+    def put(self , request , *args, **kwargs):
+        device_id = kwargs["pk"]
+        try:
+            device = Device.objects.get( pk = device_id )
+        except Device.DoesNotExist:
+            return Response("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
+            
+        data = request.data
+
+        if "key" in data:
+            if not device.valid_post_key( data["key"] ):
+                return Response("Invalid key: %s for device:%s " % (data["key"], device_id) , 
+                                status = status.HTTP_403_FORBIDDEN )
+        else:
+            return Response("Missing key for device: %s" % device_id , 
+                            status = status.HTTP_403_FORBIDDEN )
+            
+        if "git_ref" in data:
+            device.client_version = data["git_ref"]
+            device.save( )
+            return Response("Client version set to: %s" % device.client_version, status = status.HTTP_200_OK )
+        else:
+            return Response("Empty payload?" , status = status.HTTP_204_NO_CONTENT)
+            
+            
+
+        
+
+
 
 #################################################################
 

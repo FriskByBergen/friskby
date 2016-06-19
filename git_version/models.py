@@ -21,7 +21,7 @@ class GitVersion(Model):
     def validateGithubRepo( self ):
         com_find = self.repo.find( "com" )
         owner_repo = self.repo[com_find + 4:]
-        url = "https://github.com/repos/%s/commits/%s/" % (self.repo , self.ref)
+        url = "https://api.github.com/repos/%s/commits/%s" % (owner_repo , self.ref)
         response = requests.get( url )
         if response.status_code != 200:
             raise ValidationError("Could not fetch ref:%s from:%s " % (self.ref , self.repo))

@@ -15,7 +15,7 @@ class TestContext(object):
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
-        self.dev = Device.objects.create( id = "DevXXX" , 
+        self.dev = Device.objects.create( id = "DevXYZ" , 
                                           location = self.loc , 
                                           device_type = self.dev_type , 
                                           description = "Besrkivels",

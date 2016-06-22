@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^sensorinfo/$' , SensorInfoView.as_view()),
     url(r'^sensorinfo/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , SensorInfoView.as_view()),
     #
-    url(r'^reading/$'            , ReadingView.as_view()),
+    url(r'^reading/$'            , ReadingView.as_view(), name = "sensor-post"),
     url(r'^reading/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , ReadingView.as_view()),
     #
     url(r'^rawdata/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , RawDataView.as_view()),

@@ -257,6 +257,7 @@ class Device( Model ):
         config = {"post_key" : str(self.post_key.external_key),
                   "sensor_list" : [ sensor.id for sensor in self.sensorList() ],
                   "post_path" : reverse("sensor-post"),
+                  "config_path" : reverse("device-config" , args = [self.id]),
                   "device_id" : self.id }
         
         if self.git_version:

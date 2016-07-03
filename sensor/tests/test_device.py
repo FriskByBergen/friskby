@@ -41,9 +41,11 @@ class DeviceTest(TestCase):
         data = json.loads(response.content)
         client_config = data["client_config"]
 
-        self.assertTrue( client_config["git_repo"] , self.context.git_version.repo )
-        self.assertTrue( client_config["git_ref"] , self.context.git_version.ref )
-        
+        self.assertEqual( client_config["git_repo"] , self.context.git_version.repo )
+        self.assertEqual( client_config["git_ref"] , self.context.git_version.ref )
+        self.assertTrue( "post_path" in client_config )
+        self.assertTrue( "config_path" in client_config )
+        #self.assertEqual( client_config["device_id"] , self.context.dev.id )
 
 
 

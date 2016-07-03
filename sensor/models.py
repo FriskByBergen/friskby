@@ -3,10 +3,12 @@ import json
 import datetime
 import pytz
 
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.utils import dateparse , timezone
 from django.db.models import *
 from django.core.validators import RegexValidator
+
 from api_key.models import ApiKey
 from git_version.models import GitVersion
 
@@ -253,7 +255,10 @@ class Device( Model ):
     
     def clientConfig(self):
         config = {"post_key" : str(self.post_key.external_key),
-                  "sensor_list" : [ sensor.id for sensor in self.sensorList() ]}
+                  "sensor_list" : [ sensor.id for sensor in self.sensorList() ],
+                  "post_path" : reverse("sensor-post"),
+                  "config_path" : reverse("device-config" , args = [self.id]),
+                  "device_id" : self.id }
         
         if self.git_version:
             config["git_repo"] = self.git_version.repo

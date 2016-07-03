@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^device_type/(?P<pk>[0-9]+)/$' , DeviceTypeView.as_view()),
     #
     url(r'^device/$' , DeviceListView.as_view()),
-    url(r'^device/(?P<pk>%s)/$' % models.Device.IDPattern, DeviceView.as_view()),
+    url(r'^device/(?P<pk>%s)/$' % models.Device.IDPattern, DeviceView.as_view() , name = "device-config"),
     #
     url(r'^location/$' , LocationListView.as_view()),
     url(r'^location/(?P<pk>[0-9]+)/$' , LocationView.as_view()),
@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^sensorinfo/$' , SensorInfoView.as_view()),
     url(r'^sensorinfo/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , SensorInfoView.as_view()),
     #
-    url(r'^reading/$'            , ReadingView.as_view()),
+    url(r'^reading/$'            , ReadingView.as_view(), name = "sensor-post"),
     url(r'^reading/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , ReadingView.as_view()),
     #
     url(r'^rawdata/(?P<sensor_id>%s)/$' % models.Sensor.IDPattern , RawDataView.as_view()),

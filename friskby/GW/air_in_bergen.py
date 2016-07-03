@@ -1,11 +1,7 @@
-#!/usr/bin/python3
+#!/usr/bin python3
 
-import requests
-import timestring
-#  import re
-#  import time
 from datetime import date
-import psycopg2
+import pandas as pd
 from friskby.GW.friskby_gw import FriskByGW
 
 sensor_types = ['_PM10', '_PM25']
@@ -23,44 +19,47 @@ luft_map = {"BG_1": "http://www.luftkvalitet.info/home/"
 
             }
 # keys for parsing data
-komponent_id = ["PM10", "PM2.5"] #, "NO2", "O3"]
+komponent_id = ["PM10", "PM2.5"]
 
-key = "00001111-2222-3333-4444-555566667777"
+key = "9fbb2727-067d-4618-af05-e45cafdd673d"
 
-#current_date = date.today().isoformat()
+current_date = date.today().isoformat()
+
+# probably this function is not necessary and we can just use 0, 1, 2 in post_data(device, df) instead of these variables,
+# but if something will change in table, f.e. the first value will be Date, then Time etc. we'll have some
+# unexpected values and the script will crash
+def data_index(df):
+    # we need just the first value of 'Verdi', 'cause the second is from yesterday measurings
+    counter = 0
+    for i in range(len(df)):
+        for j in range(len(df[i])):
+            if df[i][j] == 'Komponent':
+                component = j
+            if df[i][j] == 'Tid':
+                tid = j
+            if (counter < 1) and (df[i][j] == 'Verdi'):
+                value = j
+                counter += 1
+    return component, tid, value
+
+
+def post_data(device, df):
+    component, tid, value = data_index(df)
+    for id in range(len(komponent_id)):
+        for i in range(len(df)):
+            if df[i][component] == komponent_id[id]:
+                ts = current_date + "T" + df[i][tid] + ":00Z"
+                n = float(df[i][value].replace(',','.'))
+                sensor_id = device + sensor_types[id]
+                sensor = GW.getSensor(sensor_id, key)
+                if(n > 0):
+                    sensor.postValue(n, timestamp = ts)
 
 for device in luft_map:
-    response = requests.get(luft_map[device])
-    if response.status_code == 200:
-        response = response.text
-        translation_table = dict.fromkeys(map(ord, '"<>='), ' ')
-        response = response.translate(translation_table)
-        t_split = response.split()
+    try:
+        url_read = pd.read_html(luft_map[device], header=0, thousands=".")[1]
+        df = url_read.values.tolist()
+        post_data(device, df)
+    except ValueError as e:
+        pass
 
-        k = 27  #  constant
-
-        #time
- #       time_i = t_split.index('ctl00_cph_Map_ctl00_gwStation_ctl02_Label2', 0, -1)
- #       ts = timestring.Date(current_date + " " + t_split[time_i + 1])
-
-        for i in range(len(komponent_id)):
-            try:
-                index = t_split.index(komponent_id[i], 0, -1)
-            except ValueError as e:
-                pass
-            else:
-                sensor_id = device + sensor_types[i]
-                sensor = GW.getSensor(sensor_id, key)
-                a = index + k
-                n = t_split[a].replace(',', '.')
-                try:
-                    n = float(n)
-                except ValueError as e:
-                    pass  # better to use Warnings here
-                else:
-                    # yes, the value from the sensor can be negative (probably because of an error)
-                    if n > 0:
-                        sensor.postValue(n)
-
-    else:
-        print("Can't get data from the site")

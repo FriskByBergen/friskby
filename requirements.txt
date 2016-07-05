@@ -17,3 +17,4 @@ django-cors-headers
 pandas
 numpy
 plotly
+bs4

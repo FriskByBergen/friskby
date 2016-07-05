@@ -1,8 +1,8 @@
-#!/usr/bin python3
+#!/usr/bin/env python
 
 from datetime import date
 import pandas as pd
-from friskby.GW.friskby_gw import FriskByGW
+from friskby_gw import FriskByGW
 
 sensor_types = ['_PM10', '_PM25']
 

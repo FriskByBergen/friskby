@@ -10,6 +10,10 @@ class GitVersion(Model):
     description = CharField("Description" , max_length = 256 )
 
 
+    def __unicode__(self):
+        return "%s: %s" % (self.description , self.ref)
+
+
     def save(self, *args, **kwargs):
         if "github.com" in self.repo:
             self.validateGithubRepo( )

@@ -9,6 +9,7 @@ from pythoncall.models import *
 class Plot(Model):
     name = CharField( max_length = 32 )
     description = CharField( max_length = 256 )
+    tag = CharField( max_length = 128 )
     python_callable = ForeignKey( PythonCall )
     html_code = TextField( blank = True )
     last_update = DateTimeField( blank = True)

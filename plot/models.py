@@ -11,7 +11,7 @@ from . import lib
 class Plot(Model):
     name = CharField( max_length = 32 )
     description = CharField( max_length = 256 )
-    tag = CharField( max_length = 128 )
+    tag = CharField( max_length = 128 , blank = True )
 
     # Derived class can implement plotting inline in the updatePlot( )
     # method, therefor this can be null and void.

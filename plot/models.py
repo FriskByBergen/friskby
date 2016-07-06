@@ -34,6 +34,10 @@ class Plot(Model):
             raise ValidationError("Python callable produced an empty string")
         
             
+    @classmethod
+    def select(cls , regexp):
+        return Plot.objects.filter( tag__iregex=regexp)
+            
         
 
     def save(self, *args, **kwargs):

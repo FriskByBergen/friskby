@@ -4,3 +4,4 @@ staticfiles
 drop_db.sh
 init_env.sh
 staticfiles
+.idea/*

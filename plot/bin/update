@@ -9,10 +9,7 @@ django.setup()
 
 from plot.models import *
 
-for id in sys.argv[1:]:
-    
-    try:
-        plot = Plot.objects.get( pk = id )
+for pattern in sys.argv[1:]
+    qs = Plot.select( pattern )
+    for plot in qs:
         plot.updatePlot( )
-    except Plot.DoesNotExist:
-        print "No such plot:%s" % id

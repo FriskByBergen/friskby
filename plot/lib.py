@@ -1,4 +1,4 @@
-from datetime import timedelta
+import datetime
 import math
 import pandas as pd
 import plotly.plotly as py
@@ -23,14 +23,14 @@ def test():
     
 
 
-def get_trace(sensor):    
-    pair = sensor.get_vectors( )
+def get_trace(sensor , start = None):    
+    pair = sensor.get_vectors( start = start )
     if pair:
         ts , values = pair
         df = pd.DataFrame().from_dict({"ts" : ts , "values" : values})
         df.index = df['ts']
 
-        df.index = df.index + timedelta(hours=2)
+        #df.index = df.index + datetime.timedelta( hours=2 )
         df = df.resample('10Min')
         
         label = "%s : %s" % (sensor.parent_device.id , sensor.sensor_type)
@@ -55,6 +55,24 @@ def trace_plot(sensor_list):
 
 
 
+def device_plot(device , duration):
+    if duration is None:
+        start = None
+    else:
+        start = TimeStamp.now() - duration
+
+    data = []
+    for sensor in device.sensorList( ):
+        trace = get_trace( sensor , start = start )
+        if trace:
+            data.append( trace )
+    
+    if data:
+        return plotly.offline.plot({"data" : data} , **default_kwargs )
+    else:
+        return None
+
+        
 
 def trace_plot_FriskPI():
     DEVICEIDS = ["FriskPI01","FriskPI02","FriskPI03","FriskPI04","FriskPI05","FriskPI06",

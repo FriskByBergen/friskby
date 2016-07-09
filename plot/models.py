@@ -55,6 +55,23 @@ class Plot(Model):
             super(Plot , self).save( *args , **kwargs )
 
 
+    def nextId(self):
+        try:
+            ret = Plot.objects.filter(id__gt=self.id).order_by("id")[0:1].get().id
+        except Plot.DoesNotExist:
+            ret = Plot.objects.aggregate(Min("id"))['id__min']
+        return ret
+
+
+    def prevId(self):
+        try:
+            ret = Plot.objects.filter(id__lt=self.id).order_by("id")[0:1].get().id
+        except Plot.DoesNotExist:
+            ret = Plot.objects.aggregate(Max("id"))['id__max']
+        return ret
+
+            
+
 
 class DevicePlot(Plot):
     device = ForeignKey( Device )

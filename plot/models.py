@@ -65,7 +65,7 @@ class Plot(Model):
 
     def prevId(self):
         try:
-            ret = Plot.objects.filter(id__lt=self.id).order_by("id")[0:1].get().id
+            ret = Plot.objects.filter(id__lt=self.id).order_by("-id")[0:1].get().id
         except Plot.DoesNotExist:
             ret = Plot.objects.aggregate(Max("id"))['id__max']
         return ret

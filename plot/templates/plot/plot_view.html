@@ -1,0 +1,14 @@
+{% extends "friskby/friskby_base.html" %}
+{% block title %} Startside for friskby lagringsløsning {% endblock %}
+
+{% block js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"> </script>
+{% endblock %}
+
+{% block body %}
+
+<div>
+{{ plot_div|safe }}
+</div>
+
+{% endblock %}

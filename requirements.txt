@@ -19,3 +19,4 @@ numpy
 plotly
 bs4
 lxml
+html5lib

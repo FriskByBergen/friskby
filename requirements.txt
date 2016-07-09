@@ -18,3 +18,4 @@ pandas
 numpy
 plotly
 bs4
+lxml

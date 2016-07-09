@@ -5,11 +5,26 @@ import django
 from django.utils import dateparse , timezone
 from django.conf import settings
 
+def update(plot):
+    print "Updating plot: %s/%d" % (plot.tag , plot.id)
+    try:
+        plot = plot.deviceplot
+    except DevicePlot.DoesNotExist:
+        pass
+
+    plot.updatePlot( )
+
+
+
 django.setup()
 
 from plot.models import *
 
-for pattern in sys.argv[1:]
-    qs = Plot.select( pattern )
-    for plot in qs:
-        plot.updatePlot( )
+if len(sys.argv) == 1:
+    for plot in Plot.objects.all():
+        update(plot)
+else:
+    for pattern in sys.argv[1:]:
+        qs = Plot.select( pattern )
+        for plot in qs:
+            update(plot)

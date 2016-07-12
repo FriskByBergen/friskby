@@ -1,1 +1,98 @@
-The root page for plots.
+{% extends "friskby/friskby_base.html" %}
+{% block title %} Tilgjnengelige FriskBY plot {% endblock %}
+
+{% block body %}
+
+<h3> Generell plot </h3>
+<table>
+  <tr>
+    <th>
+      Tittel
+    </th>
+    <th>
+      Siste oppdatering
+    </th>
+    <th>
+      TAG
+    </th>
+    <th>
+      ID
+    </th>
+    <th>
+      Link
+    </th>
+  </tr>
+  {% for plot in gen_plot %}
+  <tr>
+    <td>
+      {{ plot.name }}
+    </td>
+    <td>
+      {{ plot.last_update }}
+    </td>
+    <td>
+      {{ plot.tag }}
+    </td>
+    <td>
+      {{ plot.id }}
+    </td>
+    <td>
+      <a href="{% url 'plot_get' plot.id %}"> {{ url_root }} {% url 'plot_get' plot.id %} </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h3> Plot for en device </h3>
+<table>
+  <tr>
+    <th>
+      Tittel
+    </th>
+    <th>
+      Siste oppdatering
+    </th>
+    <th>
+      TAG
+    </th>
+    <th>
+      Device
+    </th>
+    <th>
+      Varighet
+    </th>
+    <th>
+      ID
+    </th>
+    <th>
+      Link
+    </th>
+  </tr>
+  {% for plot in gen_plot %}
+  <tr>
+    <td>
+      {{ plot.name }}
+    </td>
+    <td>
+      {{ plot.last_update }}
+    </td>
+    <td>
+      {{ plot.device }}
+    </td>
+    <td>
+      {{ plot.duration }}
+    </td>
+    <td>
+      {{ plot.tag }}
+    </td>
+    <td>
+      {{ plot.id }}
+    </td>
+    <td>
+      <a href="{% url 'plot_get' plot.id %}"> {{ url_root }} {% url 'plot_get' plot.id %} </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+

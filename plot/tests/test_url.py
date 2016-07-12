@@ -28,4 +28,7 @@ class PlotUrlTest(TestCase):
         response = client.get( reverse("plot_one" , args = [plot1.id]))
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
+        response = client.get( reverse("plot_get" , args = [plot1.id]))
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+
         

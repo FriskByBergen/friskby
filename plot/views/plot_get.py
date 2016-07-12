@@ -7,7 +7,7 @@ from plot.models import *
 
 
 
-class PlotView(View):
+class PlotGet(View):
     
     def get(self , request , plot_id):
         try:
@@ -15,8 +15,8 @@ class PlotView(View):
         except Plot.DoesNotExist:
             return HttpResponse("Plot id:%s does not exist" % plot_id , status = status.HTTP_404_NOT_FOUND )
 
-        return render( request , "plot/plot_view.html" , {"plot" : plot } )
-            
+        return HttpResponse( plot.html_code )
+        
 
 
 

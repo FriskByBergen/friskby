@@ -243,6 +243,8 @@ class Device( Model ):
     post_key = ForeignKey( ApiKey )
     client_version = CharField(max_length = 128 , blank = True , null = True)
     git_version = ForeignKey( GitVersion , blank = True , null = True)
+    locked = BooleanField( default = True )
+
 
     def __unicode__(self):
         return self.id

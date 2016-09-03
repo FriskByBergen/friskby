@@ -26,8 +26,6 @@ class DeviceTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-
-
 class DeviceSerializer(serializers.ModelSerializer):
     location = LocationSerializer( read_only = True )
     device_type = DeviceTypeSerializer( read_only = True )

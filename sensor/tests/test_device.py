@@ -23,7 +23,7 @@ class DeviceTest(TestCase):
         self.assertTrue( "client_config" in data )
 
         client_config = data["client_config"]
-        self.assertTrue( self.context.dev.valid_post_key( client_config["post_key"] ))
+        self.assertFalse( "post_key" in client_config )
 
         self.assertEqual( len(self.context.dev.sensorList( )) , 2 )
         sensor_list = client_config["sensor_list"]
@@ -48,6 +48,35 @@ class DeviceTest(TestCase):
         #self.assertEqual( client_config["device_id"] , self.context.dev.id )
 
 
+
+    def test_get_open_config(self):
+        device = Device.objects.get( pk = self.context.dev.id )
+        device.locked = False
+        device.save( )
+
+        client = Client( )
+        response = client.get("/sensor/api/device/%s/" % self.context.dev.id)
+        data = json.loads(response.content)
+        client_config = data["client_config"]
+        self.assertTrue( self.context.dev.valid_post_key( client_config["post_key"] ))
+        device.locked = True
+        device.save( )
+
+
+    def test_get_closed_config(self):
+        device = Device.objects.get( pk = self.context.dev.id )
+
+        # Invalid key supplied - closed device
+        client = Client( )
+        response = client.get("/sensor/api/device/%s/" % self.context.dev.id , {"key" : "Invalid"})
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
+
+        response = client.get("/sensor/api/device/%s/" % self.context.dev.id , {"key" : device.post_key.external_key})
+        data = json.loads(response.content)
+        client_config = data["client_config"]
+        self.assertTrue( self.context.dev.valid_post_key( client_config["post_key"] ))
+
+        
 
 
     def test_post_version(self):

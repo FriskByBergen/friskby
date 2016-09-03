@@ -54,8 +54,31 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
 
     
     def get(self , request , *args, **kwargs):
-        return self.retrieve( request , *args , **kwargs)
+        device_id = kwargs["pk"]
+        try:
+            device = Device.objects.get( pk = device_id )
+        except Device.DoesNotExist:
+            return Response("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
         
+        serialized = DeviceSerializer( device )
+
+        if "key" in request.GET:
+            if device.valid_post_key( request.GET["key"] ):
+                serialized.data["client_config"]["post_key"] = str(device.post_key.external_key)
+            else:
+                return Response( "Invalid key" , status = status.HTTP_403_FORBIDDEN )
+
+        if not device.locked:
+            serialized.data["client_config"]["post_key"] = str(device.post_key.external_key)
+            # Here we actually lock the device after a successfull
+            # GET, to ensure that the device will not be dangling in
+            # an open state. Should in addition have a scheduled job
+            # locking all open devices.
+            device.lockDevice( )
+
+        return Response( serialized.data , status = status.HTTP_200_OK )
+
+
     def put(self , request , *args, **kwargs):
         device_id = kwargs["pk"]
         try:

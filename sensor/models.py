@@ -256,8 +256,9 @@ class Device( Model ):
         return Sensor.objects.filter( parent_device = self )
     
     def clientConfig(self):
-        config = {"post_key" : str(self.post_key.external_key),
-                  "sensor_list" : [ sensor.id for sensor in self.sensorList() ],
+        # The post key is not set here, and must be explicitly set in the 
+        # view code if the request is correctly authorized.
+        config = {"sensor_list" : [ sensor.id for sensor in self.sensorList() ],
                   "post_path" : reverse("sensor-post"),
                   "config_path" : reverse("device-config" , args = [self.id]),
                   "device_id" : self.id }
@@ -267,6 +268,10 @@ class Device( Model ):
             config["git_ref"] = self.git_version.ref
         
         return config
+
+    def lockDevice(self):
+        self.locked = True
+        self.save( )
 
 
 class MeasurementType( Model ):

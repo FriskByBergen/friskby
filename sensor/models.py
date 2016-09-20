@@ -64,9 +64,19 @@ class RawData(Model):
             valid = False
         
         if valid:
-            for key in ["key" , "sensorid" , "value" , "timestamp"]:
+            for key in ["key" , "sensorid"]:
                 if not key in data:
                     valid = False
+        
+            data_OK = False
+            if "value_list" in data:
+                data_OK = True
+            else:
+                if "value" in data and "timestamp" in data:
+                    data_OK = True
+            
+            if not data_OK:
+                valid = False
         
         if valid and settings.FORCE_VALID_SENSOR:
             try:
@@ -75,9 +85,20 @@ class RawData(Model):
                 valid = False
 
         if valid:
-            ts = TimeStamp.parse_datetime( data["timestamp"] )
-            if ts is None:
-                valid = False
+            ts_list = []
+            if "timestamp" in data:
+                ts_list.append( data["timestamp"] )
+            else:
+                for item in data["value_list"]:
+                    if len(item) == 2:
+                        ts_list.append( item[0] )
+                    else:
+                        valid = False
+
+            for ts in ts_list:
+                t = TimeStamp.parse_datetime( ts )
+                if t is None:
+                    valid = False
 
         if valid and settings.FORCE_VALID_KEY:
             valid = ApiKey.valid( data["key"] )
@@ -162,49 +183,59 @@ class RawData(Model):
         # the status flag.
         if cls.is_valid(data):
             sensor_id = data["sensorid"]
-            string_value = str(data["value"])
 
-
-            rd = RawData( apikey = data["key"],
-                          sensor_id = sensor_id,
-                          timestamp_data = TimeStamp.parse_datetime( data["timestamp"]))
+            string_values = []
+            timestamp = []
+            if "value" in data:
+                string_values.append( str(data["value"]) )
+                timestamp.append( data["timestamp"] )
+            else:
+                for ts,value in data["value_list"]:
+                    timestamp.append( ts )
+                    string_values.append( value )
             
-            # 1: Check that the sensor_id is valid.
-            try:
-                sensor = Sensor.objects.get( pk = sensor_id )
-            except Sensor.DoesNotExist:
-                sensor = None
-                rd.status = RawData.INVALID_SENSOR
-                rd.string_value = string_value
-
-
-            # 2,3: Check that value can be correctly parsed as float,
-            #      and that the numerical value is in the allowed range.
-            if rd.status == RawData.VALID:
+            rawdata = []
+            for ts,string_value in zip(timestamp,string_values):
+                rd = RawData( apikey = data["key"],
+                              sensor_id = sensor_id,
+                              timestamp_data = TimeStamp.parse_datetime( ts ))
+            
+                # 1: Check that the sensor_id is valid.
                 try:
-                    value = float(string_value)
-                    if not sensor.sensor_type.valid_range( value ):
-                        rd.status = RawData.RANGE_ERROR
-                        rd.string_value = string_value
-                    else:
-                        rd.value = value
-                except ValueError:
-                    rd.status = RawData.FORMAT_ERROR
+                    sensor = Sensor.objects.get( pk = sensor_id )
+                except Sensor.DoesNotExist:
+                    sensor = None
+                    rd.status = RawData.INVALID_SENSOR
                     rd.string_value = string_value
+
+
+                # 2,3: Check that value can be correctly parsed as float,
+                #      and that the numerical value is in the allowed range.
+                if rd.status == RawData.VALID:
+                    try:
+                        value = float(string_value)
+                        if not sensor.sensor_type.valid_range( value ):
+                            rd.status = RawData.RANGE_ERROR
+                            rd.string_value = string_value
+                        else:
+                            rd.value = value
+                    except ValueError:
+                        rd.status = RawData.FORMAT_ERROR
+                        rd.string_value = string_value
                     
-            # 4: Check that the API key is valid.
-            if rd.status == RawData.VALID:
-                if not sensor.valid_post_key( data["key"] ):
-                    rd.status = RawData.INVALID_KEY
+                # 4: Check that the API key is valid.
+                if rd.status == RawData.VALID:
+                    if not sensor.valid_post_key( data["key"] ):
+                        rd.status = RawData.INVALID_KEY
 
-            # 5: Check that sensor is online:
-            if rd.status == RawData.VALID:
-                if not sensor.on_line:
-                    rd.status = RawData.SENSOR_OFFLINE
+                # 5: Check that sensor is online:
+                if rd.status == RawData.VALID:
+                    if not sensor.on_line:
+                        rd.status = RawData.SENSOR_OFFLINE
 
-            rd.save()
-            
-            return rd
+                rd.save()
+                rawdata.append( rd )
+            return rawdata
         else:
             raise ValueError("Invalid input data:%s " % data)
 

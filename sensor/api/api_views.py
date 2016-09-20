@@ -199,34 +199,34 @@ class SensorInfoView(APIView):
 
 class ReadingView(APIView):
 
-    def cleanPayload(self , data):
-        if "sensorid" in data:
-            sensorid = data["sensorid"]
-        else:
-            return (status.HTTP_400_BAD_REQUEST , "Missing 'sensorid' field in payload")
-
-                    
-        if "value" in data:
-            value = data["value"]
-        else:
-            return (status.HTTP_400_BAD_REQUEST , "Missing 'value' field in payload")
-
-        if not "timestamp" in data:
-            return (status.HTTP_400_BAD_REQUEST , "Missing 'timestamp' field in payload")
-
-        try:
-            sensor = models.Sensor.objects.get( pk = sensorid )
-            if not sensor.valid_input( value ):
-                return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
-
-            if sensor.parent_device.location is None:
-                if not "location" in data:
-                    return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
-                        
-        except models.Sensor.DoesNotExist:
-            return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
-            
-        return (True , "")
+#    def cleanPayload(self , data):
+#        if "sensorid" in data:
+#            sensorid = data["sensorid"]
+#        else:
+#            return (status.HTTP_400_BAD_REQUEST , "Missing 'sensorid' field in payload")
+#
+#                    
+#        if "value" in data:
+#            value = data["value"]
+#        else:
+#            return (status.HTTP_400_BAD_REQUEST , "Missing 'value' field in payload")
+#
+#        if not "timestamp" in data:
+#            return (status.HTTP_400_BAD_REQUEST , "Missing 'timestamp' field in payload")
+#
+#        try:
+#            sensor = models.Sensor.objects.get( pk = sensorid )
+#            if not sensor.valid_input( value ):
+#                return (status.HTTP_400_BAD_REQUEST , "The value:%s for sensor:%s is invalid" % (value , sensorid))
+#
+#            if sensor.parent_device.location is None:
+#                if not "location" in data:
+#                    return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
+#                        
+#        except models.Sensor.DoesNotExist:
+#            return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
+#            
+#        return (True , "")
 
 
 
@@ -236,12 +236,12 @@ class ReadingView(APIView):
         except ValueError:
             return Response(RawData.error( request.data ) , status = status.HTTP_400_BAD_REQUEST )
         
-
-        key = raw_data.apikey
-        sensorid = raw_data.sensor_id
-        value = raw_data.value
-        timestamp = raw_data.timestamp_data
-        location = None
+        rd        = raw_data[0]
+        key       = rd.apikey
+        sensorid  = rd.sensor_id
+        value     = rd.value
+        timestamp = rd.timestamp_data
+        location  = None
         try:
             sensor = models.Sensor.objects.get( pk = sensorid )
         except models.Sensor.DoesNotExist:
@@ -267,12 +267,13 @@ class ReadingView(APIView):
             sensor.last_timestamp = timestamp
             sensor.save()
 
-            raw_data.parsed = True
-            raw_data.save( )
+            for rd in raw_data:
+                rd.parsed = True
+                rd.save( )
 
             return Response(1 , status.HTTP_201_CREATED)
         else:
-            return Response("Sensor: %s is offline - rawdata created and stored" % raw_data.sensor_id )
+            return Response("Sensor: %s is offline - rawdata created and stored" % rd.sensor_id )
             
         
 

@@ -57,9 +57,9 @@ class RawDataTest(TestCase):
         data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         self.assertTrue( RawData.is_valid( data ))
         rd = RawData.create( data )
-        self.assertEqual( rd.status , RawData.INVALID_SENSOR )
-        self.assertEqual( rd.value , -1 )
-        self.assertEqual( rd.string_value , "100")
+        self.assertEqual( rd[0].status , RawData.INVALID_SENSOR )
+        self.assertEqual( rd[0].value , -1 )
+        self.assertEqual( rd[0].string_value , "100")
 
         # Valid 
         data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 }
@@ -255,33 +255,52 @@ class RawDataTest(TestCase):
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}                
         data["value"] = "XXX"
         rd = RawData.create( data )
-        self.assertEqual( rd.value , -1 )
-        self.assertEqual( rd.string_value , "XXX" )
-        self.assertEqual( rd.status , RawData.FORMAT_ERROR )
+        self.assertEqual( rd[0].value , -1 )
+        self.assertEqual( rd[0].string_value , "XXX" )
+        self.assertEqual( rd[0].status , RawData.FORMAT_ERROR )
 
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
-        self.assertEqual( rd.value , 10 )
-        self.assertEqual( rd.string_value , None )
-        self.assertEqual( rd.status , RawData.VALID )
+        self.assertEqual( rd[0].value , 10 )
+        self.assertEqual( rd[0].string_value , None )
+        self.assertEqual( rd[0].status , RawData.VALID )
 
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
-        self.assertEqual( rd.value , -1 )
-        self.assertEqual( rd.string_value , "150" )
-        self.assertEqual( rd.status , RawData.INVALID_SENSOR )
+        self.assertEqual( rd[0].value , -1 )
+        self.assertEqual( rd[0].string_value , "150" )
+        self.assertEqual( rd[0].status , RawData.INVALID_SENSOR )
 
         data = {"sensorid" : sensor_id , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
-        self.assertEqual( rd.value , -1 )
-        self.assertEqual( rd.string_value , "150" )
-        self.assertEqual( rd.status , RawData.RANGE_ERROR )
+        self.assertEqual( rd[0].value , -1 )
+        self.assertEqual( rd[0].string_value , "150" )
+        self.assertEqual( rd[0].status , RawData.RANGE_ERROR )
 
         data = {"sensorid" : sensor_id , "value" : 15, "timestamp" : "2015-10-10T12:13:00+01", "key" : "InvalidKey" }
         rd = RawData.create( data )
-        self.assertEqual( rd.value , 15 )
-        self.assertEqual( rd.string_value , None )
-        self.assertEqual( rd.status , RawData.INVALID_KEY )
+        self.assertEqual( rd[0].value , 15 )
+        self.assertEqual( rd[0].string_value , None )
+        self.assertEqual( rd[0].status , RawData.INVALID_KEY )
+
+
+        data = {"sensorid" : sensor_id , 
+                "value_list" : [("2015-10-10T12:13:00+01", 10), ("2015-10-10T12:14:00+01", 20)],
+                "key" : self.context.external_key }
+
+        rd = RawData.create( data )
+        self.assertEqual( len(rd) , 2)
+        self.assertEqual( rd[0].value , 10 )
+        self.assertEqual( rd[0].string_value , None )
+        self.assertEqual( rd[0].status , RawData.VALID )
+
+        self.assertEqual( rd[1].value , 20 )
+        self.assertEqual( rd[1].string_value , None )
+        self.assertEqual( rd[1].status , RawData.VALID )
+
+
+
+
 
     def test_vectors(self):
         (ts,values) = RawData.get_vectors( self.context.temp_sensor )

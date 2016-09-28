@@ -40,7 +40,7 @@ response = requests.get( restdb_url ,
 
 print response
 
-import_set = set(["FriskPI01" , "FriskPI02" , "FriskPI04" , "FriskPI05"])
+import_set = set(["FriskPI01" , "FriskPI02" , "FriskPI04"])
 data = {}
 if response.status_code == 200:
     for line in response.json( ):

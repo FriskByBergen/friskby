@@ -1,11 +1,12 @@
 import datetime
 import math
+import pytz
 import pandas as pd
 import plotly.plotly as py
 import plotly.tools as tls
 import plotly.offline
 from   plotly.graph_objs import Scatter
-
+from django.conf import settings
 from sensor.models import *
 
 
@@ -29,8 +30,13 @@ def get_trace(sensor , start = None):
         ts , values = pair
         df = pd.DataFrame().from_dict({"ts" : ts , "values" : values})
         df.index = df['ts']
+        
+        # Manually shiftinig out to the "correct" timezone
+        tz = pytz.timezone( settings.TIME_ZONE )
+        now = datetime.datetime.now( tz = tz )
+        shift = now.utcoffset()
+        df.index = df.index + shift.total_seconds()
 
-        #df.index = df.index + datetime.timedelta( hours=2 )
         df = df.resample('10Min')
         
         label = "%s : %s" % (sensor.parent_device.id , sensor.sensor_type)

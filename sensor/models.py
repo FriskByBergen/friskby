@@ -157,7 +157,7 @@ class RawData(Model):
                 raise ValueError("Can not supply both num and start")
             
         for entry in qs:
-            ts.append( (entry.timestamp_data, entry.value) )
+            ts.append( (entry.timestamp_data , entry.value) )
         return ts
 
 

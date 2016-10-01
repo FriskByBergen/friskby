@@ -5,6 +5,8 @@ import sensor.models as models
 from api_views import *
 
 urlpatterns = [
+    url(r'^client_log/$' , ClientLogView.as_view(), name = "client-log"),
+    #
     url(r'^measurement_type/$' , MeasurementTypeListView.as_view()),
     url(r'^measurement_type/(?P<pk>[0-9]+)/$' , MeasurementTypeView.as_view()),
     #

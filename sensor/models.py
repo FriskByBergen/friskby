@@ -443,3 +443,16 @@ class Sensor( Model ):
 
 
 
+
+class ClientLog( Model ):
+    device = ForeignKey( Device )
+    timestamp = DateTimeField( ) 
+    msg = CharField( max_length = 256 )
+
+    def save(self,*args, **kwargs):
+        self.timestamp = datetime.datetime.now( pytz.utc )
+        super(ClientLog, self).save( *args , **kwargs )
+
+
+    def __unicode__(self):
+        return "[%s] %s: %s" % (self.device , self.timestamp, self.msg)

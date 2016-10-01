@@ -380,3 +380,39 @@ class RawDataView(APIView):
         
         return Response( data )
                                        
+#################################################################
+
+class ClientLogView(APIView):    
+    
+    def post(self , request):
+        data = request.data
+        try:
+            api_key = data["key"]
+            device_id = data["device_id"]
+            msg = data["msg"]
+        except KeyError:
+            return Response("Invalid log data" , status = 400)
+            
+        try:
+            device = Device.objects.get( pk = device_id )
+        except Device.DoesNotExist:
+            return Response("Invalid device id:%s" % device_id , status = 400)
+
+        if device.valid_post_key( api_key ):
+            log_entry = ClientLog.objects.create( device = device,
+                                                  msg = msg )
+            log_entry.save()
+            return Response(1 , status.HTTP_201_CREATED )
+        else:
+            return Response("Invalid key :%s" % api_key , status = 403)
+    
+   
+    def get(self, request):
+        data = []
+        for log_entry in ClientLog.objects.filter( ):
+            data.append( {"device"    : log_entry.device.id,
+                          "timestamp" : log_entry.timestamp,
+                          "msg"       : log_entry.msg })
+
+        return Response( data )
+        

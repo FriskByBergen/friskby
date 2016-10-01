@@ -122,3 +122,51 @@ class DeviceTest(TestCase):
         
         device = Device.objects.get( pk = device_id )
         self.assertEqual( device.client_version , "abcdef")
+
+
+    def test_post_log(self):
+        client = Client( )
+        device_id = self.context.dev.id
+
+        # Invalid key -> 403
+        data = {"device_id" : device_id , "key" : "Invalid key" , "msg" : "Msg"}
+        response = client.post("/sensor/api/client_log/" , 
+                               data = json.dumps( data ) , 
+                               content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN ) 
+
+        
+        # Invalid device_id -> 400   
+        data = {"device_id" : "invalid_device" , 
+                "key" : str(self.context.dev.post_key.external_key) , 
+                "msg" : "Msg"}
+
+        response = client.post("/sensor/api/client_log/" , 
+                               data = json.dumps( data ) , 
+                               content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST ) 
+
+        data = {"device_id" : "invalid_device" , 
+                "key" : str(self.context.dev.post_key.external_key) , 
+                "msg" : "Msg"}
+
+        response = client.post("/sensor/api/client_log/" , 
+                               data = json.dumps( data ) , 
+                               content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST ) 
+
+
+        # All good : 201
+        data = {"device_id" : device_id,
+                "key" : str(self.context.dev.post_key.external_key) , 
+                "msg" : "Msg"}
+
+        response = client.post("/sensor/api/client_log/" , 
+                               data = json.dumps( data ) , 
+                               content_type = "application/json")
+        self.assertEqual( response.status_code , 201 )
+
+
+        # Get : 200 
+        response = client.get("/sensor/api/client_log/")
+        self.assertEqual( len(response.data) , 1 )

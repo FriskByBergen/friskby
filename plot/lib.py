@@ -35,7 +35,7 @@ def get_trace(sensor , start = None):
         tz = pytz.timezone( settings.TIME_ZONE )
         now = datetime.datetime.now( tz = tz )
         shift = now.utcoffset()
-        df.index = df.index + shift.total_seconds()
+        df.index = df.index + shift
 
         df = df.resample('10Min')
         

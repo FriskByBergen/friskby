@@ -167,6 +167,20 @@ class DeviceTest(TestCase):
         self.assertEqual( response.status_code , 201 )
 
 
+        # All good with long_msg: 201
+        data = {"device_id" : device_id,
+                "key" : str(self.context.dev.post_key.external_key) , 
+                "msg" : "Msg",
+                "long_msg" : "LONG"}
+
+        response = client.post("/sensor/api/client_log/" , 
+                               data = json.dumps( data ) , 
+                               content_type = "application/json")
+        self.assertEqual( response.status_code , 201 )
+
+
         # Get : 200 
         response = client.get("/sensor/api/client_log/")
-        self.assertEqual( len(response.data) , 1 )
+        self.assertEqual( len(response.data) , 2 )
+        last = response.data[1]
+        self.assertEqual( last["long_msg"] , "LONG")

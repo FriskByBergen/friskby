@@ -448,6 +448,7 @@ class ClientLog( Model ):
     device = ForeignKey( Device )
     timestamp = DateTimeField( ) 
     msg = CharField( max_length = 256 )
+    long_msg = TextField( blank = True, null = True )
 
     def save(self,*args, **kwargs):
         self.timestamp = datetime.datetime.now( pytz.utc )

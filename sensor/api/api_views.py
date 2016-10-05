@@ -401,6 +401,9 @@ class ClientLogView(APIView):
         if device.valid_post_key( api_key ):
             log_entry = ClientLog.objects.create( device = device,
                                                   msg = msg )
+            if "long_msg" in data:
+                log_entry.long_msg = data["long_msg"]
+
             log_entry.save()
             return Response(1 , status.HTTP_201_CREATED )
         else:
@@ -410,9 +413,15 @@ class ClientLogView(APIView):
     def get(self, request):
         data = []
         for log_entry in ClientLog.objects.filter( ):
-            data.append( {"device"    : log_entry.device.id,
-                          "timestamp" : log_entry.timestamp,
-                          "msg"       : log_entry.msg })
+            node = {"device"    : log_entry.device.id,
+                    "timestamp" : log_entry.timestamp,
+                    "msg"       : log_entry.msg ,
+                    "long_msg"  : ""}
+
+            if log_entry.long_msg:
+                node["long_msg"] = log_entry.long_msg
+
+            data.append( node )
 
         return Response( data )
         

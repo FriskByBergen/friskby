@@ -1,5 +1,15 @@
-body { font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
+/* Remove the navbar's default margin-bottom and rounded borders */
+        .navbar {
+          border-radius: 0;
+        }
 
-a { color: blue }
+.friskTimeslider {
+    /* width: 100%; */;
+}
 
-label{ font-weight:bold}
+
+#sensor-table td {
+    font-size: 10px; /* 0.85vw; */
+}
+/* Header: #d87b62 */
+/* body: #a0bbae */

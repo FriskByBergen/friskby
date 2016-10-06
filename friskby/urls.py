@@ -6,7 +6,7 @@ Examples:
 Function views
     1. Add an import:  from my_app import views
     2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
+Class-based viewsur
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
 Including another URLconf
@@ -30,6 +30,6 @@ urlpatterns = [
     url(r'^sensor/'           , include(sensor.urls)),
     url(r'^time_series/'      , include(time_series.urls)),
     url(r'^filter/'           , include(filter.urls)),
-    url(r'^friskby/'          , include(friskby_urls)),
-    url(r'^plot/'             , include(plot.urls)) 
+    url(r'^plot/'             , include(plot.urls)),
+    url(r''                   , include(friskby_urls))
 ]

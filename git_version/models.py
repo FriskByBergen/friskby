@@ -7,6 +7,7 @@ from django.db.models import *
 class GitVersion(Model):
     ref = CharField("Git ref" , max_length = 128 )
     repo = CharField("Git repo" , max_length = 128 , default = "https://github.com/FriskbyBergen/RPiParticle")
+    follow_head = BooleanField( default = False )
     description = CharField("Description" , max_length = 256 )
 
 

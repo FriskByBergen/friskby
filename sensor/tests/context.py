@@ -10,7 +10,7 @@ from sensor.models import *
 
 class TestContext(object):
     def __init__(self):
-        self.git_version = GitVersion.objects.create( ref = "master" , repo = "uri://git.no" , description = "description")
+        self.git_version = GitVersion.objects.create( ref = "master" , repo = "uri://git.no" , description = "description" , follow_head = True)
         self.key = ApiKey.objects.create( description = "Newkey")
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)

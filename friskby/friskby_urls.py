@@ -7,5 +7,5 @@ from views import JSHome
 urlpatterns = [
     url(r'^friskby/adm/$' , Adm.as_view()),
     url(r'friskby/$'      , Home.as_view()),
-    url(r''               , JSHome.as_view())
+    url(r'^$'             , JSHome.as_view())
 ]

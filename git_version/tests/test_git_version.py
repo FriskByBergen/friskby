@@ -15,6 +15,10 @@ class GitVersionTest(TestCase):
                                            description = "Hei")
 
         v = GitVersion.objects.create( ref = "master" , repo = "Does/not/exist" , description = "d")
-        
+        self.assertEqual( v.follow_head , False )
+
+        v = GitVersion.objects.create( ref = "master" , repo = "Does/not/exist" , description = "d",
+                                       follow_head = True )
+        self.assertEqual( v.follow_head , True )
             
         

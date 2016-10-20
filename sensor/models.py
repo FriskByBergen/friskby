@@ -297,6 +297,7 @@ class Device( Model ):
         if self.git_version:
             config["git_repo"] = self.git_version.repo
             config["git_ref"] = self.git_version.ref
+            config["git_follow"] = self.git_version.follow_head
         
         return config
 

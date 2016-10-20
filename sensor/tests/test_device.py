@@ -34,6 +34,7 @@ class DeviceTest(TestCase):
         
         self.assertFalse( "git_repo" in client_config )
         self.assertFalse( "git_ref" in client_config )
+        self.assertFalse( "git_follow" in client_config )
         
         self.context.dev.git_version = self.context.git_version
         self.context.dev.save(  )
@@ -43,9 +44,10 @@ class DeviceTest(TestCase):
 
         self.assertEqual( client_config["git_repo"] , self.context.git_version.repo )
         self.assertEqual( client_config["git_ref"] , self.context.git_version.ref )
+        self.assertEqual( client_config["git_follow"] , self.context.git_version.follow_head )
         self.assertTrue( "post_path" in client_config )
         self.assertTrue( "config_path" in client_config )
-        #self.assertEqual( client_config["device_id"] , self.context.dev.id )
+        self.assertEqual( client_config["device_id"] , self.context.dev.id )
 
 
 

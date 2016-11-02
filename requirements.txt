@@ -14,9 +14,9 @@ django-filter
 django-storages
 pytz
 django-cors-headers
-pandas==0.18
+pandas==0.19
 numpy
-plotly==1.12.6
+plotly==1.12.9
 bs4
 lxml
 html5lib

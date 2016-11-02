@@ -16,7 +16,7 @@ pytz
 django-cors-headers
 pandas==0.18
 numpy
-plotly
+plotly==1.12.6
 bs4
 lxml
 html5lib

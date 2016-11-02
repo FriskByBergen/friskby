@@ -1,4 +1,4 @@
-Django==1.10.1
+Django==1.10.3
 gunicorn==18.0
 wsgiref==0.1.2
 psycopg2==2.5.1
@@ -14,7 +14,7 @@ django-filter
 django-storages
 pytz
 django-cors-headers
-pandas
+pandas==0.18
 numpy
 plotly
 bs4

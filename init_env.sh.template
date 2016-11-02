@@ -1,0 +1,22 @@
+# This file is a template file with environment variables. It is
+# recommended that you copy this file to a new file called
+# e.g. init_env.sh and update the environment variables to your local
+# configuration. In particular the name of the database and the
+# user/password to log in to the database must be updated.
+#
+# When you have created init_env.sh file you can set up your shell
+# with:
+#
+#      source init_env.sh
+#
+# before you start developing.
+
+export DATABASE_URL=postgres://$USER:$PASSWORD@localhost:5432/$DATABASE
+
+export DJANGO_SETTINGS_MODULE=friskby.settings
+export FRISKBY_DEBUG=True
+export TZ=Europe/Oslo
+
+
+
+

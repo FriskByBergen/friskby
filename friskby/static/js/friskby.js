@@ -854,6 +854,10 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
         var _WGS84 = 'EPSG:4326';
         /* The WMTS source from Kartverket use UTM33 */
         var _srcProjection = _UTM33;
+        /* The active layer */
+        var _activeMTId;
+        var _activeTime;
+        var _activeLayer;
 
         /* Set the location of the proj4 library */
         ol.proj.setProj4(proj4);
@@ -906,7 +910,6 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
                 else if( $.inArray( "measurementTypeId", layer.getKeys() ) >= 0 )
                     layer.setVisible( false );
             });
-            // _map.getView().setProperties({extent: _map.getView().calculateExtent( _map.getSize())});
         }
 
         /**
@@ -945,9 +948,9 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
                 view: new ol.View({
                     projection: _srcProjection,
                     center: [-33475.34364682839,6732061.012181105],
-                    zoom: 9,
-                    minZoom: 9,
-                    maxZoom: 17
+                    zoom: 12,
+                    minZoom: 12,
+                    maxZoom: 12
                 })
             });
         }
@@ -1051,6 +1054,7 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
         var getMap = function() {
             return _map;
         }
+        
         return {
             map: getMap,
             load: load,
@@ -1108,6 +1112,7 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
                     renderTo: domElement,
                     type: 'line',
                     backgroundColor: 'transparent',
+                    zoomType: 'xy'
                 },
                 title: {
                     text: null

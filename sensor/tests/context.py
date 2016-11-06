@@ -3,6 +3,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth.models import User 
 from django.utils.crypto import get_random_string
+from django.contrib.auth.models import User
 
 from git_version.models import * 
 from api_key.models import *
@@ -15,13 +16,18 @@ class TestContext(object):
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
+        self.user = User.objects.create_user( "test-user" )
         self.dev = Device.objects.create( id = "DevXYZ" , 
                                           location = self.loc , 
                                           device_type = self.dev_type , 
                                           description = "Besrkivels",
-                                          post_key = self.key)
+                                          post_key = self.key,
+                                          owner = self.user )
 
-        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" , device_type = self.dev_type , description = "Besrkivels",
+        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" , 
+                                               device_type = self.dev_type , 
+                                               description = "Besrkivels",
+                                               owner = self.user,
                                                post_key = self.key )
 
         self.mtype = MeasurementType.objects.create( name = "Temperature" )

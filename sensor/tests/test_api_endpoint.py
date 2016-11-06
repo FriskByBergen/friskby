@@ -42,7 +42,7 @@ class MeasurementTypeTest(TestCase):
 
 class DeviceTypeTest(TestCase):
     def setUp(self):
-        DeviceType.objects.create( name = "HP-X12" )
+        DeviceType.objects.create( name = "HP-X12")
         DeviceType.objects.create( name = "TI123" )
 
 
@@ -58,13 +58,15 @@ class DeviceTypeTest(TestCase):
 
 class DeviceTest(TestCase):
     def setUp(self):
+        test_context = TestContext( )
         dev_type = DeviceType.objects.create( name = "TI123" )
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.post_key =  ApiKey.objects.create( description = "DeviceKey")
         self.dev = Device( device_type = dev_type , 
                            location = self.loc , 
                            description = "desc",
-                           post_key = self.post_key )
+                           post_key = self.post_key ,
+                           owner = test_context.user )
 
 
     def test_id_pattern(self):

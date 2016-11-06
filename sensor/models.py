@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils import dateparse , timezone
 from django.db.models import *
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
 
 from api_key.models import ApiKey
 from git_version.models import GitVersion
@@ -275,6 +276,7 @@ class Device( Model ):
     client_version = CharField(max_length = 128 , blank = True , null = True)
     git_version = ForeignKey( GitVersion , blank = True , null = True)
     locked = BooleanField( default = True )
+    owner = ForeignKey( User )
 
 
     def __unicode__(self):

@@ -154,3 +154,48 @@ When you are finished with your changes make a Pull Request on GitHub.
 
 The FriskBy web server is deployed on Heroku. It should be quite
 simple to deploy using an alternative platform.
+
+
+### Creating testdata
+
+To get some testdata to work with there are management commands. To
+create three testsensors with random data:
+
+```bash
+
+   bash% manage.py add_testdevice TestDev1 TestDev2 TestDev3
+```
+
+This will by default add 100 random datapoints to each of the sensors,
+but by passing `--num=nnn` you can add a different number of
+points. The random devices can be removed with:
+
+```bash
+
+   bash% manage.py drop_testdevice TestDev1 TestDev3
+```
+
+which will remove the devices 'TestDev1' and 'TestDev3'. If you pass
+the special argument '--all' to the 'drop_testdevice' managament
+command *all* devices will be removed. 
+
+In addition to the 'add_testdevice' and 'drop_testdevice' commands
+there are commands 'add_testdata' and 'drop_testdata' which will only
+add or drop testdata, not the actual devices.
+
+```bash
+
+   bash% manage.py add_testdata 
+```
+
+Will add 100 datapoints to each available sensor, by passing '--num='
+you can control the number of points, and by passing '--device=' or
+'--sensor=' you can control which sensor gets the data.
+
+
+```bash
+
+   bash% manage.py drop_testdata
+```
+
+will drop all the testdata. Pass '--device' or '--sensor'.

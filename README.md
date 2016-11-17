@@ -170,7 +170,7 @@ create three testsensors with random data:
 
 ```bash
 
-   bash% manage.py add_testdevice TestDev1 TestDev2 TestDev3
+   bash% ./manage.py add_testdevice TestDev1 TestDev2 TestDev3
 ```
 
 This will by default add 100 random datapoints to each of the sensors,
@@ -179,7 +179,7 @@ points. The random devices can be removed with:
 
 ```bash
 
-   bash% manage.py drop_testdevice TestDev1 TestDev3
+   bash% ./manage.py drop_testdevice TestDev1 TestDev3
 ```
 
 which will remove the devices 'TestDev1' and 'TestDev3'. If you pass
@@ -192,7 +192,7 @@ add or drop testdata, not the actual devices.
 
 ```bash
 
-   bash% manage.py add_testdata 
+   bash% ./manage.py add_testdata
 ```
 
 Will add 100 datapoints to each available sensor, by passing '--num='
@@ -202,7 +202,7 @@ you can control the number of points, and by passing '--device=' or
 
 ```bash
 
-   bash% manage.py drop_testdata
+   bash% ./manage.py drop_testdata
 ```
 
 will drop all the testdata. Pass '--device' or '--sensor'.

@@ -28,6 +28,13 @@ postgresql-server-dev-all and python-pip:
 bash% sudo apt-get install git postgresql postgresql-server-dev-all python-pip
 ```
 
+After pip has been installed, we install all the required Python packages by
+giving the file `requirements.txt` to pip:
+
+```bash
+bash% sudo pip install -r requirements.txt
+```
+
 ### Setting up the source code
 
 Development of the source code is done on GitHub using a model with

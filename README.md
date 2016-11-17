@@ -133,9 +133,18 @@ version control.
 ### Testing the code
 
 When you updated your environment you are ready to actually run the
-friskby code. To run all the tests:
+friskby code.  Before starting Django, we need to migrate:
 
-```python
+```bash
+
+    bash% ./manage.py migrate
+
+```
+
+
+To run all the tests:
+
+```bash
 
     bash% ./manage.py test
 
@@ -143,7 +152,7 @@ friskby code. To run all the tests:
 
 To start the development server:
 
-```python
+```bash
 
    bash% ./manage.py runserver
 ```

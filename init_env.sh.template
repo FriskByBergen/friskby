@@ -12,6 +12,7 @@
 # before you start developing.
 
 export DATABASE_URL=postgres://$USER:$PASSWORD@localhost:5432/$DATABASE
+# for example postgres://friskby-user:YOURCHOSENPASSWD@localhost:5432/friskby-db
 
 export DJANGO_SETTINGS_MODULE=friskby.settings
 export FRISKBY_DEBUG=True

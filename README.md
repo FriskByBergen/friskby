@@ -28,6 +28,13 @@ postgresql-server-dev-all and python-pip:
 bash% sudo apt-get install git postgresql postgresql-server-dev-all python-pip
 ```
 
+After pip has been installed, we install all the required Python packages by
+giving the file `requirements.txt` to pip:
+
+```bash
+bash% sudo pip install -r requirements.txt
+```
+
 ### Setting up the source code
 
 Development of the source code is done on GitHub using a model with
@@ -126,9 +133,18 @@ version control.
 ### Testing the code
 
 When you updated your environment you are ready to actually run the
-friskby code. To run all the tests:
+friskby code.  Before starting Django, we need to migrate:
 
-```python
+```bash
+
+    bash% ./manage.py migrate
+
+```
+
+
+To run all the tests:
+
+```bash
 
     bash% ./manage.py test
 
@@ -136,7 +152,7 @@ friskby code. To run all the tests:
 
 To start the development server:
 
-```python
+```bash
 
    bash% ./manage.py runserver
 ```
@@ -163,7 +179,7 @@ create three testsensors with random data:
 
 ```bash
 
-   bash% manage.py add_testdevice TestDev1 TestDev2 TestDev3
+   bash% ./manage.py add_testdevice TestDev1 TestDev2 TestDev3
 ```
 
 This will by default add 100 random datapoints to each of the sensors,
@@ -172,7 +188,7 @@ points. The random devices can be removed with:
 
 ```bash
 
-   bash% manage.py drop_testdevice TestDev1 TestDev3
+   bash% ./manage.py drop_testdevice TestDev1 TestDev3
 ```
 
 which will remove the devices 'TestDev1' and 'TestDev3'. If you pass
@@ -185,7 +201,7 @@ add or drop testdata, not the actual devices.
 
 ```bash
 
-   bash% manage.py add_testdata 
+   bash% ./manage.py add_testdata
 ```
 
 Will add 100 datapoints to each available sensor, by passing '--num='
@@ -195,7 +211,7 @@ you can control the number of points, and by passing '--device=' or
 
 ```bash
 
-   bash% manage.py drop_testdata
+   bash% ./manage.py drop_testdata
 ```
 
 will drop all the testdata. Pass '--device' or '--sensor'.

@@ -89,13 +89,15 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
         var _timeSeriesGeoJSON = {};
         var _beginTime, _endTime;
 
+        var host = location.host;
+
         var apiUrl = {
-            sensor:             "http://friskby.herokuapp.com/sensor/api/sensor/",
-            sensorType:         "http://friskby.herokuapp.com/sensor/api/sensortype/",
-            sensorInfo:         "http://friskby.herokuapp.com/sensor/api/sensorinfo/",
-            device:             "http://friskby.herokuapp.com/sensor/api/device/",
-            location:           "http://friskby.herokuapp.com/sensor/api/location/",
-            measurementType:    "http://friskby.herokuapp.com/sensor/api/measurement_type/"
+            sensor:             "http://" + host + "/sensor/api/sensor/",
+            sensorType:         "http://" + host + "/sensor/api/sensortype/",
+            sensorInfo:         "http://" + host + "/sensor/api/sensorinfo/",
+            device:             "http://" + host + "/sensor/api/device/",
+            location:           "http://" + host + "/sensor/api/location/",
+            measurementType:    "http://" + host + "/sensor/api/measurement_type/"
         }
 
         var apiUrlArray = function () {
@@ -112,7 +114,7 @@ var FriskbyModuleExtensions = (function ( Friskby ) {
             var daysAgo = new Date();
             daysAgo.setDate(daysAgo.getDate() - 6);
         
-            return "http://friskby.herokuapp.com/sensor/api/reading/" + sensorId + "/?start=" + daysAgo.toISOString();
+            return "http://" + host + "/sensor/api/reading/" + sensorId + "/?start=" + daysAgo.toISOString();
         }
 
         var apiUrlTimeseriesArray = function ( sensorTypes, numberOfMilliseconds ) {

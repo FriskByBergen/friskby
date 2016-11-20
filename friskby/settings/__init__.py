@@ -38,6 +38,9 @@ if os.getenv("FRISKBY_DEBUG"):
 
 ALLOWED_HOSTS = ["friskby.herokuapp.com"]
 
+if DEBUG:
+    ALLOWED_HOSTS.append("*")
+
 
 # Application definition
 

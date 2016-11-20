@@ -22,10 +22,10 @@ or even Linux specific to the software as such.
 ### Installing the dependencies (I)
 
 You need to install the following packages: git, postgresql,
-postgresql-server-dev-all and python-pip:
+postgresql-server-dev-all, python-dev and python-pip:
 
 ```bash
-bash% sudo apt-get install git postgresql postgresql-server-dev-all python-pip
+bash% sudo apt-get install git postgresql postgresql-server-dev-all python-pip python-dev
 ```
 
 After pip has been installed, we install all the required Python packages by

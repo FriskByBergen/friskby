@@ -1,0 +1,28 @@
+{% extends "friskby/friskby_base.html" %}
+{% block title %} quick {% endblock %}
+
+{% block js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"> </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"> </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script
+<script src="{{ STATIC_URL }}js/include/moment_2.10.6.js"></script>
+<script>
+   
+
+</script>
+{% endblock %}
+
+
+{% block css %}
+
+
+{% endblock %}
+
+
+{% block body %}
+
+{% for sensor in sensor_list %}
+    {{ sensor.id }}
+{% endfor %}
+
+{% endblock %}

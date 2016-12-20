@@ -2,77 +2,26 @@
 {% block title %} Friskby {% endblock %}
 
 {% block js %}
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="http://code.highcharts.com/highcharts-more.js"></script>
   <script src="https://openlayers.org/en/v3.20.0/build/ol.js" type="text/javascript"></script>
+  <script src="{{ STATIC_URL }}js/quick/map.js"></script>
+  <script src="{{ STATIC_URL }}js/quick/chart.js"></script>
   <script type="text/javascript">
-    function normalize(val, minIn, maxIn, maxOut) {
-      var delta = (maxIn - minIn);
-      var norm_val = val;
-      norm_val = Math.min(Math.max(norm_val, minIn), maxIn) + delta;
-      norm_val = (norm_val / delta) * maxOut;
-      norm_val = Math.floor(norm_val);
-      return norm_val;
-    }
-
+    var values = {{device_json|safe}};
     window.onload = function() {
-      var map = new ol.Map({
-        target: 'map',
-        layers: [
-          new ol.layer.Tile({
-            source: new ol.source.OSM()
-          })
-        ],
-        view: new ol.View({
-          center: ol.proj.fromLonLat([5.3349616, 60.3940185]),
-          zoom: 11
-        })
-      });
-      var styleFunc = function(feature, resolution) {
-        var norm_val = normalize(feature.getProperties()["sensor"]["pm10"],-20, 20,255);
-        var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
-        console.log("norm: " + norm_val);
-        return new ol.style.Style({
-          fill: new ol.style.Fill({color: color}),
-          stroke: new ol.style.Stroke({color: 'red', width: 3}),
-          text: new ol.style.Text({
-              font: '10px Calibri,sans-serif',
-              fill: new ol.style.Fill({
-                  color: '#000'
-              }),
-              stroke: new ol.style.Stroke({
-                  color: '#fff',
-                  width: 3
-              }),
-              text: "" + feature.getProperties()["sensor"]["pm10"].toFixed(1)
-          })
-        });
-      }
-      var vectorSource = new ol.source.Vector();
-      var circleLayer = new ol.layer.Vector({
-        source: vectorSource,
-        style: styleFunc
-      });
-      map.addLayer(circleLayer);
-      var values = {{device_json|safe}};
-      values.forEach(function(value) {
-        vectorSource.addFeature(
-          new ol.Feature({
-            "geometry" : new ol.geom.Circle(
-              ol.proj.transform([value.long, value.lat], 'EPSG:4326', 'EPSG:3857'),
-              1000),
-            "sensor": value }));
+      var map = createmap(); // from map.js
+      var chart = createchart(); // from chart.js
+      map.onSelect(function(id) {
+        chart.select(id);
       });
     };
   </script>
 {% endblock %}
 
 {% block css %}
-  <link rel="stylesheet" href="https://openlayers.org/en/v3.20.0/css/ol.css" type="text/css">
-  <style>
-    .map {
-      height: 400px;
-      width: 100%;
-    }
-  </style>
+
 {% endblock %}
 
 {% block body %}
@@ -87,7 +36,11 @@
   </table>
 </div>
 
-<div id="map" style="width:30%; height:30%">
+<div id="map" style="max-width:800px; height: 300px">
+
+</div>
+
+<div id="chart" style="max-width:800px; height: 300px">
 
 </div>
 

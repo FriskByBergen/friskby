@@ -9,7 +9,7 @@ def get_current_timestamp():
     from django.db import connection
     cursor = connection.cursor()
     # use this for debug
-    cursor.execute("SELECT timestamp_recieved from sensor_rawdata order by timestamp_recieved desc limit 1")
+    cursor.execute("SELECT timestamp_data from sensor_rawdata order by timestamp_data desc limit 1")
     #cursor.execute("SELECT CURRENT_TIMESTAMP")
     rows = cursor.fetchone()
     return rows[0]
@@ -18,6 +18,7 @@ class Quick(View):
 
     def get(self , request):
         import json
+        from django.utils import formats
         device_list = models.Device.objects.all()
 
         current_time = request.GET.get('time', get_current_timestamp())
@@ -27,22 +28,26 @@ class Quick(View):
             pm25sensor = next(x for x in d.sensorList() if x.description == "PM25")
             pm10sensor = next(x for x in d.sensorList() if x.description == "PM10")
             dataSql = """
-            SELECT * FROM sensor_rawdata
+            SELECT id, value, timestamp_data FROM sensor_rawdata
             where sensor_id = '%s'
-              and timestamp_recieved <= '%s'
-              and timestamp_recieved > TIMESTAMP '%s' - INTERVAL '1 hour'
-            order by timestamp_recieved desc LIMIT 1"""
-            data25 = models.RawData.objects.raw(dataSql % (pm25sensor.id, current_time, current_time))[0]
-            data10 = models.RawData.objects.raw(dataSql % (pm10sensor.id, current_time, current_time))[0]
-
+              and timestamp_data <= '%s'
+              and timestamp_data > TIMESTAMP '%s' - INTERVAL '2 weeks'
+            order by timestamp_data asc"""
+            data25 = models.RawData.objects.raw(dataSql % (pm25sensor.id, current_time, current_time))
+            data10 = models.RawData.objects.raw(dataSql % (pm10sensor.id, current_time, current_time))
+            data25list = list({"value": x.value, "id": x.id, "timestamp": str(x.timestamp_data)} for x in data25)
+            data10list = list({"value": x.value, "id": x.id, "timestamp": str(x.timestamp_data)} for x in data10)
+            time = formats.date_format(data25[0].timestamp_data, "d/m-f")
             row = {
                 'id': d.id,
                 'locname': d.location.name,
                 'lat': d.location.latitude,
                 'long': d.location.longitude,
-                'pm25': data25.value,
-                'pm10': data10.value,
-                'time': str(data25.timestamp_recieved) }
+                'pm25': data25[0].value,
+                'pm10': data10[0].value,
+                'pm25list': data25list,
+                'pm10list': data10list,
+                'time': time }
             device_rows.append(row)
             print(vars(d))
             print(row)

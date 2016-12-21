@@ -1,4 +1,4 @@
-# FriskBy
+# FriskBy ![build status](https://api.travis-ci.org/FriskByBergen/friskby.svg?branch=master "TravisCI Build Status")
 
 This web service is part of the FriskBy project.
 

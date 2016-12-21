@@ -25,9 +25,8 @@ def test():
 
 
 def get_trace(sensor , start = None):    
-    pair = sensor.get_vectors( start = start )
-    if pair:
-        ts , values = pair
+    ts,values = sensor.get_vectors( start = start )
+    if len(values) > 0:
         df = pd.DataFrame().from_dict({"ts" : ts , "values" : values})
         df.index = df['ts']
         
@@ -40,7 +39,7 @@ def get_trace(sensor , start = None):
         except TypeError:
             pass
 
-        df = df.resample('10Min')
+        df = df.resample('10Min').mean( )
         
         label = "%s : %s" % (sensor.parent_device.id , sensor.sensor_type)
         return Scatter( x=df.index,

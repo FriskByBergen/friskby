@@ -55,10 +55,12 @@ class TestContext(object):
 
         RawData.create( {"sensorid" : self.temp_sensor.id , 
                          "value" : "10",
-                         "key" : self.key , 
+                         "key" : str(self.key.external_key),
                          "timestamp" : "2015-10-10T10:10:00+01" })
 
         RawData.create( {"sensorid" : self.temp_sensor.id , 
                          "value" : "12",
-                         "key" : self.key , 
+                         "key" : str(self.key.external_key),
                          "timestamp" : "2015-11-10T10:10:00+01" })
+    
+        

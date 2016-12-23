@@ -13,6 +13,9 @@
     window.onload = function() {
       var map = createmap(); // from map.js
       var chart = createchart(); // from chart.js
+      var timestamp = "{{date}}";
+      chart.showDataFor(values, "pm25list");
+      map.showDataFor(values, "pm25list", timestamp);
       map.onSelect(function(id) {
         chart.select(id);
       });

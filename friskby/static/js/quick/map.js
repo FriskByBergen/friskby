@@ -76,6 +76,9 @@ function createmap() {
     },
     select: function(id) {
       // todo select feature in map
+    },
+    showDataFor: function(sensors, key, timestamp) {
+      
     }
   };
 };

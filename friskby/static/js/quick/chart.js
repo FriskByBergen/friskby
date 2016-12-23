@@ -19,7 +19,12 @@ function createchart() {
           },
           title: {
               text: 'Date'
-          }
+          },
+          plotLines: [{
+              color: '#FF0000',
+              width: 5,
+              value: Date.parse(values[0]["pm25list"][0]["timestamp"])
+          }]
       },
       yAxis: {
           title: {
@@ -40,17 +45,7 @@ function createchart() {
               }
           }
       },
-      series: values.map(function(sensor) {
-        return {
-          id: sensor.id,
-          name: sensor.locname,
-          color: '#F33',
-          data: sensor["pm25list"].map(function(measurement) {
-            return [Date.parse(measurement.timestamp),
-                    measurement.value];
-          })
-        };
-      })
+
     });
     return {
       select: function(id) {
@@ -59,6 +54,19 @@ function createchart() {
         var ser = chart.get(id)
         console.log(ser);
         ser.show();
+      },
+      showDataFor(values, key) {
+           values.forEach(function(sensor) {
+              chart.addSeries({
+                id: sensor.id,
+                name: sensor.locname,
+                //color: '#F33',
+                data: sensor[key].map(function(measurement) {
+                  return [Date.parse(measurement.timestamp),
+                          measurement.value];
+                })
+              });
+          });
       }
     };
 }

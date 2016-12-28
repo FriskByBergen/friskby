@@ -13,5 +13,5 @@ class ViewTest(TestCase):
 
     def test_get_root(self):
         client = Client( )
-        response = client.get("/sensor/view/")
+        response = client.get( reverse("sensor.view.main"))
         self.assertEqual( response.status_code , status.HTTP_200_OK )

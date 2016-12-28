@@ -292,8 +292,8 @@ class Device( Model ):
         # The post key is not set here, and must be explicitly set in the 
         # view code if the request is correctly authorized.
         config = {"sensor_list" : [ sensor.id for sensor in self.sensorList() ],
-                  "post_path" : reverse("sensor-post"),
-                  "config_path" : reverse("device-config" , args = [self.id]),
+                  "post_path" : reverse("sensor.api.post"),
+                  "config_path" : reverse("sensor.device_config" , args = [self.id]),
                   "device_id" : self.id }
         
         if self.git_version:

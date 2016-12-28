@@ -8,5 +8,5 @@ class MainView(View):
         return render( request , "sensor/main.html" )
 
 
-        
+
 

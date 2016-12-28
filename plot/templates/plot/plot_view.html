@@ -9,8 +9,8 @@
 Title: {{ plot.name }} <br>
 Tag: {{ plot.tag }} <br>
 Id: {{ plot.id }} <br>
-<a href="{% url 'plot_one' plot.nextId %}"> Next </a> <br>
-<a href="{% url 'plot_one' plot.prevId %}"> Previous </a> <br>
+<a href="{% url 'plot.view' plot.nextId %}"> Next </a> <br>
+<a href="{% url 'plot.view' plot.prevId %}"> Previous </a> <br>
 
 <div>
 {{ plot.html_code |safe }}

@@ -1,6 +1,7 @@
 import random
 import json
 
+from django.urls import reverse
 from django.utils import timezone
 from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
@@ -17,8 +18,10 @@ class SensorInfoTest(TestCase):
     def test_get_list(self):
         client = Client( )
 
+
         # Missing data
-        response = client.get("/sensor/api/sensorinfo/")
+        url = reverse("sensor.api.list_info")
+        response = client.get(url)
         self.assertEqual( response.status_code , status.HTTP_200_OK , response.data)
         sensor_list = response.data
         sensor0 = sensor_list[0]
@@ -46,10 +49,12 @@ class SensorInfoTest(TestCase):
     def test_get(self):
         client = Client( )
 
-        response = client.get("/sensor/api/sensorinfo/XYZ/")
+        url = reverse("sensor.api.info" , args = ["XYZ"])
+        response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
 
-        response = client.get("/sensor/api/sensorinfo/TEMP:XX/")
+        url = reverse("sensor.api.info" , args = ["TEMP:XX"])
+        response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
         sensor0 = response.data
@@ -63,8 +68,8 @@ class SensorInfoTest(TestCase):
         self.assertEqual( sensor_type["min_value"] , 0 )
         self.assertEqual( sensor_type["max_value"] , 100 )
 
-        
-        response = client.get("/sensor/api/sensorinfo/HUM:XX/")
+        url = reverse("sensor.api.info" , args = ["HUM:XX"])
+        response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         sensor0 = response.data
         self.assertEqual( sensor0["data_type"] , "RAWDATA" )

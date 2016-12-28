@@ -1,10 +1,18 @@
+import requests
+from unittest import skipUnless
 from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
 from rest_framework import status
 
 from git_version.models import *
 
+try:
+    response = requests.get("https://github.com/")
+    have_network = True
+except:
+    have_network = False
 
+@skipUnless(have_network , "This test class requires network access")
 class GitVersionTest(TestCase):
     def setUp(self):
         pass

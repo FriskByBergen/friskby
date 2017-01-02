@@ -61,7 +61,6 @@ class TestContext(object):
                                                  sensor_type = self.sensor_type_temp)
 
 
-        self.ts = TimeStamp.objects.create( timestamp = TimeStamp.parse_datetime("2015-10-10T10:10:00+01") )
         self.test_user_passwd = get_random_string( length = 10 ),
         self.test_user = User.objects.create_user( get_random_string( length = 10 ),
                                                    password = self.test_user_passwd , 

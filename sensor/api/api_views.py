@@ -261,8 +261,6 @@ class ReadingView(APIView):
                     
 
         if sensor.on_line:
-            ts = models.TimeStamp.objects.create( timestamp = timestamp )
-
             sensor.last_value = value
             sensor.last_timestamp = timestamp
             sensor.save()

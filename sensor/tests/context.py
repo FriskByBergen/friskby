@@ -1,6 +1,3 @@
-import requests
-import sys 
-
 from django.conf import settings
 from django.contrib.auth.models import User 
 from django.utils.crypto import get_random_string
@@ -66,11 +63,4 @@ class TestContext(object):
                                                    password = self.test_user_passwd , 
                                                    email = "joe@invalid.email.com" )
 
-        try:
-            response = requests.get("https://github.com/")
-            self.network = True
-        except Exception:
-            self.network = False
-            settings.RESTDB_IO_URL = None
-            sys.stderr.write("** WARNING: No network connection - skipping post to restdb.io\n")
         

@@ -22,9 +22,8 @@ class PlotTest(TestCase):
                       tag = "tag2",
                       python_callable = self.context.error_call )
 
-        with self.assertRaises(ValidationError):
-            plot2.save( )
-
+        plot2.save()
+        self.assertEqual( plot2.html_code[0:5],  "ERROR" ) 
         plot2.python_callable = self.context.simple_call
         plot2.save( )
 
@@ -34,10 +33,6 @@ class PlotTest(TestCase):
                                      tag = "XYZ",
                                      python_callable = self.context.plotly_call )
         
-        plot3.python_callable = self.context.error_call
-        plot3.save( )
-        with self.assertRaises(ValidationError):
-            plot3.updatePlot( )
             
         qs = Plot.select( r"tag.*" )
         self.assertEqual( len(qs) , 2 )

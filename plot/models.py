@@ -131,6 +131,4 @@ class DevicePlot(Plot):
             self.html_code = new_html
             self.last_update = datetime.datetime.now( pytz.utc )
             super(Plot , self).save( )
-        else:
-            raise ValidationError("Python callable produced an empty string")
 

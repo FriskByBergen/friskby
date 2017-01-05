@@ -37,9 +37,12 @@ class Plot(Model):
         if new_html:
             self.html_code = new_html
             self.last_update = datetime.datetime.now( pytz.utc )
-            super(Plot , self).save( )
         else:
-            raise ValidationError("Python callable produced an empty string")
+            if not self.html_code:
+                self.html_code = "ERROR: No plot generated"
+                self.last_update = datetime.datetime.now( pytz.utc )
+
+        super(Plot , self).save( )
         
             
     @classmethod

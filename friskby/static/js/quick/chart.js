@@ -19,12 +19,7 @@ function createchart() {
           },
           title: {
               text: 'Date'
-          },
-          plotLines: [{
-              color: '#FF0000',
-              width: 5,
-              value: Date.parse(values[0]["pm25list"][0]["timestamp"])
-          }]
+          }
       },
       yAxis: {
           title: {
@@ -47,26 +42,36 @@ function createchart() {
       },
 
     });
+
     return {
       select: function(id) {
-        console.log("selecting in chart: " + id);
         chart.series.forEach(function(s) {s.hide();});
-        var ser = chart.get(id)
-        console.log(ser);
+        var ser = chart.get(id);
         ser.show();
       },
-      showDataFor(values, key) {
-           values.forEach(function(sensor) {
-              chart.addSeries({
-                id: sensor.id,
-                name: sensor.locname,
-                //color: '#F33',
-                data: sensor[key].map(function(measurement) {
-                  return [Date.parse(measurement.timestamp),
-                          measurement.value];
-                })
-              });
-          });
+      showDataFor: function(values, key) {
+        while(chart.series.length > 0)
+           chart.series[0].remove(true);
+         values.forEach(function(sensor) {
+            chart.addSeries({
+              id: sensor.id,
+              name: sensor.locname,
+              data: sensor[key].map(function(measurement) {
+                return [Date.parse(measurement.timestamp),
+                        measurement.value];
+              })
+            });
+        });
+      },
+      scrollTo: function(date) {
+        chart.xAxis[0].removePlotBand("plotLine");
+
+        chart.xAxis[0].addPlotLine({
+                value: Date.parse(date),
+                width: 3,
+                color: 'red',
+                id: "plotLine"
+            });
       }
     };
 }

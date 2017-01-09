@@ -54,5 +54,5 @@ class Quick(View):
 
         json = json.dumps(device_rows)
 
-        context = {"device_rows" : device_rows, "date": current_time, "device_json": json }
+        context = {"device_rows" : device_rows, "date": current_time, "device_json": json, "timestamp": str(current_time) }
         return render( request , "friskby/quick.html" , context )

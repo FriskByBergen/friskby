@@ -11,15 +11,30 @@
   <script type="text/javascript">
     var values = {{device_json|safe}};
     window.onload = function() {
-      var map = createmap(); // from map.js
+      var date = "{{date}}";
+      var timestamp = "{{timestamp}}";
+      var map = createmap(timestamp); // from map.js
       var chart = createchart(); // from chart.js
-      var timestamp = "{{date}}";
       chart.showDataFor(values, "pm25list");
       map.showDataFor(values, "pm25list", timestamp);
       map.onSelect(function(id) {
         chart.select(id);
       });
+      document.getElementById("pmselect").onchange = function(e) {
+        var listname = this.value + "list";
+        chart.showDataFor(values, listname);
+        map.showDataFor(values, listname, timestamp);
+      };
+      document.getElementById("slider").oninput = function(e) {
+        var val = this.value;
+        var n = Math.floor((values[0]["pm25list"].length - 1) * val);
+        var date = values[0]["pm25list"][n];
+        chart.scrollTo(date.timestamp);
+        var listname = document.getElementById("pmselect").value + "list";
+        map.showDataFor(values, listname, date.timestamp);
+      }
     };
+
   </script>
 {% endblock %}
 
@@ -31,6 +46,10 @@
 <h1>Friskby oversikt for {{date}}</h1>
 <div id="sensorlist">
   <h2>Measurements</h2>
+  <select id="pmselect">
+    <option id="pm25opt" value="pm25">PM 25</option>
+    <option id="pm10opt" value="pm10">PM 10</option>
+  </select>
   <table>
     <tr><th>Location</th><th>PM 2.5</th><th>PM 10</th><th>Last update</th></tr>
 {% for d in device_rows %}
@@ -42,7 +61,8 @@
 <div id="map" style="max-width:800px; height: 300px">
 
 </div>
-
+<input id="slider" type ="range" min ="0.0" max="1.0" value="1.0" step="0.01"
+    style="width:800px;"/>
 <div id="chart" style="max-width:800px; height: 300px">
 
 </div>

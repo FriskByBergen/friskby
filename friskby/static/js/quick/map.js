@@ -20,32 +20,32 @@ function createmap() {
       zoom: 11
     })
   });
-  var styleFunc = function(feature, resolution) {
-    var val = feature.getProperties()["sensor"]["pm10list"][0].value;
-    var norm_val = normalize(val,-20, 20,255);
-    var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
-    return new ol.style.Style({
-      fill: new ol.style.Fill({color: color}),
-      stroke: new ol.style.Stroke({color: 'white', width: 3}),
-      text: new ol.style.Text({
-          font: '10px Calibri,sans-serif',
-          fill: new ol.style.Fill({
-              color: '#000'
-          }),
-          stroke: new ol.style.Stroke({
-              color: '#fff',
-              width: 3
-          }),
-          text: "" + val.toFixed(1)
-      })
-    });
-  }
+  var styleFunc = function(list, timestamp) {
+     return function(feature, resolution) {
+      var val = feature.getProperties()["sensor"][list].find(function(a) {
+        return a.timestamp == timestamp;
+      });
+      if (val == undefined) return new ol.style.Style({visible: false}); else val = val.value;
+      var norm_val = normalize(val,-20, 20,255);
+      var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
+      return new ol.style.Style({
+        fill: new ol.style.Fill({color: color}),
+        stroke: new ol.style.Stroke({color: 'white', width: 3}),
+        text: new ol.style.Text({
+            font: '10px Calibri,sans-serif',
+            fill: new ol.style.Fill({
+                color: '#000'
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#fff',
+                width: 3
+            }),
+            text: "" + val.toFixed(1)
+        })
+      });
+    };
+  };
   var vectorSource = new ol.source.Vector();
-  var circleLayer = new ol.layer.Vector({
-    source: vectorSource,
-    style: styleFunc
-  });
-  map.addLayer(circleLayer);
   values.forEach(function(value) {
     vectorSource.addFeature(
       new ol.Feature({
@@ -74,11 +74,16 @@ function createmap() {
         });
       });
     },
-    select: function(id) {
-      // todo select feature in map
-    },
     showDataFor: function(sensors, key, timestamp) {
-      
+       map.getLayers().forEach(function(l) {
+         if (l.get("name") === "layer") map.removeLayer(l);
+      });
+      var layer = new ol.layer.Vector({
+        source: vectorSource,
+        style: styleFunc(key, timestamp)
+      });
+      layer.set("name", "layer");
+      map.addLayer(layer);
     }
   };
 };

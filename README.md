@@ -65,6 +65,18 @@ The git/github workflows used by FriskBy are very common, and
 extensive explanations are only a google search away.
 
 
+### Installing the dependencies (II)
+
+In addition to the binary packages listed above you must also install
+several Python packages. The Python packages can be installed with
+normal pip install:
+
+   ```bash
+   bash% sudo pip install -r requirements.txt
+   ```
+
+
+
 ### Creating the database
 
 A database for storing the measurements is an essential part of the

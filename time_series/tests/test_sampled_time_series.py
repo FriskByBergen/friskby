@@ -1,5 +1,6 @@
 import time
 import datetime
+from django.urls import reverse
 from django.db import IntegrityError
 from django.utils import dateparse , timezone
 from django.test import TestCase, Client
@@ -58,11 +59,9 @@ class SampledTimeSeriesTest(TestCase):
         id = ts.id
 
         ts2 = SampledTimeSeries.objects.get( pk = id )
-        
 
         client = Client( )
-        #Invalid ID
-        response = client.get("/time_series/api/sampled/%s/" % id )
+        response = client.get( reverse( "api.time_series.sampled" , args = [id]))
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
 

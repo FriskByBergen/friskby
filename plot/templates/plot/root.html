@@ -37,7 +37,7 @@
       {{ plot.id }}
     </td>
     <td>
-      <a href="{% url 'plot_one' plot.id %}"> {{ url_root }}{% url 'plot_get' plot.id %} </a>
+      <a href="{% url 'plot.view' plot.id %}"> {{ url_root }}{% url 'api.plot.get' plot.id %} </a>
     </td>
   </tr>
   {% endfor %}
@@ -89,7 +89,7 @@
       {{ plot.id }}
     </td>
     <td>
-      <a href="{% url 'plot_one' plot.id %}"> {{ url_root }}{% url 'plot_get' plot.id %} </a>
+      <a href="{% url 'plot.view' plot.id %}"> {{ url_root }}{% url 'api.plot.get' plot.id %} </a>
     </td>
   </tr>
   {% endfor %}

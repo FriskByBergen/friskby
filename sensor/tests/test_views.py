@@ -1,4 +1,5 @@
 import json
+from django.urls import reverse
 from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
 from rest_framework import status
@@ -12,5 +13,5 @@ class ViewTest(TestCase):
 
     def test_get_root(self):
         client = Client( )
-        response = client.get("/sensor/view/")
+        response = client.get( reverse("sensor.view.main"))
         self.assertEqual( response.status_code , status.HTTP_200_OK )

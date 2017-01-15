@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.test import TestCase, Client
 from django.test import TestCase
 from rest_framework import status
@@ -15,13 +16,14 @@ class ApiKeyViewTest(TestCase):
         
     def test_get_not_logged_in_fails(self):
         client = Client( )
+        url = reverse( "key.view.main" )
 
-        # Missing data
-        response = client.get("/sensor/view/keys/")
+        # Not logged in
+        response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_302_FOUND )
         
         client.login( username = self.context.test_user.username , 
                       password = self.context.test_user_passwd )
 
-        response = client.get("/sensor/view/keys/")
+        response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )

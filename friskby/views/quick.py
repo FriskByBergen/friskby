@@ -1,58 +1,77 @@
+import json
+
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
+from django.utils import formats
 
 from plot.models import *
+from sensor.models import *
 
-import sensor.models as models
+def make_timestamp( row ):
+    row["timestamp_data"] = TimeStamp.create( row["timestamp_data"] )
+    return row
 
-def get_current_timestamp():
-    from django.db import connection
-    cursor = connection.cursor()
-    # use this for debug
-    cursor.execute("SELECT timestamp_data from sensor_rawdata order by timestamp_data desc limit 1")
-    #cursor.execute("SELECT CURRENT_TIMESTAMP")
-    rows = cursor.fetchone()
-    return rows[0]
 
 class Quick(View):
 
     def get(self , request):
-        import json
-        from django.utils import formats
-        device_list = models.Device.objects.all()
+        device_list = Device.objects.all()
 
-        current_time = request.GET.get('time', get_current_timestamp())
-        print(current_time)
+        if "time" in request.GET:
+            end_time = TimeStamp.parse_datetime( request.GET["time"] )
+            print "end_time: %s" % end_time
+        else:
+            last = RawData.objects.latest( 'timestamp_data' )
+            end_time = last.timestamp_data
+            
+        start_time = end_time - datetime.timedelta( seconds = 14 * 24 * 3600 )
+        try:
+            pm10_type = MeasurementType.objects.get( name = "PM10" )
+            pm25_type = MeasurementType.objects.get( name = "PM25" )
+        except MeasurementType.DoesNotExist:
+            return HttpResponse( "Internal error - missing measurement types PM10 / PM25" , status = 500 )
+            
+
         device_rows = []
         for d in device_list:
-            pm25sensor = next(x for x in d.sensorList() if x.description == "PM25")
-            pm10sensor = next(x for x in d.sensorList() if x.description == "PM10")
-            dataSql = """
-            SELECT id, value, timestamp_data FROM sensor_rawdata
-            where sensor_id = '%s'
-              and timestamp_data <= '%s'
-              and timestamp_data > TIMESTAMP '%s' - INTERVAL '2 weeks'
-            order by timestamp_data asc"""
-            data25 = models.RawData.objects.raw(dataSql % (pm25sensor.id, current_time, current_time))
-            data10 = models.RawData.objects.raw(dataSql % (pm10sensor.id, current_time, current_time))
-            data25list = list({"value": x.value, "id": x.id, "timestamp": str(x.timestamp_data)} for x in data25)
-            data10list = list({"value": x.value, "id": x.id, "timestamp": str(x.timestamp_data)} for x in data10)
-            time = formats.date_format(data25[0].timestamp_data, "d/m-f")
+            if d.location is None:
+                continue
+                
+
+            try:
+                pm10sensor = Sensor.objects.get( sensor_type__measurement_type = pm10_type )
+                pm25sensor = Sensor.objects.get( sensor_type__measurement_type = pm25_type )
+            except Sensor.DoesNotExist:
+                continue
+
+            data25query = RawData.objects.filter( sensor_id = pm25sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data")
+            data10query = RawData.objects.filter( sensor_id = pm10sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data")
+
+            data25list = map( make_timestamp , data25query )
+            data10list = map( make_timestamp , data10query )
+            
+            if len(data25list) == 0:
+                continue
+
+            time = data25list[0]["timestamp_data"]
             row = {
                 'id': d.id,
                 'locname': d.location.name,
                 'lat': d.location.latitude,
                 'long': d.location.longitude,
-                'pm25': data25[0].value,
-                'pm10': data10[0].value,
-                'pm25list': data25list,
+                'pm25': data25list[0]["value"],
+                'pm10': data10list[0]["value"],
+                'pm25list': data25list, 
                 'pm10list': data10list,
-                'time': time }
+                'time': time}
             device_rows.append(row)
-            print(vars(d))
-            print(row)
 
-        json = json.dumps(device_rows)
+        json_string = json.dumps(device_rows)
 
-        context = {"device_rows" : device_rows, "date": current_time, "device_json": json, "timestamp": str(current_time) }
+        context = {"device_rows" : device_rows, 
+                   "date": end_time, 
+                   "device_json": json_string, 
+                   "timestamp": str(end_time) }
+
         return render( request , "friskby/quick.html" , context )

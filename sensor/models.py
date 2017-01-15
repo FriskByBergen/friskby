@@ -321,12 +321,6 @@ class TimeStamp( Model ):
     # i.e. yyyy-mm-ddTHH:MM:SS+zz
     # Where the +zz is a timezone shift relative to UTC; i.e. +01 for Central European Time.
 
-    timestamp = DateTimeField("timestamp")
-
-    def __unicode__(self):
-        return str(self.timestamp)
-
-
     @classmethod
     # This takes a time_string which is supposed to be in the time
     # zone given by the settings.TIME_ZONE variable. The resulting

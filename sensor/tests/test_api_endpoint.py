@@ -103,21 +103,6 @@ class DataTypeTest(TestCase):
         self.assertTrue("FILTEREDX" in type_list)
 
 
-class TimeStampTest(TestCase):
-
-    def setUp(self):
-        TimeStamp.objects.create( timestamp = timezone.now() )
-        TimeStamp.objects.create( timestamp = timezone.now() )
-        TimeStamp.objects.create( timestamp = timezone.now() )
-
-        
-    def test_get(self):
-        client = Client( )
-        response = client.get("/sensor/api/timestamp/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
-        self.assertEqual( len(data) , 3 )
-
 
 
 class LocationTest(TestCase):

@@ -55,6 +55,7 @@ class Quick(View):
                 continue
 
             time = data25list[0]["timestamp_data"]
+
             row = {
                 'id': d.id,
                 'locname': d.location.name,

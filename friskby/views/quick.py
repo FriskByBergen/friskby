@@ -40,8 +40,8 @@ class Quick(View):
                 
 
             try:
-                pm10sensor = Sensor.objects.get( sensor_type__measurement_type = pm10_type )
-                pm25sensor = Sensor.objects.get( sensor_type__measurement_type = pm25_type )
+                pm10sensor = Sensor.objects.get( parent_device=d, sensor_type__measurement_type = pm10_type )
+                pm25sensor = Sensor.objects.get( parent_device=d, sensor_type__measurement_type = pm25_type )
             except Sensor.DoesNotExist:
                 continue
 

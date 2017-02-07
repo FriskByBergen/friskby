@@ -25,8 +25,15 @@ class Quick(View):
         print(current_time)
         device_rows = []
         for d in device_list:
-            pm25sensor = next(x for x in d.sensorList() if x.description == "PM25")
-            pm10sensor = next(x for x in d.sensorList() if x.description == "PM10")
+            sl = d.sensorList()
+            pm25sensor,pm10sensor = None, None
+            for s in sl:
+                if s.description == "PM25":
+                    pm25sensor = s
+                elif s.description == "PM10":
+                    pm10sensor = s
+            if not (pm25sensor and pm10sensor):
+                continue
             dataSql = """
             SELECT id, value, timestamp_data FROM sensor_rawdata
             where sensor_id = '%s'

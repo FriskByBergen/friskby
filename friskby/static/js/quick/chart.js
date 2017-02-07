@@ -57,7 +57,7 @@ function createchart() {
               id: sensor.id,
               name: sensor.locname,
               data: sensor[key].map(function(measurement) {
-                return [Date.parse(measurement.timestamp),
+                return [Date.parse(measurement.timestamp_data),
                         measurement.value];
               })
             });

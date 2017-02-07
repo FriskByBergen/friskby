@@ -45,8 +45,8 @@ class Quick(View):
             except Sensor.DoesNotExist:
                 continue
 
-            data25query = RawData.objects.filter( sensor_id = pm25sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data")
-            data10query = RawData.objects.filter( sensor_id = pm10sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data")
+            data25query = RawData.objects.filter( sensor_id = pm25sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data").order_by('timestamp_data')
+            data10query = RawData.objects.filter( sensor_id = pm10sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data").order_by('timestamp_data')
 
             data25list = map( make_timestamp , data25query )
             data10list = map( make_timestamp , data10query )
@@ -54,7 +54,7 @@ class Quick(View):
             if len(data25list) == 0:
                 continue
 
-            time = data25list[0]["timestamp_data"]
+            time = data25list[-1]["timestamp_data"]
 
             row = {
                 'id': d.id,

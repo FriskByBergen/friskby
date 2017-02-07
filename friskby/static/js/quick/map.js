@@ -21,11 +21,12 @@ function createmap() {
     })
   });
   var styleFunc = function(list, timestamp) {
-     return function(feature, resolution) {
-      var val = feature.getProperties()["sensor"][list].find(function(a) {
-        return a.timestamp == timestamp;
-      });
-      if (val == undefined) return new ol.style.Style({visible: false}); else val = val.value;
+    return function(feature, resolution) {
+      var data = feature.getProperties()["sensor"][list];
+      if (data.length == 0 || data[data.length - 1] == undefined)
+        return new ol.style.Style({visible: false});
+
+      var val = data[data.length - 1].value;
       var norm_val = normalize(val,-20, 20,255);
       var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
       return new ol.style.Style({

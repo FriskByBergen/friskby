@@ -9,7 +9,7 @@ class Command(BaseCommand):
     all entries, but by using one of --sensor= or --device= options
     you can drop only data from that sensor/device.  """
 
-    add_arguments(self, parser):
+    def add_arguments(self, parser):
         parser.add_argument('--device' )
         parser.add_argument('--sensor' )
 

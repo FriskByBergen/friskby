@@ -1,15 +1,23 @@
 /* Remove the navbar's default margin-bottom and rounded borders */
-        .navbar {
-          border-radius: 0;
-        }
+.navbar {
+    border-radius: 0;
+}
 
 .friskTimeslider {
     /* width: 100%; */;
 }
 
-
-#sensor-table td {
-    font-size: 10px; /* 0.85vw; */
+#sensorlist {
+    margin: 10px;
 }
+
+#map {
+    margin: 10px;
+}
+
+#chart {
+    margin: 10px;
+}
+
 /* Header: #d87b62 */
 /* body: #a0bbae */

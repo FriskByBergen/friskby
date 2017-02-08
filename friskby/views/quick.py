@@ -32,7 +32,8 @@ class Quick(View):
         except MeasurementType.DoesNotExist:
             return HttpResponse( "Internal error - missing measurement types PM10 / PM25" , status = 500 )
             
-
+        data_all = RawData.objects.filter( timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data", "sensor_id").order_by('timestamp_data')
+        
         device_rows = []
         for d in device_list:
             if d.location is None:
@@ -45,8 +46,8 @@ class Quick(View):
             except Sensor.DoesNotExist:
                 continue
 
-            data25query = RawData.objects.filter( sensor_id = pm25sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data").order_by('timestamp_data')
-            data10query = RawData.objects.filter( sensor_id = pm10sensor.id , timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data").order_by('timestamp_data')
+            data25query = [x for x in data_all if x["sensor_id"] == pm25sensor.id]
+            data10query = [x for x in data_all if x["sensor_id"] == pm10sensor.id]
 
             data25list = map( make_timestamp , data25query )
             data10list = map( make_timestamp , data10query )

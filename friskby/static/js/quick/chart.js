@@ -25,8 +25,8 @@ function createchart() {
           title: {
               text: 'μg/m3'
           },
-          /*min: 0,
-          max: 100*/
+          min: 0,
+          max: 100
       },
       tooltip: {
           headerFormat: '<b>{series.name}</b><br>',

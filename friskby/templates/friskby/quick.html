@@ -43,28 +43,28 @@
 {% endblock %}
 
 {% block body %}
-<h1>Friskby oversikt for {{date}}</h1>
+<h1>Friskby Bergen</h1>
 <div id="sensorlist">
-  <h2>Measurements</h2>
+  <table class="pure-table">
+    <tr><th>Location</th><th>PM 2.5</th><th>PM 10</th><th>Last update</th></tr>
+    {% for d in device_rows %}
+    <tr><td>{{d.locname}}</td><td>{{d.pm25}}</td><td>{{d.pm10}}</td><td>{{d.time}}</td></tr>
+    {% endfor %}
+  </table>
   <select id="pmselect">
     <option id="pm25opt" value="pm25">PM 25</option>
     <option id="pm10opt" value="pm10">PM 10</option>
   </select>
-  <table class="pure-table">
-    <tr><th>Location</th><th>PM 2.5</th><th>PM 10</th><th>Last update</th></tr>
-{% for d in device_rows %}
-    <tr><td>{{d.locname}}</td><td>{{d.pm25}}</td><td>{{d.pm10}}</td><td>{{d.time}}</td></tr>
-{% endfor %}
-  </table>
 </div>
+
 
 <div id="map" style="max-width:850px; height: 300px">
-
 </div>
 <input id="slider" type ="range" min ="0.0" max="1.0" value="1.0" step="0.01"
-    style="width:850px;"/>
-<div id="chart" style="max-width:850px; height: 500px">
+       style="width:850px;"/>
+</div>
 
+<div id="chart" style="max-width:850px; height: 500px">
 </div>
 
 {% endblock %}

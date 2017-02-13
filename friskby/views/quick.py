@@ -5,6 +5,9 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.utils import formats
 
+from dateutil import parser as dt_parser
+from datetime import datetime as dt
+
 from plot.models import *
 from sensor.models import *
 
@@ -12,10 +15,27 @@ def make_timestamp( row ):
     row["timestamp_data"] = TimeStamp.create( row["timestamp_data"] )
     return row
 
+def downsample(lst, minutes = 15, cutoff = 100):
+    if not lst:
+        return []
+    ret = []
+    prev = None
+    ret.append(lst[0])
+    prev = lst[0]['timestamp_data']
+    for e in lst:
+        delta = e['timestamp_data'] - prev
+        if delta.total_seconds() > minutes*60:
+            e['value'] = min(cutoff, e['value'])
+            ret.append(e)
+            prev = e['timestamp_data']
+    if ret[-1] != lst[-1]:
+        ret.append(lst[-1]) # retain the last element
+    return ret
 
 class Quick(View):
 
     def get(self , request):
+        period = 7 * 24 * 3600 # 1 week
         device_list = Device.objects.all()
 
         if "time" in request.GET:
@@ -25,7 +45,7 @@ class Quick(View):
             last = RawData.objects.latest( 'timestamp_data' )
             end_time = last.timestamp_data
             
-        start_time = end_time - datetime.timedelta( seconds = 14 * 24 * 3600 )
+        start_time = end_time - datetime.timedelta( seconds = period )
         try:
             pm10_type = MeasurementType.objects.get( name = "PM10" )
             pm25_type = MeasurementType.objects.get( name = "PM25" )
@@ -33,7 +53,8 @@ class Quick(View):
             return HttpResponse( "Internal error - missing measurement types PM10 / PM25" , status = 500 )
             
         data_all = RawData.objects.filter( timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data", "sensor_id").order_by('timestamp_data')
-        
+
+        algo_start = dt.now()
         device_rows = []
         for d in device_list:
             if d.location is None:
@@ -46,8 +67,8 @@ class Quick(View):
             except Sensor.DoesNotExist:
                 continue
 
-            data25query = [x for x in data_all if x["sensor_id"] == pm25sensor.id]
-            data10query = [x for x in data_all if x["sensor_id"] == pm10sensor.id]
+            data25query = downsample([x for x in data_all if x["sensor_id"] == pm25sensor.id], minutes=30, cutoff=100)
+            data10query = downsample([x for x in data_all if x["sensor_id"] == pm10sensor.id], minutes=30, cutoff=100)
 
             data25list = map( make_timestamp , data25query )
             data10list = map( make_timestamp , data10query )
@@ -56,7 +77,7 @@ class Quick(View):
                 continue
 
             time = data25list[-1]["timestamp_data"]
-
+            time_pp = dt_parser.parse(time).strftime('%b. %d, %H:%M') # %d-%m-%Y %H:%M
             row = {
                 'id': d.id,
                 'locname': d.location.name,
@@ -66,9 +87,13 @@ class Quick(View):
                 'pm10': data10list[0]["value"],
                 'pm25list': data25list, 
                 'pm10list': data10list,
-                'time': time}
+                'time': time_pp,
+                'isotime': time}
             device_rows.append(row)
 
+        algo_end = dt.now()
+        algo_delta = algo_end - algo_start
+        print('total time used: %.2f sec' % algo_delta.total_seconds())
         json_string = json.dumps(device_rows)
 
         context = {"device_rows" : device_rows, 

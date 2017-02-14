@@ -29,7 +29,7 @@ class RawData(Model):
                (INVALID_SENSOR , "Invalid sensor ID"),
                (SENSOR_OFFLINE , "Sensor offline"))
     
-    apikey = CharField(max_length=128)
+
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
@@ -195,8 +195,7 @@ class RawData(Model):
             
             rawdata = []
             for ts,string_value in zip(timestamp,string_values):
-                rd = RawData( apikey = "DUMMY",
-                              sensor_id = sensor_id,
+                rd = RawData( sensor_id = sensor_id,
                               timestamp_data = TimeStamp.parse_datetime( ts ))
             
                 # 1: Check that the sensor_id is valid.

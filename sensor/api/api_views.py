@@ -237,7 +237,6 @@ class ReadingView(APIView):
             return Response(RawData.error( request.data ) , status = status.HTTP_400_BAD_REQUEST )
         
         rd        = raw_data[0]
-        key       = rd.apikey
         sensorid  = rd.sensor_id
         value     = rd.value
         timestamp = rd.timestamp_data
@@ -247,9 +246,6 @@ class ReadingView(APIView):
         except models.Sensor.DoesNotExist:
             return Response("The sensorID:%s is not found. " % sensorid , status.HTTP_404_NOT_FOUND)
 
-        if not sensor.valid_post_key( key ):
-            return Response("Invalid key:'%s' when posting to:'%s'" % (key , sensorid) , status.HTTP_403_FORBIDDEN)
-            
         if not sensor.valid_input( value ):
             return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
         value = float(value)

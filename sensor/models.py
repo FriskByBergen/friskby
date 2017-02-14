@@ -195,7 +195,7 @@ class RawData(Model):
             
             rawdata = []
             for ts,string_value in zip(timestamp,string_values):
-                rd = RawData( apikey = data["key"],
+                rd = RawData( apikey = "DUMMY",
                               sensor_id = sensor_id,
                               timestamp_data = TimeStamp.parse_datetime( ts ))
             

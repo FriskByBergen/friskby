@@ -160,18 +160,6 @@ STATICFILES_DIRS = (
 )
 
 
-# By default the application will store an entry in the RawData
-# database if the post has all the required fields, without actually
-# checking that the fields are valid. If the FORCE_VALID_KEY setting
-# is set to True the application will check that supplied key is a
-# valid key before saving.
-FORCE_VALID_KEY = False
-if os.getenv("FORCE_VALID_KEY"):
-    value = os.getenv("FORCE_VALID_KEY").lower()
-    if value == "true":
-        FORCE_VALID_KEY = True
-
-
 # By default all posted measurements will be stored in the RAWDATA
 # table even if the sensor can not be recognized. If the
 # FORCE_VALID_SENSOR setting is set to True, only readings

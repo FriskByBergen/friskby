@@ -100,10 +100,10 @@ class RawData(Model):
                 t = TimeStamp.parse_datetime( ts )
                 if t is None:
                     valid = False
-
-        if valid and settings.FORCE_VALID_KEY:
+            
+        if valid:
             valid = ApiKey.valid( data["key"] )
-
+        
         return valid
 
     
@@ -123,10 +123,8 @@ class RawData(Model):
         if ts is None:
             return "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz"
 
-        if settings.FORCE_VALID_KEY:
-            if not ApiKey.valid( data["key"] ):
-                return "Error: invalid key"
-
+        if not ApiKey.valid( data["key"] ):
+            return "Error: invalid key"
 
         return None
 

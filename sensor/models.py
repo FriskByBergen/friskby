@@ -16,7 +16,6 @@ from git_version.models import GitVersion
 
 class RawData(Model):
     VALID = 0
-    INVALID_KEY = 1
     FORMAT_ERROR = 2
     RANGE_ERROR = 3
     INVALID_SENSOR = 4
@@ -49,7 +48,7 @@ class RawData(Model):
 
     @classmethod
     def valid_status( cls , status ):
-        if status in [cls.VALID , cls.INVALID_KEY]:
+        if status == cls.VALID:
             return True
         else:
             return False
@@ -220,11 +219,6 @@ class RawData(Model):
                         rd.status = RawData.FORMAT_ERROR
                         rd.string_value = string_value
                     
-                # 4: Check that the API key is valid.
-                if rd.status == RawData.VALID:
-                    if not sensor.valid_post_key( data["key"] ):
-                        rd.status = RawData.INVALID_KEY
-
                 # 5: Check that sensor is online:
                 if rd.status == RawData.VALID:
                     if not sensor.on_line:

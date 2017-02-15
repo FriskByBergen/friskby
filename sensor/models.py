@@ -23,7 +23,6 @@ class RawData(Model):
     SENSOR_OFFLINE = 5
 
     choices = ((VALID , "Valid") , 
-               (INVALID_KEY , "Invalid key"),
                (FORMAT_ERROR , "Format error in value"),
                (RANGE_ERROR , "Value out of range"),
                (INVALID_SENSOR , "Invalid sensor ID"),

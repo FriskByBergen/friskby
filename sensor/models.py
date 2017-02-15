@@ -29,7 +29,7 @@ class RawData(Model):
                (INVALID_SENSOR , "Invalid sensor ID"),
                (SENSOR_OFFLINE , "Sensor offline"))
     
-    apikey = CharField(max_length=128)
+
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
@@ -100,10 +100,10 @@ class RawData(Model):
                 t = TimeStamp.parse_datetime( ts )
                 if t is None:
                     valid = False
-
-        if valid and settings.FORCE_VALID_KEY:
+            
+        if valid:
             valid = ApiKey.valid( data["key"] )
-
+        
         return valid
 
     
@@ -123,10 +123,8 @@ class RawData(Model):
         if ts is None:
             return "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz"
 
-        if settings.FORCE_VALID_KEY:
-            if not ApiKey.valid( data["key"] ):
-                return "Error: invalid key"
-
+        if not ApiKey.valid( data["key"] ):
+            return "Error: invalid key"
 
         return None
 
@@ -197,8 +195,7 @@ class RawData(Model):
             
             rawdata = []
             for ts,string_value in zip(timestamp,string_values):
-                rd = RawData( apikey = data["key"],
-                              sensor_id = sensor_id,
+                rd = RawData( sensor_id = sensor_id,
                               timestamp_data = TimeStamp.parse_datetime( ts ))
             
                 # 1: Check that the sensor_id is valid.

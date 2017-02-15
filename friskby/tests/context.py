@@ -1,3 +1,4 @@
+from api_key.models import *
 from sensor.models import *
 from sensor.tests.context import TestContext as SensorContext
 
@@ -35,11 +36,13 @@ class TestContext(object):
                                                   parent_device = self.sensor_context.dev,
                                                   description = "??",
                                                   sensor_type = self.sensor_type_pm25 )
-        
-        RawData.create( {"key" : "123" , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 } )
-        RawData.create( {"key" : "123" , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-11T12:12:00+01" , "value" :  50 } )
-        RawData.create( {"key" : "123" , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-12T12:12:00+01" , "value" :  10 } )
 
-        RawData.create( {"key" : "123" , "sensorid" : "Test:PM25" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 } )
-        RawData.create( {"key" : "123" , "sensorid" : "Test:PM25" , "timestamp" : "2015-10-11T12:12:00+01" , "value" : 200 } )
-        RawData.create( {"key" : "123" , "sensorid" : "Test:PM25" , "timestamp" : "2015-10-12T12:12:00+01" , "value" : 300 } )
+        self.key = ApiKey.objects.create( description = "Newkey")
+        self.external_key = str(self.key.external_key)
+        
+        RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 } )
+        RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-11T12:12:00+01" , "value" :  50 } )
+        RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-12T12:12:00+01" , "value" :  10 } )
+        RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM25" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 } )
+        RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM25" , "timestamp" : "2015-10-11T12:12:00+01" , "value" : 200 } )
+        RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM25" , "timestamp" : "2015-10-12T12:12:00+01" , "value" : 300 } )

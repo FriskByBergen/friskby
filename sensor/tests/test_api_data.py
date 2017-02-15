@@ -18,19 +18,26 @@ class Readingtest(TestCase):
     def test_post_key(self):
         client = Client( )
         url = reverse( "sensor.api.post" )
-
+        
+        pre_length = len(RawData.objects.all( ))
         # Missing key 
         data = {"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01"}
         string_data = json.dumps( data )
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
+        post_length = len(RawData.objects.all( ))
+
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
+        self.assertEqual( pre_length , post_length )
+
 
         # Invalid key 
         data = {"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01" , "key" : "Invalid"}
         string_data = json.dumps( data )
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN , response.data)
-
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
+        post_length = len(RawData.objects.all( ))
+        self.assertEqual( pre_length , post_length )
+        
 
     def test_post_offline(self):
         client = Client( )

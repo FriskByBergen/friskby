@@ -20,7 +20,7 @@ class RawDataTest(TestCase):
         self.assertEqual( RawData.error( None ) , "Error: empty payload")
 
         # Missing value
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01"}
         self.assertFalse( RawData.is_valid( data ))
         self.assertEqual( RawData.error( data ) , "Error: missing fields in payload: ['value']")
 
@@ -35,14 +35,14 @@ class RawDataTest(TestCase):
         self.assertEqual( RawData.error( data ) , "Error: missing fields in payload: ['key', 'sensorid', 'value']")
         
         # Invalid timestamp
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12" , "value" : 100}
+        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12" , "value" : 100}
         self.assertFalse( RawData.is_valid( data ))
         self.assertEqual( RawData.error( data ) , "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz")
         with self.assertRaises( ValueError ):
             RawData.create( data )
             
         # Valid 
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         self.assertTrue( RawData.is_valid( data ))
         self.assertTrue( RawData.error( data ) is None )
         rd = RawData.create( data )
@@ -50,11 +50,11 @@ class RawDataTest(TestCase):
         #Force recognized sensor
         tmp = settings.FORCE_VALID_SENSOR
         settings.FORCE_VALID_SENSOR = True
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         self.assertFalse( RawData.is_valid( data ))
 
         settings.FORCE_VALID_SENSOR = False
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         self.assertTrue( RawData.is_valid( data ))
         rd = RawData.create( data )
         self.assertEqual( rd[0].status , RawData.INVALID_SENSOR )
@@ -62,29 +62,12 @@ class RawDataTest(TestCase):
         self.assertEqual( rd[0].string_value , "100")
 
         # Valid 
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 }
+        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 }
         rd = RawData.create( data )
         
-        # Force recognized key:
-        data = {"key" : "123" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
-
-        try:
-            tmp = settings.FORCE_VALID_KEY
-            settings.FORCE_VALID_KEY = True
-            with self.assertRaises( ValueError ):
-                RawData.create( data )
-            self.assertEqual( RawData.error( data ) , "Error: invalid key")
-        finally:
-            settings.FORCE_VALID_KEY = False
-
-        try:
-            data["key"] = self.context.external_key
-            tmp = settings.FORCE_VALID_KEY
-            settings.FORCE_VALID_KEY = True
+        data = {"key" : "Invalid" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        with self.assertRaises(ValueError):
             rd = RawData.create( data )
-        finally:
-            settings.FORCE_VALID_KEY = False
-
 
     def test_get_api(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
@@ -149,11 +132,6 @@ class RawDataTest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
-
-        response = client.get( url , {"status" : RawData.INVALID_KEY})
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads(response.content)
-        self.assertEqual( len(data) , 1 )
 
         sd = SampledData.updateRawData( sensor )
         self.assertEqual(len(sd) , 3)
@@ -277,11 +255,8 @@ class RawDataTest(TestCase):
         self.assertEqual( rd[0].status , RawData.RANGE_ERROR )
 
         data = {"sensorid" : sensor_id , "value" : 15, "timestamp" : "2015-10-10T12:13:00+01", "key" : "InvalidKey" }
-        rd = RawData.create( data )
-        self.assertEqual( rd[0].value , 15 )
-        self.assertEqual( rd[0].string_value , None )
-        self.assertEqual( rd[0].status , RawData.INVALID_KEY )
-
+        with self.assertRaises(ValueError):
+            rd = RawData.create( data )
 
         data = {"sensorid" : sensor_id , 
                 "value_list" : [("2015-10-10T12:13:00+01", 10), ("2015-10-10T12:14:00+01", 20)],

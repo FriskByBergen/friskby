@@ -18,13 +18,11 @@ class RawData(Model):
     VALID = 0
     FORMAT_ERROR = 2
     RANGE_ERROR = 3
-    INVALID_SENSOR = 4
     SENSOR_OFFLINE = 5
 
     choices = ((VALID , "Valid") , 
                (FORMAT_ERROR , "Format error in value"),
                (RANGE_ERROR , "Value out of range"),
-               (INVALID_SENSOR , "Invalid sensor ID"),
                (SENSOR_OFFLINE , "Sensor offline"))
     
 
@@ -77,7 +75,7 @@ class RawData(Model):
             if not data_OK:
                 valid = False
         
-        if valid and settings.FORCE_VALID_SENSOR:
+        if valid:
             try:
                 sensor = Sensor.objects.get( pk = data["sensorid"] )
             except Sensor.DoesNotExist:

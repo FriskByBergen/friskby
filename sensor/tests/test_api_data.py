@@ -82,9 +82,8 @@ class Readingtest(TestCase):
 
         # SensorID is invalid
         data = {"sensorid" : "TempXX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
-        string_data = json.dumps( data )
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND , response.data)
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
         # Value out of range
         data = {"sensorid" : "TEMP:XX" , "value" : 400, "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}

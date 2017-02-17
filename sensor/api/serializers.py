@@ -63,7 +63,7 @@ class SensorTypeSerializer(serializers.ModelSerializer):
 class SensorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sensor
-        fields = ('id', 'sensor_type','parent_device','description')
+        fields = ('sensor_id', 'sensor_type','parent_device','description')
 
 
 

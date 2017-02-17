@@ -40,22 +40,22 @@ class TestContext(object):
                                                            min_value = 0,
                                                            max_value = 100)
         
-        self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
+        self.temp_sensor = Sensor.objects.create( sensor_id = "TEMP:XX",
                                                   parent_device = self.dev,
                                                   description = "tempm",
                                                   sensor_type = self.sensor_type_temp)
         
-        self.hum_sensor = Sensor.objects.create( id = "HUM:XX",
+        self.hum_sensor = Sensor.objects.create( sensor_id = "HUM:XX",
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
                                                  sensor_type = self.sensor_type_temp)
 
-        self.loc0_sensor = Sensor.objects.create( id = "NO_LOC:XX",
-                                                 description = "Measurement humidity",
-                                                 data_type = self.raw_data ,
-                                                 parent_device = self.dev_loc0,
-                                                 sensor_type = self.sensor_type_temp)
+        self.loc0_sensor = Sensor.objects.create( sensor_id = "NO_LOC:XX",
+                                                  description = "Measurement humidity",
+                                                  data_type = self.raw_data ,
+                                                  parent_device = self.dev_loc0,
+                                                  sensor_type = self.sensor_type_temp)
 
 
         self.test_user_passwd = get_random_string( length = 10 ),

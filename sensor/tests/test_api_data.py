@@ -43,7 +43,7 @@ class Readingtest(TestCase):
         client = Client( )
         self.context.temp_sensor.on_line = False
         self.context.temp_sensor.save( ) 
-        sensor_id = self.context.temp_sensor.id
+        sensor_id = self.context.temp_sensor.sensor_id
         data = {"sensorid" : sensor_id , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
         url = reverse( "sensor.api.post" )
@@ -246,7 +246,7 @@ class Readingtest(TestCase):
         
     def test_get(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
-        Sensor.objects.create( id = sensor_id,
+        Sensor.objects.create( sensor_id = sensor_id,
                                parent_device = self.context.dev,
                                sensor_type = self.context.sensor_type_temp , 
                                description = "Measurement of ..")

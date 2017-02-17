@@ -70,8 +70,8 @@ class Quick(View):
             except Sensor.DoesNotExist:
                 continue
 
-            data25query = downsample([x for x in data_all if x["sensor_id"] == pm25sensor.id], minutes=30, cutoff=100)
-            data10query = downsample([x for x in data_all if x["sensor_id"] == pm10sensor.id], minutes=30, cutoff=100)
+            data25query = downsample([x for x in data_all if x["sensor_id"] == pm25sensor.sensor_id], minutes=30, cutoff=100)
+            data10query = downsample([x for x in data_all if x["sensor_id"] == pm10sensor.sensor_id], minutes=30, cutoff=100)
 
             data25list = map( make_timestamp , data25query )
             data10list = map( make_timestamp , data10query )

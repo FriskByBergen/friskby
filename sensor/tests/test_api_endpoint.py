@@ -149,15 +149,15 @@ class SensorTest(TestCase):
 
     def test_valid_key(self):
         sensor = self.context.temp_sensor
-        sensor.id = "Invalid id"
+        sensor.sensor_id = "Invalid id"
         with self.assertRaises(ValidationError):
             sensor.full_clean()
 
-        sensor.id = "?=+/"
+        sensor.sensor_id = "?=+/"
         with self.assertRaises(ValidationError):
             sensor.full_clean()
             
-        sensor.id = "TEMP:XX_aa-23864"
+        sensor.sensor_id = "TEMP:XX_aa-23864"
         sensor.save( )
         sensor.full_clean()
 

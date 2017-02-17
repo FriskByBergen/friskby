@@ -129,25 +129,25 @@ class RawData(Model):
         ts = []
         if num is None:
             if start is None and end is None:
-                qs = RawData.objects.filter( sensor_id = sensor.id , 
+                qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
                                              status = RawData.VALID ).order_by('timestamp_data')
             else:
                 if end is None:
-                    qs = RawData.objects.filter( sensor_id = sensor.id , 
+                    qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
                                                  status = RawData.VALID, 
                                                  timestamp_data__gte = start).order_by('timestamp_data')
                 elif start is None:
-                    qs = RawData.objects.filter( sensor_id = sensor.id , 
+                    qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
                                                  status = RawData.VALID, 
                                                  timestamp_data__lte = end).order_by('timestamp_data')
                 else:
-                    qs = RawData.objects.filter( sensor_id = sensor.id , 
+                    qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
                                                  status = RawData.VALID, 
                                                  timestamp_data__range = [start,end]).order_by('timestamp_data')
 
         else:
             if start is None and end is None:
-                qs = reversed( RawData.objects.filter( sensor_id = sensor.id , status = RawData.VALID).order_by('-timestamp_data')[:num] )
+                qs = reversed( RawData.objects.filter( sensor_id = sensor.sensor_id , status = RawData.VALID).order_by('-timestamp_data')[:num] )
             else:
                 raise ValueError("Can not supply both num and start")
             
@@ -279,7 +279,7 @@ class Device( Model ):
     def clientConfig(self):
         # The post key is not set here, and must be explicitly set in the 
         # view code if the request is correctly authorized.
-        config = {"sensor_list" : [ sensor.id for sensor in self.sensorList() ],
+        config = {"sensor_list" : [ sensor.sensor_id for sensor in self.sensorList() ],
                   "post_path" : reverse("sensor.api.post"),
                   "config_path" : reverse("sensor.device_config" , args = [self.id]),
                   "device_id" : self.id }
@@ -363,7 +363,7 @@ class SensorType( Model ):
 class Sensor( Model ):
     IDPattern = "[-_:a-zA-Z0-9]+"
 
-    id = CharField("Sensor ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
+    sensor_id = CharField("Sensor ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
     sensor_type = ForeignKey( SensorType )
     parent_device = ForeignKey( Device )
     data_type = ForeignKey( DataType , default = "TEST" )
@@ -373,7 +373,7 @@ class Sensor( Model ):
     last_timestamp = DateTimeField( null = True , blank = True) 
 
     def __unicode__(self):
-        return self.id
+        return self.sensor_id
         
 
     def valid_input(self , input_value):
@@ -406,7 +406,7 @@ class Sensor( Model ):
                 
 
         location = data_value.data_info.location
-        return {"sensorid"  : self.id,
+        return {"sensorid"  : self.sensor_id,
                 "timestamp" : data_value.data_info.timestamp.timestamp,
                 "value"     : value,
                 "location"  : {"latitude" : location.latitude , "longitude" : location.longitude}}
@@ -420,7 +420,7 @@ class Sensor( Model ):
     # subsequently used to update the status of all the relevant
     # RawData records.
     def get_rawdata(self, status = RawData.VALID):
-        qs = RawData.objects.filter( sensor_id = self.id , 
+        qs = RawData.objects.filter( sensor_id = self.sensor_id , 
                                      processed = False ,
                                      status = status ).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
         

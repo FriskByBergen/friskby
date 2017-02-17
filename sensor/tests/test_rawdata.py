@@ -18,9 +18,10 @@ class RawDataTest(TestCase):
     def test_valid(self):
         self.assertFalse( RawData.is_valid( None ))
         self.assertEqual( RawData.error( None ) , "Error: empty payload")
+        sensor_id = self.context.temp_sensor.id
 
         # Missing value
-        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01"}
+        data = {"key" : self.context.external_key , "sensorid" : sensor_id , "timestamp" : "2015-10-10T12:12:00+01"}
         self.assertFalse( RawData.is_valid( data ))
         self.assertEqual( RawData.error( data ) , "Error: missing fields in payload: ['value']")
 
@@ -35,37 +36,27 @@ class RawDataTest(TestCase):
         self.assertEqual( RawData.error( data ) , "Error: missing fields in payload: ['key', 'sensorid', 'value']")
         
         # Invalid timestamp
-        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12" , "value" : 100}
+        data = {"key" : self.context.external_key , "sensorid" : sensor_id , "timestamp" : "2015-10-10T12" , "value" : 100}
         self.assertFalse( RawData.is_valid( data ))
         self.assertEqual( RawData.error( data ) , "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz")
         with self.assertRaises( ValueError ):
             RawData.create( data )
             
         # Valid 
-        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        data = {"key" : self.context.external_key , "sensorid" : sensor_id , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         self.assertTrue( RawData.is_valid( data ))
         self.assertTrue( RawData.error( data ) is None )
         rd = RawData.create( data )
 
-        #Force recognized sensor
-        tmp = settings.FORCE_VALID_SENSOR
+        # Invalid sensor id
         settings.FORCE_VALID_SENSOR = True
         data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         self.assertFalse( RawData.is_valid( data ))
+        with self.assertRaises(ValueError):
+            rd = RawData.create( data )
 
-        settings.FORCE_VALID_SENSOR = False
-        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
-        self.assertTrue( RawData.is_valid( data ))
-        rd = RawData.create( data )
-        self.assertEqual( rd[0].status , RawData.INVALID_SENSOR )
-        self.assertEqual( rd[0].value , -1 )
-        self.assertEqual( rd[0].string_value , "100")
-
-        # Valid 
-        data = {"key" : self.context.external_key , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 }
-        rd = RawData.create( data )
-        
-        data = {"key" : "Invalid" , "sensorid" : "ggg" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
+        # Invalid key
+        data = {"key" : "Invalid" , "sensorid" : sensor_id , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100}
         with self.assertRaises(ValueError):
             rd = RawData.create( data )
 
@@ -241,10 +232,8 @@ class RawDataTest(TestCase):
         self.assertEqual( rd[0].status , RawData.VALID )
 
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
-        rd = RawData.create( data )
-        self.assertEqual( rd[0].value , -1 )
-        self.assertEqual( rd[0].string_value , "150" )
-        self.assertEqual( rd[0].status , RawData.INVALID_SENSOR )
+        with self.assertRaises(ValueError):
+            rd = RawData.create( data )
 
         data = {"sensorid" : sensor_id , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )

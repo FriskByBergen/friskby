@@ -77,7 +77,7 @@ class RawData(Model):
             if not data_OK:
                 valid = False
         
-        if valid and settings.FORCE_VALID_SENSOR:
+        if valid:
             try:
                 sensor = Sensor.objects.get( pk = data["sensorid"] )
             except Sensor.DoesNotExist:

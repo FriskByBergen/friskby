@@ -27,12 +27,12 @@ class TestContext(object):
                                                            max_value = 1000)
                                                            
 
-        self.sensor_pm10 = Sensor.objects.create( id = "Test:PM10",
+        self.sensor_pm10 = Sensor.objects.create( sensor_id = "Test:PM10",
                                                   parent_device = self.sensor_context.dev,
                                                   description = "??",
                                                   sensor_type = self.sensor_type_pm10 )
 
-        self.sensor_pm25 = Sensor.objects.create( id = "Test:PM25",
+        self.sensor_pm25 = Sensor.objects.create( sensor_id = "Test:PM25",
                                                   parent_device = self.sensor_context.dev,
                                                   description = "??",
                                                   sensor_type = self.sensor_type_pm25 )

@@ -22,7 +22,7 @@ class FilterDataView(APIView):
         qs =  FilterData.objects.all()
 
         for fd in qs:
-            sensor_id = fd.sensor.id
+            sensor_id = fd.sensor.sensor_id
             filter_id = fd.filter_code.id
             
             if not sensor_id in data:
@@ -66,7 +66,7 @@ class SampledDataView(APIView):
         qs =  SampledData.objects.all()
 
         for sd in qs:
-            sensor_id = sd.sensor.id
+            sensor_id = sd.sensor.sensor_id
             if not sensor_id in data:
                 data[sensor_id] = []
 

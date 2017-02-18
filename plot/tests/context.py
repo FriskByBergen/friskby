@@ -48,17 +48,17 @@ class TestContext(object):
                                                            min_value = 0,
                                                            max_value = 100)
         
-        self.temp_sensor = Sensor.objects.create( id = "TEMP:XX",
+        self.temp_sensor = Sensor.objects.create( sensor_id = "TEMP:XX",
                                                   parent_device = self.dev,
                                                   description = "tempm",
                                                   sensor_type = self.sensor_type_temp)
 
-        RawData.create( {"sensorid" : self.temp_sensor.id , 
+        RawData.create( {"sensorid" : self.temp_sensor.sensor_id , 
                          "value" : "10",
                          "key" : str(self.key.external_key),
                          "timestamp" : "2015-10-10T10:10:00+01" })
 
-        RawData.create( {"sensorid" : self.temp_sensor.id , 
+        RawData.create( {"sensorid" : self.temp_sensor.sensor_id , 
                          "value" : "12",
                          "key" : str(self.key.external_key),
                          "timestamp" : "2015-11-10T10:10:00+01" })

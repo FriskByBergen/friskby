@@ -180,7 +180,7 @@ class SensorInfoView(APIView):
             sensor_list = models.Sensor.objects.all()
         else:
             try:
-                sensor_list = [ models.Sensor.objects.get( pk = sensor_id ) ]
+                sensor_list = [ models.Sensor.objects.get( sensor_id = sensor_id ) ]
             except models.Sensor.DoesNotExist:
                 return Response("The sensorID:%s is not found" % sensor_id , status.HTTP_404_NOT_FOUND)
             
@@ -242,7 +242,7 @@ class ReadingView(APIView):
         timestamp = rd.timestamp_data
         location  = None
         try:
-            sensor = models.Sensor.objects.get( pk = sensorid )
+            sensor = models.Sensor.objects.get( sensor_id = sensorid )
         except models.Sensor.DoesNotExist:
             return Response("The sensorID:%s is not found. " % sensorid , status.HTTP_404_NOT_FOUND)
 
@@ -286,7 +286,7 @@ class ReadingView(APIView):
             else:
                 start = None
 
-            sensor = models.Sensor.objects.get( pk = sensor_id )
+            sensor = models.Sensor.objects.get( sensor_id = sensor_id )
             ts = sensor.get_ts( num = num , start = start )
             return Response(ts , status = status.HTTP_200_OK )
         except models.Sensor.DoesNotExist:
@@ -318,7 +318,7 @@ class CurrentValueView(APIView):
 
         if not sensor_id is None:
             try:
-                sensor = models.Sensor.objects.get( pk = sensor_id )
+                sensor = models.Sensor.objects.get( sensor_id = sensor_id )
             except models.Sensor.DoesNotExist:
                 return Response("No such sensor:%s" % sensor_id , status = status.HTTP_404_NOT_FOUND )
 
@@ -341,7 +341,7 @@ class CurrentValueView(APIView):
             for sensor in sensor_list:
                 sensor_data = sensor.get_current( timeout ) 
                 if sensor_data is None:
-                    sensor_data = {"sensorid" : sensor.id }
+                    sensor_data = {"sensorid" : sensor.sensor_id }
                 data.append( sensor_data )
                 
             return Response( data )
@@ -351,7 +351,7 @@ class RawDataView(APIView):
 
     def get(self , request , sensor_id = None):
         try:
-            sensor = models.Sensor.objects.get( pk = sensor_id )
+            sensor = models.Sensor.objects.get( sensor_id = sensor_id )
         except models.Sensor.DoesNotExist:
             return Response("The sensorID:%s is not found" % sensor_id , status = 404)#status.HTTP_404_NOT_FOUND)
 
@@ -366,7 +366,7 @@ class RawDataView(APIView):
         else:
             data_status = models.RawData.VALID
         
-        query = models.RawData.objects.filter( sensor_id = sensor.id , 
+        query = models.RawData.objects.filter( sensor_id = sensor.sensor_id , 
                                                status = data_status )
         data = []
         for row in query:

@@ -18,7 +18,7 @@ class RawDataTest(TestCase):
     def test_valid(self):
         self.assertFalse( RawData.is_valid( None ))
         self.assertEqual( RawData.error( None ) , "Error: empty payload")
-        sensor_id = self.context.temp_sensor.id
+        sensor_id = self.context.temp_sensor.sensor_id
 
         # Missing value
         data = {"key" : self.context.external_key , "sensorid" : sensor_id , "timestamp" : "2015-10-10T12:12:00+01"}
@@ -62,7 +62,7 @@ class RawDataTest(TestCase):
 
     def test_get_api(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
-        sensor = Sensor.objects.create( id = sensor_id,
+        sensor = Sensor.objects.create( sensor_id = sensor_id,
                                         parent_device = self.context.dev,
                                         sensor_type = self.context.sensor_type_temp , 
                                         description = "Measurement of ..")
@@ -139,7 +139,7 @@ class RawDataTest(TestCase):
         ts = RawData.get_ts( self.context.temp_sensor )
         self.assertEqual( len(ts) , 0 )
 
-        sensor_id = self.context.temp_sensor.id
+        sensor_id = self.context.temp_sensor.sensor_id
         for i in range(10):
             data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % (30 - i), "key" : self.context.external_key}
             RawData.create( data )
@@ -217,7 +217,7 @@ class RawDataTest(TestCase):
 
 
     def test_create(self):
-        sensor_id = self.context.temp_sensor.id
+        sensor_id = self.context.temp_sensor.sensor_id
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}                
         data["value"] = "XXX"
         rd = RawData.create( data )
@@ -268,7 +268,7 @@ class RawDataTest(TestCase):
         self.assertEqual( len(ts) , 0 )
         self.assertEqual( len(values) , 0 )
 
-        sensor_id = self.context.temp_sensor.id
+        sensor_id = self.context.temp_sensor.sensor_id
         for i in range(10):
             data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % i, "key" : self.context.external_key}
             RawData.create( data )

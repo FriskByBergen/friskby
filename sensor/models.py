@@ -29,7 +29,6 @@ class RawData(Model):
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
-    string_value = CharField( max_length = 128 , null = True , blank = True)
     value = FloatField( default = -1 )
     status = IntegerField( default = VALID , choices = choices)
     processed = BooleanField( default = False )

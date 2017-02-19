@@ -226,7 +226,6 @@ class RawDataTest(TestCase):
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
         self.assertEqual( rd[0].value , 10 )
-        self.assertEqual( rd[0].string_value , None )
         self.assertEqual( rd[0].status , RawData.VALID )
 
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
@@ -236,7 +235,6 @@ class RawDataTest(TestCase):
         data = {"sensorid" : sensor_id , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
         self.assertEqual( rd[0].value , -1 )
-        self.assertEqual( rd[0].string_value , "150" )
         self.assertEqual( rd[0].status , RawData.RANGE_ERROR )
 
         data = {"sensorid" : sensor_id , "value" : 15, "timestamp" : "2015-10-10T12:13:00+01", "key" : "InvalidKey" }
@@ -250,11 +248,9 @@ class RawDataTest(TestCase):
         rd = RawData.create( data )
         self.assertEqual( len(rd) , 2)
         self.assertEqual( rd[0].value , 10 )
-        self.assertEqual( rd[0].string_value , None )
         self.assertEqual( rd[0].status , RawData.VALID )
 
         self.assertEqual( rd[1].value , 20 )
-        self.assertEqual( rd[1].string_value , None )
         self.assertEqual( rd[1].status , RawData.VALID )
 
 

@@ -72,7 +72,7 @@ class Quick(View):
         try:
             sensortype = MeasurementType.objects.get( name = sensor_type_name )
         except MeasurementType.DoesNotExist:
-            return HttpResponse( "Internal error - missing measurement type %s" % sensortype , status = 500 )
+            return HttpResponse( "Internal error - missing measurement type %s" % sensor_type_name , status = 500 )
             
         data_all = RawData.objects.filter( timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data", "sensor_id").order_by('timestamp_data')
 

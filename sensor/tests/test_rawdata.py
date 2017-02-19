@@ -232,10 +232,10 @@ class RawDataTest(TestCase):
         with self.assertRaises(ValueError):
             rd = RawData.create( data )
 
+        # Out of range
         data = {"sensorid" : sensor_id , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
-        rd = RawData.create( data )
-        self.assertEqual( rd[0].value , -1 )
-        self.assertEqual( rd[0].status , RawData.RANGE_ERROR )
+        with self.assertRaises(ValueError):
+            rd = RawData.create( data )
 
         data = {"sensorid" : sensor_id , "value" : 15, "timestamp" : "2015-10-10T12:13:00+01", "key" : "InvalidKey" }
         with self.assertRaises(ValueError):

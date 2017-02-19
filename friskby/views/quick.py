@@ -1,12 +1,14 @@
 import json
+import pytz
 
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
 from django.utils import formats
 
-from dateutil import parser as dt_parser
-from datetime import datetime as dt
+from django.utils.dateparse import parse_datetime as dt_parser
+from django.utils import timezone as dt
+from django.utils.timezone import activate
 
 from plot.models import *
 from sensor.models import *
@@ -39,6 +41,7 @@ class Quick(View):
 
     def get(self , request):
         period = 7 * 24 * 3600 # 1 week
+        activate(settings.TIME_ZONE)
         device_list = Device.objects.all()
 
         if "time" in request.GET:
@@ -95,7 +98,7 @@ class Quick(View):
                 continue
 
             time = datalist[-1]["timestamp_data"]
-            time_pp = dt_parser.parse(time).strftime('%b. %d, %H:%M') # %d-%m-%Y %H:%M
+            time_pp = dt.localtime(dt_parser(time)).strftime('%b. %d, %H:%M')
             row = {
                 'id': d.id,
                 'locname': d.location.name,

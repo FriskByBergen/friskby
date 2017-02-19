@@ -370,7 +370,7 @@ class RawDataView(APIView):
                                                status = data_status )
         data = []
         for row in query:
-            data.append( (row.timestamp_data , row.string_value ))
+            data.append( (row.timestamp_data , row.value ))
         
         return Response( data )
                                        

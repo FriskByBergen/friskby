@@ -16,12 +16,10 @@ from git_version.models import GitVersion
 
 class RawData(Model):
     VALID = 0
-    FORMAT_ERROR = 2
     RANGE_ERROR = 3
     SENSOR_OFFLINE = 5
 
     choices = ((VALID , "Valid") , 
-               (FORMAT_ERROR , "Format error in value"),
                (RANGE_ERROR , "Value out of range"),
                (SENSOR_OFFLINE , "Sensor offline"))
     
@@ -29,7 +27,6 @@ class RawData(Model):
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
-    string_value = CharField( max_length = 128 , null = True , blank = True)
     value = FloatField( default = -1 )
     status = IntegerField( default = VALID , choices = choices)
     processed = BooleanField( default = False )

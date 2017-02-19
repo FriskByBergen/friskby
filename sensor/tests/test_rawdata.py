@@ -220,10 +220,8 @@ class RawDataTest(TestCase):
         sensor_id = self.context.temp_sensor.sensor_id
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}                
         data["value"] = "XXX"
-        rd = RawData.create( data )
-        self.assertEqual( rd[0].value , -1 )
-        self.assertEqual( rd[0].string_value , "XXX" )
-        self.assertEqual( rd[0].status , RawData.FORMAT_ERROR )
+        with self.assertRaises(ValueError):
+            rd = RawData.create( data )
 
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )

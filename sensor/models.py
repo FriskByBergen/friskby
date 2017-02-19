@@ -68,9 +68,18 @@ class RawData(Model):
             data_OK = False
             if "value_list" in data:
                 data_OK = True
+                for t,v in data["value_list"]:
+                    try:
+                        float_value = float(v)
+                    except ValueError:
+                        data_OK = False
             else:
                 if "value" in data and "timestamp" in data:
                     data_OK = True
+                    try:
+                        float_value = float(data["value"])
+                    except ValueError:
+                        data_OK = False
             
             if not data_OK:
                 valid = False
@@ -96,7 +105,7 @@ class RawData(Model):
                 t = TimeStamp.parse_datetime( ts )
                 if t is None:
                     valid = False
-            
+
         if valid:
             valid = ApiKey.valid( data["key"] )
         

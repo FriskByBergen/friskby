@@ -15,8 +15,8 @@
       var timestamp = "{{timestamp}}";
       var map = createmap(timestamp); // from map.js
       var chart = createchart(); // from chart.js
-      chart.showDataFor(values, "pm25list");
-      map.showDataFor(values, "pm25list", timestamp);
+      chart.showDataFor(values, "datalist");
+      map.showDataFor(values, "datalist", timestamp);
       map.onSelect(function(id) {
         chart.select(id);
       });
@@ -27,8 +27,8 @@
       };
       document.getElementById("slider").oninput = function(e) {
         var val = this.value;
-        var n = Math.floor((values[0]["pm25list"].length - 1) * val);
-        var date = values[0]["pm25list"][n];
+        var n = Math.floor((values[0]["datalist"].length - 1) * val);
+        var date = values[0]["datalist"][n];
         chart.scrollTo(date.timestamp);
         var listname = document.getElementById("pmselect").value + "list";
         map.showDataFor(values, listname, date.timestamp);
@@ -44,6 +44,9 @@
 
 {% block body %}
 <h1>Friskby Bergen</h1>
+<a href="?start={{previous_start}}&time={{previous_end}}&sensortype={{sensortype}}">Previous</a>
+<a href="?start={{current_start}}&time={{current_end}}&sensortype={{othersensor}}">View {{othersensor}} data</a>
+<a href="?start={{next_start}}&time={{next_end}}&sensortype={{sensortype}}">Next</a>
 <div id="sensorlist">
   <table class="pure-table">
     <tr><th>Location</th><th>PM 2.5</th><th>PM 10</th><th>Last update</th></tr>
@@ -51,10 +54,6 @@
     <tr><td>{{d.locname}}</td><td>{{d.pm25}}</td><td>{{d.pm10}}</td><td>{{d.time}}</td></tr>
     {% endfor %}
   </table>
-  <select id="pmselect">
-    <option id="pm25opt" value="pm25">PM 25</option>
-    <option id="pm10opt" value="pm10">PM 10</option>
-  </select>
 </div>
 
 

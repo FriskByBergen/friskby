@@ -43,17 +43,36 @@ class Quick(View):
 
         if "time" in request.GET:
             end_time = TimeStamp.parse_datetime( request.GET["time"] )
-            print "end_time: %s" % end_time
         else:
             last = RawData.objects.latest( 'timestamp_data' )
             end_time = last.timestamp_data
-            
-        start_time = end_time - datetime.timedelta( seconds = period )
+
+        if "start" in request.GET:
+            start_time = TimeStamp.parse_datetime( request.GET["start"] )
+            print(start_time)
+        else:
+            start_time = end_time - datetime.timedelta( seconds = period )
+
+        if "sensortype" in request.GET:
+            sensor_type_name = request.GET["sensortype"]
+        else:
+            sensor_type_name = "PM10"
+
+        if sensor_type_name == "PM10":
+            other_sensor_name = "PM25"
+        else:
+            other_sensor_name = "PM10"
+
+        previous_start = start_time - (end_time - start_time)
+        previous_end = start_time
+
+        next_start = end_time
+        next_end = end_time + (end_time - start_time)
+
         try:
-            pm10_type = MeasurementType.objects.get( name = "PM10" )
-            pm25_type = MeasurementType.objects.get( name = "PM25" )
+            sensortype = MeasurementType.objects.get( name = sensor_type_name )
         except MeasurementType.DoesNotExist:
-            return HttpResponse( "Internal error - missing measurement types PM10 / PM25" , status = 500 )
+            return HttpResponse( "Internal error - missing measurement type %s" % sensor_type_name , status = 500 )
             
         data_all = RawData.objects.filter( timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data", "sensor_id").order_by('timestamp_data')
 
@@ -63,33 +82,28 @@ class Quick(View):
             if d.location is None:
                 continue
                 
-
             try:
-                pm10sensor = Sensor.objects.get( parent_device=d, sensor_type__measurement_type = pm10_type )
-                pm25sensor = Sensor.objects.get( parent_device=d, sensor_type__measurement_type = pm25_type )
+                sensor = Sensor.objects.get( parent_device=d, sensor_type__measurement_type = sensortype )
             except Sensor.DoesNotExist:
                 continue
 
-            data25query = downsample([x for x in data_all if x["sensor_id"] == pm25sensor.sensor_id], minutes=30, cutoff=100)
-            data10query = downsample([x for x in data_all if x["sensor_id"] == pm10sensor.sensor_id], minutes=30, cutoff=100)
+            dataquery = downsample([x for x in data_all if x["sensor_id"] == sensor.sensor_id], minutes=30, cutoff=100)
 
-            data25list = map( make_timestamp , data25query )
-            data10list = map( make_timestamp , data10query )
+            datalist = map( make_timestamp , dataquery )
             
-            if len(data25list) == 0:
+            if len(datalist) == 0:
                 continue
 
-            time = data25list[-1]["timestamp_data"]
+            time = datalist[-1]["timestamp_data"]
             time_pp = dt_parser.parse(time).strftime('%b. %d, %H:%M') # %d-%m-%Y %H:%M
             row = {
                 'id': d.id,
                 'locname': d.location.name,
                 'lat': d.location.latitude,
                 'long': d.location.longitude,
-                'pm25': data25list[0]["value"],
-                'pm10': data10list[0]["value"],
-                'pm25list': data25list, 
-                'pm10list': data10list,
+                'pm25': datalist[0]["value"],
+                'pm10': datalist[0]["value"],
+                'datalist': datalist,
                 'time': time_pp,
                 'isotime': time}
             device_rows.append(row)
@@ -102,6 +116,14 @@ class Quick(View):
         context = {"device_rows" : device_rows, 
                    "date": end_time, 
                    "device_json": json_string, 
-                   "timestamp": str(end_time) }
+                   "timestamp": end_time,
+                   "current_start": start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                   "current_end": end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                   "previous_start": previous_start.strftime("%Y-%m-%d %H:%M:%S"),
+                   "previous_end": previous_end.strftime("%Y-%m-%d %H:%M:%S"),
+                   "next_start": next_start.strftime("%Y-%m-%d %H:%M:%S"),
+                   "next_end": next_end.strftime("%Y-%m-%d %H:%M:%S"),
+                   "sensortype": sensor_type_name,
+                   "othersensor": other_sensor_name}
 
         return render( request , "friskby/quick.html" , context )

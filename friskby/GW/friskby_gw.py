@@ -36,7 +36,7 @@ class FriskBySensor(FriskByHttp):
     def __init__(self , values , url = ROOT_URL , key = None):
         super(FriskBySensor , self).__init__( url )
         sensor_type = values["sensor_type"]
-        self.id = values["id"]
+        self.id = values["sensor_id"]
         self.min_value = sensor_type["min_value"]
         self.max_value = sensor_type["max_value"]
         self.post_key = key

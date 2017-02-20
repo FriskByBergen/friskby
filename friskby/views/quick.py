@@ -1,14 +1,9 @@
 import json
-import pytz
 
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
 from django.utils import formats
-
-from django.utils.dateparse import parse_datetime as dt_parser
-from django.utils import timezone as dt
-from django.utils.timezone import activate
 
 from plot.models import *
 from sensor.models import *
@@ -41,8 +36,7 @@ class Quick(View):
 
     def get(self , request):
         period = 7 * 24 * 3600 # 1 week
-        activate(settings.TIME_ZONE)
-        device_list = Device.objects.all()
+        device_list = Device.objects.all()        
 
         if "time" in request.GET:
             end_time = TimeStamp.parse_datetime( request.GET["time"] )
@@ -79,7 +73,7 @@ class Quick(View):
             
         data_all = RawData.objects.filter( timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data", "sensor_id").order_by('timestamp_data')
 
-        algo_start = dt.now()
+        algo_start = TimeStamp.now()
         device_rows = []
         for d in device_list:
             if d.location is None:
@@ -98,7 +92,9 @@ class Quick(View):
                 continue
 
             time = datalist[-1]["timestamp_data"]
-            time_pp = dt.localtime(dt_parser(time)).strftime('%b. %d, %H:%M')
+           
+            time_pp = TimeStamp.parse_datetime(time).strftime('%b. %d, %H:%M') 
+
             row = {
                 'id': d.id,
                 'locname': d.location.name,
@@ -111,7 +107,7 @@ class Quick(View):
                 'isotime': time}
             device_rows.append(row)
 
-        algo_end = dt.now()
+        algo_end = TimeStamp.now()
         algo_delta = algo_end - algo_start
         print('total time used: %.2f sec' % algo_delta.total_seconds())
         json_string = json.dumps(device_rows)

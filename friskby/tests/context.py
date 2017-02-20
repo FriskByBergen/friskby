@@ -37,8 +37,7 @@ class TestContext(object):
                                                   description = "??",
                                                   sensor_type = self.sensor_type_pm25 )
 
-        self.key = ApiKey.objects.create( description = "Newkey")
-        self.external_key = str(self.key.external_key)
+        self.external_key = self.sensor_context.external_key
         
         RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 } )
         RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-11T12:12:00+01" , "value" :  50 } )

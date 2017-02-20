@@ -49,14 +49,13 @@ class Readingtest(TestCase):
         url = reverse( "sensor.api.post" )
         get_url = reverse( "sensor.api.get" , args = [sensor_id])
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
 
         get_url = reverse( "sensor.api.get" , args = [sensor_id])
         response = client.get( get_url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
         self.assertEqual( len(result) , 0 )
-        self.assertEqual( 1 , len(self.context.temp_sensor.get_rawdata( status = RawData.SENSOR_OFFLINE )))
         
 
     

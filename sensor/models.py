@@ -86,6 +86,11 @@ class RawData(Model):
                 valid = False
 
         if valid:
+            if not sensor.on_line:
+                valid = False
+                
+
+        if valid:
             ts_list = []
             if "timestamp" in data:
                 ts_list.append( data["timestamp"] )
@@ -205,11 +210,6 @@ class RawData(Model):
                               value = value )
                 
                     
-                # 5: Check that sensor is online:
-                if rd.status == RawData.VALID:
-                    if not sensor.on_line:
-                        rd.status = RawData.SENSOR_OFFLINE
-
                 rd.save()
                 rawdata.append( rd )
             return rawdata

@@ -93,7 +93,7 @@ class Quick(View):
 
             time = datalist[-1]["timestamp_data"]
            
-            time_pp = TimeStamp.create(TimeStamp.parse_datetime(time), '%b. %d, %H:%M') 
+            time_pp = TimeStamp.create(TimeStamp.parse_datetime(time), '%b. %d, %H:%M', True) 
 
             row = {
                 'id': d.id,

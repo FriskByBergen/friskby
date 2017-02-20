@@ -15,20 +15,14 @@ from git_version.models import GitVersion
 
 
 class RawData(Model):
-    VALID = 0
-    SENSOR_OFFLINE = 5
-
-    choices = [(VALID , "Valid")]
-
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 
     timestamp_data = DateTimeField( )
     value = FloatField( default = -1 )
-    status = IntegerField( default = VALID , choices = choices)
     processed = BooleanField( default = False )
 
     def __unicode__(self):
-        return "Sensor:%s: Value:%s  status:%d" % (self.sensor_id , self.value , self.status)
+        return "Sensor:%s: Value:%s" % (self.sensor_id , self.value)
 
     
     def save(self,*args, **kwargs):
@@ -36,14 +30,6 @@ class RawData(Model):
             self.timestamp_recieved = datetime.datetime.now( pytz.utc )
         super(RawData , self).save(*args , **kwargs)
         
-
-    @classmethod
-    def valid_status( cls , status ):
-        if status == cls.VALID:
-            return True
-        else:
-            return False
-
 
 
 
@@ -136,25 +122,21 @@ class RawData(Model):
         ts = []
         if num is None:
             if start is None and end is None:
-                qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
-                                             status = RawData.VALID ).order_by('timestamp_data')
+                qs = RawData.objects.filter( sensor_id = sensor.sensor_id ).order_by('timestamp_data')
             else:
                 if end is None:
                     qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
-                                                 status = RawData.VALID, 
                                                  timestamp_data__gte = start).order_by('timestamp_data')
                 elif start is None:
                     qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
-                                                 status = RawData.VALID, 
                                                  timestamp_data__lte = end).order_by('timestamp_data')
                 else:
                     qs = RawData.objects.filter( sensor_id = sensor.sensor_id , 
-                                                 status = RawData.VALID, 
                                                  timestamp_data__range = [start,end]).order_by('timestamp_data')
 
         else:
             if start is None and end is None:
-                qs = reversed( RawData.objects.filter( sensor_id = sensor.sensor_id , status = RawData.VALID).order_by('-timestamp_data')[:num] )
+                qs = reversed( RawData.objects.filter( sensor_id = sensor.sensor_id ).order_by('-timestamp_data')[:num] )
             else:
                 raise ValueError("Can not supply both num and start")
             
@@ -368,8 +350,7 @@ class Sensor( Model ):
 
 
     # Can speicify *either* a start or number of values with keyword
-    # arguments 'start' and 'num', but not both. Will search in the
-    # RawData table, only VALID data is considered.
+    # arguments 'start' and 'num', but not both. 
     def get_ts(self, num = None , start = None , end = None):
         return RawData.get_ts( self , num = num, start = start , end = end)
 
@@ -405,10 +386,9 @@ class Sensor( Model ):
     # This method returns a QuerySet - because that query set is
     # subsequently used to update the status of all the relevant
     # RawData records.
-    def get_rawdata(self, status = RawData.VALID):
+    def get_rawdata(self):
         qs = RawData.objects.filter( sensor_id = self.sensor_id , 
-                                     processed = False ,
-                                     status = status ).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
+                                     processed = False).values_list( 'id', 'timestamp_data' , 'value').order_by('timestamp_data')
         
         return qs
 

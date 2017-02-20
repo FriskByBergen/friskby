@@ -73,17 +73,8 @@ class RawDataTest(TestCase):
         response = client.get( reverse("sensor.api.rawdata" , args = ["missing"]))
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
 
-        # Invalid type -> 400
-        
         url = reverse( "sensor.api.rawdata" , args = [sensor_id])
-        response = client.get( url, {"status" : 199})
-        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
-
-        # Invalid type -> 400
-        response = client.get(url , {"status" : "ABC"})
-        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
-
-        response = client.get(url , {"status" : 0 })
+        response = client.get(url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 0 )
@@ -100,20 +91,16 @@ class RawDataTest(TestCase):
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
 
         
-        response = client.get( url , {"status" : 0 })
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads(response.content)
-        self.assertEqual( len(data) , 3 )
-
-        # Just use default status - status == 0
         response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
 
-        response = client.get(url , {"status" : 1 })
-        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
-        
+        response = client.get( url )
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        data = json.loads(response.content)
+        self.assertEqual( len(data) , 3 )
+
         data = {"sensorid" : sensor_id , "value" : 20, "timestamp" : "2015-10-10T12:14:00+01", "key" : "InvalidKey"}
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
         
@@ -125,7 +112,7 @@ class RawDataTest(TestCase):
         sd = SampledData.updateRawData( sensor )
         self.assertEqual(len(sd) , 3)
         
-        response = client.get( url , {"status" : RawData.VALID })
+        response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
@@ -226,8 +213,7 @@ class RawDataTest(TestCase):
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
         self.assertEqual( rd[0].value , 10 )
-        self.assertEqual( rd[0].status , RawData.VALID )
-
+        
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         with self.assertRaises(ValueError):
             rd = RawData.create( data )
@@ -248,11 +234,9 @@ class RawDataTest(TestCase):
         rd = RawData.create( data )
         self.assertEqual( len(rd) , 2)
         self.assertEqual( rd[0].value , 10 )
-        self.assertEqual( rd[0].status , RawData.VALID )
 
         self.assertEqual( rd[1].value , 20 )
-        self.assertEqual( rd[1].status , RawData.VALID )
-
+        
 
 
 

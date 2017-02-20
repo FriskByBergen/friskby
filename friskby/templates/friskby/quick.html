@@ -44,14 +44,14 @@
 
 {% block body %}
 <h1>Friskby Bergen</h1>
-<a href="?start={{previous_start}}&time={{previous_end}}&sensortype={{sensortype}}">Previous</a>
-<a href="?start={{current_start}}&time={{current_end}}&sensortype={{othersensor}}">View {{othersensor}} data</a>
+<a href="?start={{previous_start}}&time={{previous_end}}&sensortype={{sensortype}}">Previous</a> - 
+<a href="?start={{current_start}}&time={{current_end}}&sensortype={{othersensor}}">View {{pretty_other}} data</a> - 
 <a href="?start={{next_start}}&time={{next_end}}&sensortype={{sensortype}}">Next</a>
 <div id="sensorlist">
   <table class="pure-table">
-    <tr><th>Location</th><th>PM 2.5</th><th>PM 10</th><th>Last update</th></tr>
+    <tr><th>Location</th><th>{{pretty_sensor}}</th><th>Last update</th></tr>
     {% for d in device_rows %}
-    <tr><td>{{d.locname}}</td><td>{{d.pm25}}</td><td>{{d.pm10}}</td><td>{{d.time}}</td></tr>
+    <tr><td>{{d.locname}}</td><td>{{d.last}}</td><td>{{d.time}}</td></tr>
     {% endfor %}
   </table>
 </div>

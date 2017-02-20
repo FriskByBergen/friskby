@@ -18,9 +18,7 @@ class RawData(Model):
     VALID = 0
     SENSOR_OFFLINE = 5
 
-    choices = ((VALID , "Valid") , 
-               (SENSOR_OFFLINE , "Sensor offline"))
-    
+    choices = [(VALID , "Valid")]
 
     sensor_id = CharField(max_length=128)
     timestamp_recieved = DateTimeField(  ) 

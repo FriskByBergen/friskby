@@ -93,7 +93,7 @@ class Quick(View):
 
             time = datalist[-1]["timestamp_data"]
            
-            time_pp = TimeStamp.parse_datetime(time).strftime('%b. %d, %H:%M') 
+            time_pp = TimeStamp.create(TimeStamp.parse_datetime(time), '%b. %d, %H:%M') 
 
             row = {
                 'id': d.id,
@@ -116,12 +116,12 @@ class Quick(View):
                    "date": end_time, 
                    "device_json": json_string, 
                    "timestamp": end_time,
-                   "current_start": start_time.strftime("%Y-%m-%d %H:%M:%S"),
-                   "current_end": end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                   "previous_start": previous_start.strftime("%Y-%m-%d %H:%M:%S"),
-                   "previous_end": previous_end.strftime("%Y-%m-%d %H:%M:%S"),
-                   "next_start": next_start.strftime("%Y-%m-%d %H:%M:%S"),
-                   "next_end": next_end.strftime("%Y-%m-%d %H:%M:%S"),
+                   "current_start": TimeStamp.create(start_time, "%Y-%m-%d %H:%M:%S"),
+                   "current_end": TimeStamp.create(end_time, "%Y-%m-%d %H:%M:%S"),
+                   "previous_start": TimeStamp.create(previous_start, "%Y-%m-%d %H:%M:%S"),
+                   "previous_end": TimeStamp.create(previous_end, "%Y-%m-%d %H:%M:%S"),
+                   "next_start": TimeStamp.create(next_start, "%Y-%m-%d %H:%M:%S"),
+                   "next_end": TimeStamp.create(next_end, "%Y-%m-%d %H:%M:%S"),
                    "sensortype": sensor_type_name,
                    "othersensor": other_sensor_name}
 

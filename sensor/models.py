@@ -324,10 +324,12 @@ class TimeStamp( Model ):
         return dt
 
     @classmethod
-    def create(cls , time = None):
+    def create(cls , time = None, format = None):
+        if format is None:
+            format = cls.DATETIME_FORMAT
         if time is None:
             time = timezone.now()
-        return time.strftime(cls.DATETIME_FORMAT)
+        return time.strftime(format)
 
     @classmethod
     def now(cls):

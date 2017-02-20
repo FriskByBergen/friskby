@@ -33,67 +33,6 @@ class RawData(Model):
 
 
 
-    @classmethod
-    def is_valid(cls , data):
-        valid = True
-        if data is None:
-            valid = False
-        
-        if valid:
-            for key in ["key" , "sensorid"]:
-                if not key in data:
-                    valid = False
-        
-            data_OK = False
-            if "value_list" in data:
-                data_OK = True
-                for t,v in data["value_list"]:
-                    try:
-                        float_value = float(v)
-                    except ValueError:
-                        data_OK = False
-            else:
-                if "value" in data and "timestamp" in data:
-                    data_OK = True
-                    try:
-                        float_value = float(data["value"])
-                    except ValueError:
-                        data_OK = False
-            
-            if not data_OK:
-                valid = False
-        
-        if valid:
-            try:
-                sensor = Sensor.objects.get( pk = data["sensorid"] )
-            except Sensor.DoesNotExist:
-                valid = False
-
-        if valid:
-            if not sensor.on_line:
-                valid = False
-                
-
-        if valid:
-            ts_list = []
-            if "timestamp" in data:
-                ts_list.append( data["timestamp"] )
-            else:
-                for item in data["value_list"]:
-                    if len(item) == 2:
-                        ts_list.append( item[0] )
-                    else:
-                        valid = False
-
-            for ts in ts_list:
-                t = TimeStamp.parse_datetime( ts )
-                if t is None:
-                    valid = False
-
-        if valid:
-            valid = ApiKey.valid( data["key"] )
-        
-        return valid
 
     
     @classmethod
@@ -111,9 +50,6 @@ class RawData(Model):
         ts = TimeStamp.parse_datetime( data["timestamp"] )
         if ts is None:
             return "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz"
-
-        if not ApiKey.valid( data["key"] ):
-            return "Error: invalid key"
 
         return None
 
@@ -157,45 +93,64 @@ class RawData(Model):
         return ts,values
 
 
-
-
     @classmethod
     def create(cls , data):
-        # If the is_valid() check passes we are guaranteed to store a
-        # record in the rawdata table; however there might still be
-        # (minor) problems with the data - that will be indicated by
-        # the status flag.
-        if cls.is_valid(data):
+        if "sensorid" in data:
             sensor_id = data["sensorid"]
+            try:
+                sensor = Sensor.objects.get( sensor_id = sensor_id )
+            except Sensor.DoesNotExist:
+                raise ValueError("No such sensor: %s" % sensor_id)
+        else:
+            raise ValueError("Must have 'sensorid' as part of data")
+        
+        if "key" in data:
+            key = data["key"]
+            if not sensor.valid_post_key( key ):
+                raise ValueError("Invalid post key:'%s' for sensor:'%s'" % (key , sensor_id))
+        else:
+            raise ValueError("Must have 'key' in data")
 
-            string_values = []
-            timestamp = []
-            if "value" in data:
-                string_values.append( str(data["value"]) )
-                timestamp.append( data["timestamp"] )
-            else:
-                for ts,value in data["value_list"]:
-                    timestamp.append( ts )
-                    string_values.append( value )
-            
-            rawdata = []
-            for ts,string_value in zip(timestamp,string_values):
-                sensor = Sensor.objects.get( pk = sensor_id )
-                value = float( string_value )
+        if not sensor.on_line:
+            raise ValueError("Sensor '%s' is offline - can not accept data")
+
+        string_values = []
+        string_ts = []
+        if "value" in data and "timestamp" in data:
+            string_values.append( data["value"] )
+            string_ts.append( data["timestamp"] )
+        elif "value_list" in data:
+            for ts,value in data["value_list"]:
+                string_ts.append( ts )
+                string_values.append( value )
+        else:
+            raise ValueError("Missing 'data' and 'timestamp' or 'value_list'");
+
+        timestamp = []
+        values = []
+        try:
+            for ts,string_value in zip(string_ts,string_values):
+                timestamp.append( TimeStamp.parse_datetime( ts ) )
+                value = float(string_value)
                 if not sensor.sensor_type.valid_range( value ):
                     raise ValueError("Out of range")
-
-                rd = RawData( sensor_id = sensor_id,
-                              timestamp_data = TimeStamp.parse_datetime( ts ),
-                              value = value )
-                
+                values.append( value )
+        except:
+            raise ValueError("Invalid data")
+            
+        rawdata = []
+        for ts,value in zip(timestamp,values):
+            rd = RawData( sensor_id = sensor_id,
+                          timestamp_data = ts,
+                          value = value )
+            
                     
-                rd.save()
-                rawdata.append( rd )
-            return rawdata
-        else:
-            raise ValueError("Invalid input data:%s " % data)
+            rd.save()
+            rawdata.append( rd )
 
+        return rawdata
+
+        
 
 class Location( Model ):
     name = CharField("Location" , max_length = 60 )

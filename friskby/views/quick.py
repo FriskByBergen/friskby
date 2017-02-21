@@ -60,8 +60,12 @@ class Quick(View):
 
         if sensor_type_name == "PM10":
             other_sensor_name = "PM25"
+            pretty_sensor = u'10 \u00b5m'
+            pretty_other = u'25 \u00b5m'
         else:
             other_sensor_name = "PM10"
+            pretty_sensor = u'25 \u00b5m'
+            pretty_other = u'10 \u00b5m'
 
         previous_start = start_time - (end_time - start_time)
         previous_end = start_time
@@ -101,8 +105,7 @@ class Quick(View):
                 'locname': d.location.name,
                 'lat': d.location.latitude,
                 'long': d.location.longitude,
-                'pm25': datalist[0]["value"],
-                'pm10': datalist[0]["value"],
+                'last': datalist[0]["value"],
                 'datalist': datalist,
                 'time': time_pp,
                 'isotime': time}
@@ -124,6 +127,8 @@ class Quick(View):
                    "next_start": next_start.strftime("%Y-%m-%d %H:%M:%S"),
                    "next_end": next_end.strftime("%Y-%m-%d %H:%M:%S"),
                    "sensortype": sensor_type_name,
-                   "othersensor": other_sensor_name}
+                   "othersensor": other_sensor_name,
+                   "pretty_sensor": pretty_sensor,
+                   "pretty_other": pretty_other}
 
         return render( request , "friskby/quick.html" , context )

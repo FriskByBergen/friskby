@@ -43,10 +43,24 @@
 {% endblock %}
 
 {% block body %}
-<h1>Friskby Bergen</h1>
-<a href="?start={{previous_start}}&time={{previous_end}}&sensortype={{sensortype}}">Previous</a> - 
-<a href="?start={{current_start}}&time={{current_end}}&sensortype={{othersensor}}">View {{pretty_other}} data</a> - 
-<a href="?start={{next_start}}&time={{next_end}}&sensortype={{sensortype}}">Next</a>
+<div class="header">
+  <h1>Friskby Bergen</h1>
+  <div class="navbar">
+    <ul>
+      <li>
+        <a href="?start={{previous_start}}&time={{previous_end}}&sensortype={{sensortype}}">Previous</a>
+      </li>
+      <li>
+        <a href="?start={{current_start}}&time={{current_end}}&sensortype={{othersensor}}">View
+          {{pretty_other}} data</a>
+      </li>
+      <li>
+        <a href="?start={{next_start}}&time={{next_end}}&sensortype={{sensortype}}">Next</a>
+      </li>
+      <ul>
+  </div>
+</div>
+
 <div id="sensorlist">
   <table class="pure-table">
     <tr><th>Location</th><th>{{pretty_sensor}}</th><th>Last update</th></tr>
@@ -57,13 +71,14 @@
 </div>
 
 
-<div id="map" style="max-width:850px; height: 300px">
+<div class="maparea">
+<div id="map">
 </div>
 <input id="slider" type ="range" min ="0.0" max="1.0" value="1.0" step="0.01"
-       style="width:850px;"/>
+       style="width:650px;"/>
 </div>
 
-<div id="chart" style="max-width:850px; height: 500px">
+<div id="chart">
 </div>
 
 {% endblock %}

@@ -5,9 +5,6 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.utils import formats
 
-from dateutil import parser as dt_parser
-from datetime import datetime as dt
-
 from plot.models import *
 from sensor.models import *
 
@@ -39,7 +36,7 @@ class Quick(View):
 
     def get(self , request):
         period = 7 * 24 * 3600 # 1 week
-        device_list = Device.objects.all()
+        device_list = Device.objects.all()        
 
         if "time" in request.GET:
             end_time = TimeStamp.parse_datetime( request.GET["time"] )
@@ -80,7 +77,7 @@ class Quick(View):
             
         data_all = RawData.objects.filter( timestamp_data__range=(start_time , end_time)).values( "id", "value", "timestamp_data", "sensor_id").order_by('timestamp_data')
 
-        algo_start = dt.now()
+        algo_start = TimeStamp.now()
         device_rows = []
         for d in device_list:
             if d.location is None:
@@ -99,7 +96,9 @@ class Quick(View):
                 continue
 
             time = datalist[-1]["timestamp_data"]
-            time_pp = dt_parser.parse(time).strftime('%b. %d, %H:%M') # %d-%m-%Y %H:%M
+           
+            time_pp = TimeStamp.create(TimeStamp.parse_datetime(time), '%b. %d, %H:%M', True) 
+
             row = {
                 'id': d.id,
                 'locname': d.location.name,
@@ -111,7 +110,7 @@ class Quick(View):
                 'isotime': time}
             device_rows.append(row)
 
-        algo_end = dt.now()
+        algo_end = TimeStamp.now()
         algo_delta = algo_end - algo_start
         print('total time used: %.2f sec' % algo_delta.total_seconds())
         json_string = json.dumps(device_rows)
@@ -120,12 +119,12 @@ class Quick(View):
                    "date": end_time, 
                    "device_json": json_string, 
                    "timestamp": end_time,
-                   "current_start": start_time.strftime("%Y-%m-%d %H:%M:%S"),
-                   "current_end": end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                   "previous_start": previous_start.strftime("%Y-%m-%d %H:%M:%S"),
-                   "previous_end": previous_end.strftime("%Y-%m-%d %H:%M:%S"),
-                   "next_start": next_start.strftime("%Y-%m-%d %H:%M:%S"),
-                   "next_end": next_end.strftime("%Y-%m-%d %H:%M:%S"),
+                   "current_start": TimeStamp.create(start_time, "%Y-%m-%d %H:%M:%S"),
+                   "current_end": TimeStamp.create(end_time, "%Y-%m-%d %H:%M:%S"),
+                   "previous_start": TimeStamp.create(previous_start, "%Y-%m-%d %H:%M:%S"),
+                   "previous_end": TimeStamp.create(previous_end, "%Y-%m-%d %H:%M:%S"),
+                   "next_start": TimeStamp.create(next_start, "%Y-%m-%d %H:%M:%S"),
+                   "next_end": TimeStamp.create(next_end, "%Y-%m-%d %H:%M:%S"),
                    "sensortype": sensor_type_name,
                    "othersensor": other_sensor_name,
                    "pretty_sensor": pretty_sensor,

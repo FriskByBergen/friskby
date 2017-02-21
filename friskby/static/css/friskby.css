@@ -1,6 +1,43 @@
-/* Remove the navbar's default margin-bottom and rounded borders */
+* {
+    /* CSS RESET */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+div.header {
+    background: #333;
+    padding: 0px;
+    margin: 0px;
+    color: #fff;
+}
+
+div.header h1 {
+    font-size: 200%;
+    padding: 10px;
+}
+
 .navbar {
     border-radius: 0;
+    padding:5px;
+}
+
+.navbar li {
+    display: inline;
+    padding: 0 2em;
+}
+
+.navbar li a {
+    color: #fff;
 }
 
 .friskTimeslider {
@@ -8,16 +45,21 @@
 }
 
 #sensorlist {
+    float:left;
+    margin: 10px;
+}
+
+.maparea {
+    float:left;
     margin: 10px;
 }
 
 #map {
-    margin: 10px;
+    height: 300px;
 }
 
 #chart {
     margin: 10px;
+    height: 500px;
+    width: 95%;
 }
-
-/* Header: #d87b62 */
-/* body: #a0bbae */

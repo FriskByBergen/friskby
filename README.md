@@ -227,3 +227,22 @@ you can control the number of points, and by passing '--device=' or
 ```
 
 will drop all the testdata. Pass '--device' or '--sensor'.
+
+## Synchronizing with production data
+
+To obtain the production data, follow these steps:
+
+First we let the user `friskby-user` create databases:
+```
+$ sudo -iu postgres
+$ psql
+> ALTER USER "friskby-user" CREATEDB;
+> \q
+```
+
+Then, whenever we want to replace our data with the production data:
+```
+$ sudo -iu postgres
+$ dropdb friskby-db ; PGUSER=friskby-user PGPASSWORD=fby heroku pg:pull HEROKU_POSTGRESQL_SILVER_URL friskby-db --app friskby
+```
+where `fby`, `<friskby-pwd>` of course is replaced with your chosen 8+ character password.

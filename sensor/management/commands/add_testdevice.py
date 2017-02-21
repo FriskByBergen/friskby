@@ -69,13 +69,13 @@ class Command(BaseCommand):
                                                       max_value = 1000)
         
         raw_data = DataType.objects.get( pk = "RAWDATA" )
-        sensor_PM10 = Sensor.objects.create( id = "%s_PM10" % device_id , 
+        sensor_PM10 = Sensor.objects.create( sensor_id = "%s_PM10" % device_id , 
                                              description = "PM10",
                                              data_type = raw_data , 
                                              parent_device = dev,
                                              sensor_type = sensor_type_PM10 )
 
-        sensor_PM25 = Sensor.objects.create( id = "%s_PM25" % device_id , 
+        sensor_PM25 = Sensor.objects.create( sensor_id = "%s_PM25" % device_id , 
                                              description = "PM25",
                                              data_type = raw_data , 
                                              parent_device = dev,

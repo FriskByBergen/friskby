@@ -57,8 +57,7 @@ INSTALLED_APPS = (
     'api_key',
     'pythoncall',
     'time_series',
-    'sensor',
-    'filter'
+    'sensor'
 )
 
 MIDDLEWARE_CLASSES = (

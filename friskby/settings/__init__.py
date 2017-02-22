@@ -55,11 +55,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'git_version',
     'api_key',
-    'pythoncall',
-    'time_series',
-    'sensor',
-    'plot',
-    'filter'
+    'sensor'
 )
 
 MIDDLEWARE_CLASSES = (

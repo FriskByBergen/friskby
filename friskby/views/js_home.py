@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import View
 
-from plot.models import *
 
 class JSHome(View):
     

@@ -5,7 +5,6 @@ from django.test import TestCase, Client
 from rest_framework import status
 
 from sensor.models import *
-from filter.models import SampledData 
 
 from .context import TestContext
 
@@ -65,17 +64,10 @@ class RawDataTest(TestCase):
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
 
-        sd = SampledData.updateRawData( sensor )
-        self.assertEqual(len(sd) , 3)
-        
         response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 3 )
-
-        sd = SampledData.updateRawData( sensor )
-        self.assertEqual(len(sd) , 3)
-        self.assertEqual( len(RawData.objects.filter( processed = True )) , 3)
 
 
     def test_ts(self):

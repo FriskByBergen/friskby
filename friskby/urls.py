@@ -19,7 +19,6 @@ from django.contrib.auth import views as auth_views
 
 import filter.urls
 import sensor.urls
-import plot.urls
 import time_series.urls
 import friskby_urls
 
@@ -30,6 +29,5 @@ urlpatterns = [
     url(r'^sensor/'           , include(sensor.urls)),
     url(r'^time_series/'      , include(time_series.urls)),
     url(r'^filter/'           , include(filter.urls)),
-    url(r'^plot/'             , include(plot.urls)),
     url(r''                   , include(friskby_urls))
 ]

@@ -58,7 +58,6 @@ INSTALLED_APPS = (
     'pythoncall',
     'time_series',
     'sensor',
-    'plot',
     'filter'
 )
 

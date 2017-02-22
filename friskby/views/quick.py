@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.utils import formats
 
-from plot.models import *
 from sensor.models import *
 
 def make_timestamp( row ):

@@ -21,7 +21,7 @@ class Command(BaseCommand):
     def drop_device(self , dev):
         sys.stdout.write("Dropping device:%s and all related data\n" % dev.id)
         for sensor in dev.sensorList():
-            RawData.objects.filter( sensor_id = sensor.id ).delete()
+            RawData.objects.filter( sensor_id = sensor.sensor_id ).delete()
 
         dev.delete()
 
@@ -34,7 +34,8 @@ class Command(BaseCommand):
             for dev_id in options["device"]:
                 try:
                     device = Device.objects.get( pk = dev_id )
-                except Device.DoeesNotExist:
+                    device_list.append( device )
+                except Device.DoesNotExist:
                     sys.stderr.write("No such device: %s\n" % dev_id)
 
         for dev in device_list:

@@ -21,3 +21,4 @@ class Command(BaseCommand):
         for sensor in sensor_list( options ):
             sample( sensor , int(options["num"]) )
         
+            

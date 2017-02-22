@@ -50,7 +50,12 @@ class Command(BaseCommand):
                                      post_key = key,
                                      owner = owner )
         
-        mtype_PM10 = MeasurementType.objects.create( name = "PM10" )
+        try:
+            mtype_PM10 = MeasurementType.objects.get( name = "PM10" )
+        except MeasurementType.DoesNotExist:
+            mtype_PM10 = MeasurementType.objects.create( name = "PM10" )
+
+
         sensor_type_PM10 = SensorType.objects.create( product_name = "XX12762 Turbo",
                                                       measurement_type = mtype_PM10,
                                                       short_description = "Temp",
@@ -59,7 +64,11 @@ class Command(BaseCommand):
                                                       min_value = -1000,
                                                       max_value = 1000)
 
-        mtype_PM25 = MeasurementType.objects.create( name = "PM25" )
+        try:
+            mtype_PM25 = MeasurementType.objects.get( name = "PM25" )
+        except MeasurementType.DoesNotExist:
+            mtype_PM25 = MeasurementType.objects.create( name = "PM25" )
+
         sensor_type_PM25 = SensorType.objects.create( product_name = "XX12762 Turbo",
                                                       measurement_type = mtype_PM25,
                                                       short_description = "Temp",
@@ -94,7 +103,6 @@ class Command(BaseCommand):
         except User.DoesNotExist:
             owner = User.objects.create_superuser( "friskby" , "friskby@invalid.com" , "friskby" )
         
-            
         num = int(options["num"])
         for dev_id in options["device"]:
             self.add_device(dev_id , owner, num)

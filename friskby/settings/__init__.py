@@ -55,7 +55,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'git_version',
     'api_key',
-    'time_series',
     'sensor'
 )
 

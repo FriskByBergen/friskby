@@ -1,10 +1,10 @@
-function normalize(val, minIn, maxIn, maxOut) {
-  var delta = (maxIn - minIn);
-  var norm_val = val;
-  norm_val = Math.min(Math.max(norm_val, minIn), maxIn) + delta;
-  norm_val = (norm_val / delta) * maxOut;
-  norm_val = Math.floor(norm_val);
-  return norm_val;
+function normalize( val, minIn, maxIn, minOut, maxOut )  {
+  var r = Math.max( Math.min( val, maxIn ), minIn) ;
+  var deltaIn = maxIn - minIn;
+  var deltaOut = maxOut - minOut;
+  r = minOut + deltaOut * (r - minIn) / deltaIn;
+  r = Math.floor(r);
+  return r;
 }
 
 function createmap() {
@@ -27,7 +27,7 @@ function createmap() {
         return new ol.style.Style({visible: false});
 
       var val = data[data.length - 1].value;
-      var norm_val = normalize(val,-20, 20,255);
+      var norm_val = normalize(val,0,35,0,255);
       var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
       return new ol.style.Style({
         fill: new ol.style.Fill({color: color}),

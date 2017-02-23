@@ -66,3 +66,7 @@ div.header h1 {
     height: 500px;
     width: 95%;
 }
+
+table .valuecol {
+    text-align: right;
+}

@@ -109,6 +109,12 @@ class Quick(View):
                 'isotime': time}
             device_rows.append(row)
 
+        # this sorts the devices lexicographically, but BG_XXX devices last
+        cmp_ln = lambda x: x['locname']
+        cmp_id = lambda x: 1 if x['id'][:2] == 'BG' else 0
+        device_rows = sorted(device_rows, key=cmp_ln)
+        device_rows = sorted(device_rows, key=cmp_id)
+
         algo_end = TimeStamp.now()
         algo_delta = algo_end - algo_start
         print('total time used: %.2f sec' % algo_delta.total_seconds())

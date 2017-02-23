@@ -103,7 +103,7 @@ class Quick(View):
                 'locname': d.location.name,
                 'lat': d.location.latitude,
                 'long': d.location.longitude,
-                'last': datalist[0]["value"],
+                'last': datalist[-1]["value"],
                 'datalist': datalist,
                 'time': time_pp,
                 'isotime': time}

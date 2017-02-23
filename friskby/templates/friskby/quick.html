@@ -20,11 +20,6 @@
       map.onSelect(function(id) {
         chart.select(id);
       });
-      document.getElementById("pmselect").onchange = function(e) {
-        var listname = this.value + "list";
-        chart.showDataFor(values, listname);
-        map.showDataFor(values, listname, timestamp);
-      };
       document.getElementById("slider").oninput = function(e) {
         var val = this.value;
         var n = Math.floor((values[0]["datalist"].length - 1) * val);

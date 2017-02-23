@@ -12,6 +12,7 @@
 html, body {
     margin: 0 !important;
     padding: 0 !important;
+    font-family: arial, helvetica;
 }
 
 div.header {
@@ -23,22 +24,22 @@ div.header {
 
 div.header h1 {
     font-size: 200%;
-    padding: 10px;
+    padding: 10px 10px 10px 10px;
 }
 
 .navbar {
     border-radius: 0;
-    padding:5px;
+    padding: 10px;
 }
 
 .navbar li {
     display: inline;
-    padding: 0 2em;
+    padding: 0 2em 0 0;
 }
 
 .navbar li a {
     color: #fff;
-}
+} 
 
 .friskTimeslider {
     /* width: 100%; */;
@@ -52,10 +53,12 @@ div.header h1 {
 .maparea {
     float:left;
     margin: 10px;
+    width: auto;
 }
 
 #map {
     height: 300px;
+    width: 100%;
 }
 
 #chart {

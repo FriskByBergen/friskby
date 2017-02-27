@@ -8,7 +8,8 @@ from django.utils import formats
 from sensor.models import *
 
 def make_timestamp( row ):
-    row["timestamp_data"] = TimeStamp.create( row["timestamp_data"] )
+    timedate_format = "%Y-%m-%dT%H:%M:%SZ"
+    row["timestamp_data"] = TimeStamp.create( row["timestamp_data"], timedate_format )
     return row
 
 def with_cutoff(elt, cutoff):

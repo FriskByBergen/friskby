@@ -56,24 +56,28 @@
   </div>
 </div>
 
-<div id="sensorlist">
-  <table class="pure-table">
-    <tr><th>Location</th><th>{{pretty_sensor}}</th><th>Last update</th></tr>
-    {% for d in device_rows %}
-    <tr><td>{{d.locname}}</td><td class="valuecol">{{d.last}}</td><td>{{d.time}}</td></tr>
-    {% endfor %}
-  </table>
-</div>
 
-
-<div class="maparea">
-<div id="map">
+<div class="row">
+  <div class="col-6 col-m-7">
+    <div id="sensorlist">
+      <table class="pure-table">
+        <tr><th>Location</th><th>{{pretty_sensor}}</th><th>Last update</th></tr>
+          {% for d in device_rows %}
+        <tr><td>{{d.locname}}</td><td class="valuecol">{{d.last}}</td><td>{{d.time}}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <div class="col-6 col-m-5">
+    <div id="map">
+    </div>
+    <input id="slider" type ="range" min ="0.0" max="1.0" value="1.0" step="0.01" />
+  </div>
 </div>
-<input id="slider" type ="range" min ="0.0" max="1.0" value="1.0" step="0.01"
-       style="width:650px;"/>
+<div class="row">
+  <div class="col-12 col-m-12">
+    <div id="chart">
+    </div>
+  </div>
 </div>
-
-<div id="chart">
-</div>
-
 {% endblock %}

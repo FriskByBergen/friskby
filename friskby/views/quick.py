@@ -124,6 +124,7 @@ class Quick(View):
                    "date": end_time, 
                    "device_json": json_string, 
                    "timestamp": end_time,
+                   "timezone_offset": TimeStamp.timezoneOffset(),
                    "current_start": TimeStamp.create(start_time, "%Y-%m-%d %H:%M:%S"),
                    "current_end": TimeStamp.create(end_time, "%Y-%m-%d %H:%M:%S"),
                    "previous_start": TimeStamp.create(previous_start, "%Y-%m-%d %H:%M:%S"),

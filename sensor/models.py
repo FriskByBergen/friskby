@@ -253,7 +253,10 @@ class TimeStamp( Model ):
     @classmethod
     def now(cls):
         return timezone.now()
-
+    
+    @classmethod
+    def timezoneOffset(cls):
+        return -1*timezone.localtime(timezone.now()).utcoffset().seconds/60
 
 
 class SensorType( Model ):

@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
@@ -10,7 +12,7 @@ from .context import TestContext
 class DeviceTest(TestCase):
     def setUp(self):
         self.context = TestContext( )
-        
+
 
     def test_get_config(self):
         client = Client( )
@@ -20,7 +22,7 @@ class DeviceTest(TestCase):
         url = reverse( "sensor.device_config" , args = [ self.context.dev.id ])
         response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
-        
+
         data = json.loads(response.content)
         self.assertTrue( "client_config" in data )
 
@@ -33,11 +35,11 @@ class DeviceTest(TestCase):
 
         self.assertTrue( "TEMP:XX" in sensor_list )
         self.assertTrue( "HUM:XX" in sensor_list )
-        
+
         self.assertFalse( "git_repo" in client_config )
         self.assertFalse( "git_ref" in client_config )
         self.assertFalse( "git_follow" in client_config )
-        
+
         self.context.dev.git_version = self.context.git_version
         self.context.dev.save(  )
         response = client.get("/sensor/api/device/%s/" % self.context.dev.id)
@@ -82,7 +84,7 @@ class DeviceTest(TestCase):
         client_config = data["client_config"]
         self.assertTrue( self.context.dev.valid_post_key( client_config["post_key"] ))
 
-        
+
 
 
     def test_post_version(self):
@@ -92,42 +94,42 @@ class DeviceTest(TestCase):
         # Invalid key -> 403
         data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
         url = reverse( "sensor.device_config" , args = [ self.context.dev.id ])
-        response = client.put( url, 
-                               data = json.dumps( data ) , 
+        response = client.put( url,
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN ) 
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
 
         # Missing key -> 403
         data = {"git_ref" : "abcdef"}
         response = client.put(url,
-                              data = json.dumps( data ) , 
+                              data = json.dumps( data ) ,
                               content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN ) 
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
 
 
         # Invalid sensor -> 404
         data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
         invalid_url = reverse( "sensor.device_config" , args = [ "NOXXX" ])
         response = client.put( invalid_url,
-                               data = json.dumps( data ) , 
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND ) 
-        
+        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
+
 
         # No data -> 204
         data = {"key" : str(self.context.dev.post_key.external_key)}
         response = client.put( url,
-                               data = json.dumps( data ) , 
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_204_NO_CONTENT ) 
+        self.assertEqual( response.status_code , status.HTTP_204_NO_CONTENT )
 
         # All good -> 200
         data = {"key" : str(self.context.dev.post_key.external_key) , "git_ref" : "abcdef"}
-        response = client.put(url, 
-                              data = json.dumps( data ) , 
+        response = client.put(url,
+                              data = json.dumps( data ) ,
                               content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_200_OK ) 
-        
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+
         device = Device.objects.get( pk = device_id )
         self.assertEqual( device.client_version , "abcdef")
 
@@ -139,56 +141,56 @@ class DeviceTest(TestCase):
         # Invalid key -> 403
         data = {"device_id" : device_id , "key" : "Invalid key" , "msg" : "Msg"}
         url = reverse("sensor.api.client_log")
-        response = client.post(url, 
-                               data = json.dumps( data ) , 
+        response = client.post(url,
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN ) 
+        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
 
-        
-        # Invalid device_id -> 400   
-        data = {"device_id" : "invalid_device" , 
-                "key" : str(self.context.dev.post_key.external_key) , 
+
+        # Invalid device_id -> 400
+        data = {"device_id" : "invalid_device" ,
+                "key" : str(self.context.dev.post_key.external_key) ,
                 "msg" : "Msg"}
 
-        response = client.post(url, 
-                               data = json.dumps( data ) , 
+        response = client.post(url,
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST ) 
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
 
-        data = {"device_id" : "invalid_device" , 
-                "key" : str(self.context.dev.post_key.external_key) , 
+        data = {"device_id" : "invalid_device" ,
+                "key" : str(self.context.dev.post_key.external_key) ,
                 "msg" : "Msg"}
 
-        response = client.post(url, 
-                               data = json.dumps( data ) , 
+        response = client.post(url,
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST ) 
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST )
 
 
         # All good : 201
         data = {"device_id" : device_id,
-                "key" : str(self.context.dev.post_key.external_key) , 
+                "key" : str(self.context.dev.post_key.external_key) ,
                 "msg" : "Msg"}
 
-        response = client.post(url, 
-                               data = json.dumps( data ) , 
+        response = client.post(url,
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
         self.assertEqual( response.status_code , 201 )
 
 
         # All good with long_msg: 201
         data = {"device_id" : device_id,
-                "key" : str(self.context.dev.post_key.external_key) , 
+                "key" : str(self.context.dev.post_key.external_key) ,
                 "msg" : "Msg",
                 "long_msg" : "LONG"}
 
-        response = client.post(url, 
-                               data = json.dumps( data ) , 
+        response = client.post(url,
+                               data = json.dumps( data ) ,
                                content_type = "application/json")
         self.assertEqual( response.status_code , 201 )
 
 
-        # Get : 200 
+        # Get : 200
         response = client.get(url)
         self.assertEqual( len(response.data) , 2 )
         last = response.data[1]

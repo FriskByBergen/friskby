@@ -7,17 +7,14 @@ from .context import TestContext
 
 class SensorTest(TestCase):
     def setUp(self):
-        self.context = TestContext( )
+        self.context = TestContext()
 
 
     def test_validate(self):
-        obj = Sensor.objects.get( pk = "TEMP:XX" )
-        self.assertFalse( obj.valid_input(  -100  ))
-        self.assertFalse( obj.valid_input(   200 ))
-        self.assertFalse( obj.valid_input(   "XYZ"  ))
+        obj = Sensor.objects.get(pk=abs(hash("TEMP:XX")))
+        self.assertFalse(obj.valid_input(-100))
+        self.assertFalse(obj.valid_input(200))
+        self.assertFalse(obj.valid_input("XYZ"))
 
-        self.assertTrue( obj.valid_input(  "50"  ))
-        self.assertTrue( obj.valid_input(  50  ))
-        
-    
-
+        self.assertTrue(obj.valid_input("50"))
+        self.assertTrue(obj.valid_input(50))

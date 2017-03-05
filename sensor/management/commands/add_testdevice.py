@@ -10,11 +10,11 @@ from ._sample import sample
 def random_location(name):
     locations = Location.objects.all()
     altitude = 0
-    SW = (60.37 , 5.36) 
+    SW = (60.37 , 5.36)
     NE = (60.45 , 5.40)
     latitude  = SW[0] + random.random() * (NE[0] - SW[0])
     longitude = SW[1] + random.random() * (NE[1] - SW[1])
-    
+
     loc = Location.objects.create( name = name , latitude = latitude , longitude = longitude , altitude = altitude)
     return loc
 
@@ -43,13 +43,13 @@ class Command(BaseCommand):
         key = ApiKey.objects.create( description = "Newkey")
         loc = random_location(device_id)
         dev_type = DeviceType.objects.create( name = "HP-X123" )
-        dev = Device.objects.create( id = device_id , 
-                                     location = loc , 
-                                     device_type = dev_type , 
+        dev = Device.objects.create( id = device_id ,
+                                     location = loc ,
+                                     device_type = dev_type ,
                                      description = "Description",
                                      post_key = key,
                                      owner = owner )
-        
+
         try:
             mtype_PM10 = MeasurementType.objects.get( name = "PM10" )
         except MeasurementType.DoesNotExist:
@@ -76,35 +76,35 @@ class Command(BaseCommand):
                                                       unit = "Degree celcius",
                                                       min_value = -1000,
                                                       max_value = 1000)
-        
+
         raw_data = DataType.objects.get( pk = "RAWDATA" )
-        sensor_PM10 = Sensor.objects.create( sensor_id = "%s_PM10" % device_id , 
+        sensor_PM10 = Sensor.objects.create( sensor_id = "%s_PM10" % device_id ,
+                                             s_id = abs(hash("%s_PM10" % device_id)) ,
                                              description = "PM10",
-                                             data_type = raw_data , 
+                                             data_type = raw_data ,
                                              parent_device = dev,
                                              sensor_type = sensor_type_PM10 )
 
-        sensor_PM25 = Sensor.objects.create( sensor_id = "%s_PM25" % device_id , 
+        sensor_PM25 = Sensor.objects.create( sensor_id = "%s_PM25" % device_id ,
+                                             s_id = abs(hash("%s_PM25" % device_id)) ,
                                              description = "PM25",
-                                             data_type = raw_data , 
+                                             data_type = raw_data ,
                                              parent_device = dev,
                                              sensor_type = sensor_type_PM25 )
-        
+
         if num > 0:
             sys.stdout.write("Sampling %d random measurements for:%s\n" % (num , device_id))
             for sensor in dev.sensorList():
                 sample( sensor , num )
 
 
-    
+
     def handle(self, *args, **options):
         try:
             owner = User.objects.get( username = "friskby")
         except User.DoesNotExist:
             owner = User.objects.create_superuser( "friskby" , "friskby@invalid.com" , "friskby" )
-        
+
         num = int(options["num"])
         for dev_id in options["device"]:
             self.add_device(dev_id , owner, num)
-        
-        

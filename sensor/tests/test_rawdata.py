@@ -9,21 +9,22 @@ from sensor.models import *
 from .context import TestContext
 
 class RawDataTest(TestCase):
-    
+
     def setUp(self):
         self.context = TestContext( )
-        
+
 
 
     def test_get_api(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         sensor = Sensor.objects.create( sensor_id = sensor_id,
+                                        s_id = abs(hash(sensor_id)),
                                         parent_device = self.context.dev,
-                                        sensor_type = self.context.sensor_type_temp , 
+                                        sensor_type = self.context.sensor_type_temp ,
                                         description = "Measurement of ..")
 
         client = Client( )
-        
+
         # Invalid sensor -> 404
         response = client.get( reverse("sensor.api.rawdata" , args = ["missing"]))
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
@@ -33,8 +34,8 @@ class RawDataTest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
         self.assertEqual( len(data) , 0 )
-        
-        
+
+
 
         data_list = [{"sensorid" : sensor_id , "value" : "60", "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key},
                      {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key},
@@ -45,7 +46,7 @@ class RawDataTest(TestCase):
             response = client.post( post_url , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
 
-        
+
         response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
@@ -58,7 +59,7 @@ class RawDataTest(TestCase):
 
         data = {"sensorid" : sensor_id , "value" : 20, "timestamp" : "2015-10-10T12:14:00+01", "key" : "InvalidKey"}
         response = client.post("/sensor/api/reading/" , data = json.dumps( data ) , content_type = "application/json")
-        
+
         response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         data = json.loads(response.content)
@@ -78,7 +79,7 @@ class RawDataTest(TestCase):
         for i in range(10):
             data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % (30 - i), "key" : self.context.external_key}
             RawData.create( data )
-            
+
         qs = RawData.objects.all()
 
         ts = RawData.get_ts( self.context.temp_sensor )
@@ -87,9 +88,9 @@ class RawDataTest(TestCase):
             self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % (21 + index)))
             self.assertEqual( pair[1] , 9 - index )
 
-            
 
-        
+
+
         ts = RawData.get_ts( self.context.temp_sensor , num = 100)
         self.assertEqual( len(ts) , 10 )
         for index,pair in enumerate(ts):
@@ -138,7 +139,7 @@ class RawDataTest(TestCase):
         self.assertEqual( pair[1] , 8 )
 
 
-        ts = RawData.get_ts( self.context.temp_sensor , 
+        ts = RawData.get_ts( self.context.temp_sensor ,
                              start = TimeStamp.parse_datetime( "2015-10-10T12:13:24+01" ),
                              end = TimeStamp.parse_datetime( "2015-10-10T12:13:26+01" ))
         self.assertEqual( len(ts) , 3 )
@@ -153,7 +154,7 @@ class RawDataTest(TestCase):
 
     def test_create(self):
         sensor_id = self.context.temp_sensor.sensor_id
-        data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}                
+        data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         data["value"] = "XXX"
         with self.assertRaises(ValueError):
             rd = RawData.create( data )
@@ -161,7 +162,7 @@ class RawDataTest(TestCase):
         data = {"sensorid" : sensor_id , "value" : 10, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         rd = RawData.create( data )
         self.assertEqual( rd[0].value , 10 )
-        
+
         data = {"sensorid" : "Missing" , "value" : 150, "timestamp" : "2015-10-10T12:13:00+01", "key" : self.context.external_key}
         with self.assertRaises(ValueError):
             rd = RawData.create( data )
@@ -175,7 +176,7 @@ class RawDataTest(TestCase):
         with self.assertRaises(ValueError):
             rd = RawData.create( data )
 
-        data = {"sensorid" : sensor_id , 
+        data = {"sensorid" : sensor_id ,
                 "value_list" : [("2015-10-10T12:13:00+01", 10), ("2015-10-10T12:14:00+01", 20)],
                 "key" : self.context.external_key }
 
@@ -183,7 +184,7 @@ class RawDataTest(TestCase):
         self.assertEqual( len(rd) , 2)
         self.assertEqual( rd[0].value , 10 )
         self.assertEqual( rd[1].value , 20 )
-        
+
 
 
 
@@ -197,7 +198,7 @@ class RawDataTest(TestCase):
         for i in range(10):
             data = {"sensorid" : sensor_id , "value" : i, "timestamp" : "2015-10-10T12:13:%02d+01" % i, "key" : self.context.external_key}
             RawData.create( data )
-            
+
         qs = RawData.objects.all()
 
         ts,values = RawData.get_vectors( self.context.temp_sensor )
@@ -207,7 +208,7 @@ class RawDataTest(TestCase):
             pair = (ts[index] , values[index])
             self.assertEqual( pair[0] , TimeStamp.parse_datetime( "2015-10-10T12:13:%02d+01" % index))
             self.assertEqual( pair[1] , index )
-        
+
         ts,values = RawData.get_vectors( self.context.temp_sensor , num = 100)
         self.assertEqual( len(ts) , 10 )
         for index in range(len(ts)):

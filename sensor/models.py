@@ -290,6 +290,7 @@ class SensorType( Model ):
 class Sensor( Model ):
     IDPattern = "[-_:a-zA-Z0-9]+"
 
+    s_id = IntegerField()
     sensor_id = CharField("Sensor ID" , max_length = 60 , primary_key = True , validators = [RegexValidator(regex = "^%s$" % IDPattern)])
     sensor_type = ForeignKey( SensorType )
     parent_device = ForeignKey( Device )

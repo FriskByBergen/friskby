@@ -14,13 +14,13 @@ from .context import TestContext
 class Readingtest(TestCase):
     def setUp(self):
         self.context = TestContext()
-        
+
     def test_post_key(self):
         client = Client( )
         url = reverse( "sensor.api.post" )
-        
+
         pre_length = len(RawData.objects.all( ))
-        # Missing key 
+        # Missing key
         data = {"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01"}
         string_data = json.dumps( data )
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
@@ -30,19 +30,19 @@ class Readingtest(TestCase):
         self.assertEqual( pre_length , post_length )
 
 
-        # Invalid key 
+        # Invalid key
         data = {"sensorid" : "TEMP:XX" , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01" , "key" : "Invalid"}
         string_data = json.dumps( data )
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
         post_length = len(RawData.objects.all( ))
         self.assertEqual( pre_length , post_length )
-        
+
 
     def test_post_offline(self):
         client = Client( )
         self.context.temp_sensor.on_line = False
-        self.context.temp_sensor.save( ) 
+        self.context.temp_sensor.save( )
         sensor_id = self.context.temp_sensor.sensor_id
         data = {"sensorid" : sensor_id , "value" : 50 , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
         string_data = json.dumps( data )
@@ -56,9 +56,9 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
         self.assertEqual( len(result) , 0 )
-        
 
-    
+
+
     def test_post(self):
         client = Client( )
 
@@ -66,7 +66,7 @@ class Readingtest(TestCase):
         url = reverse( "sensor.api.post" )
         response = client.post( url )
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
-        
+
         # Payload is not valid json
         response = client.post( url , data = "Not valid json" , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
@@ -109,16 +109,17 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
-        
+
     def test_get(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( id = sensor_id,
+                               s_id = abs(hash(sensor_id)),
                                parent_device = self.context.dev,
-                               sensor_type = self.context.sensor_type_temp , 
+                               sensor_type = self.context.sensor_type_temp ,
                                description = "Measurement of ..")
 
-        
-        
+
+
         client = Client( )
         post_url = reverse( "sensor.api.post" )
         response = client.get( post_url )
@@ -137,7 +138,7 @@ class Readingtest(TestCase):
             string_data = json.dumps( data )
             response = client.post( post_url , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
-        
+
 
         info_url = reverse( "sensor.api.info" , args = [ sensor_id ] )
         response = client.get( info_url )
@@ -145,7 +146,7 @@ class Readingtest(TestCase):
         self.assertEqual( result["last_value"] , 20 )
         self.assertEqual( TimeStamp.parse_datetime( result["last_timestamp"] ) , TimeStamp.parse_datetime("2015-10-10T12:14:00+01"))
 
-        
+
         response = client.get( get_url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
@@ -209,7 +210,7 @@ class Readingtest(TestCase):
         client = Client( )
         post_url = reverse( "sensor.api.post" )
         # Payload structure is invalid invalid - missing timestamp
-        data = {"sensorid" : "TEMP:XX" , 
+        data = {"sensorid" : "TEMP:XX" ,
                 "value_list" : [("2015-10-10T12:12:00+01" , 50), ("2015-10-10T12:13:00+01" , 60)],
                 "key" : self.context.external_key}
         string_data = json.dumps( data )
@@ -242,16 +243,17 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
 
-        
+
     def test_get(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         Sensor.objects.create( sensor_id = sensor_id,
+                               s_id = abs(hash(sensor_id)),
                                parent_device = self.context.dev,
-                               sensor_type = self.context.sensor_type_temp , 
+                               sensor_type = self.context.sensor_type_temp ,
                                description = "Measurement of ..")
 
-        
-        
+
+
         client = Client( )
         post_url = reverse( "sensor.api.post" )
         get_url = reverse( "sensor.api.get" , args = [sensor_id ])
@@ -270,7 +272,7 @@ class Readingtest(TestCase):
             string_data = json.dumps( data )
             response = client.post(post_url , data = json.dumps( data ) , content_type = "application/json")
             self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
-        
+
 
         info_url = reverse("sensor.api.info" , args = [sensor_id])
         response = client.get( info_url )
@@ -278,7 +280,7 @@ class Readingtest(TestCase):
         self.assertEqual( result["last_value"] , 20 )
         self.assertEqual( TimeStamp.parse_datetime( result["last_timestamp"] ) , TimeStamp.parse_datetime("2015-10-10T12:14:00+01"))
 
-        
+
         response = client.get( get_url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
@@ -336,5 +338,3 @@ class Readingtest(TestCase):
         self.assertEqual( response.status_code , status.HTTP_200_OK )
         result = response.data
         self.assertEqual( 0 , len(result) )
-
-

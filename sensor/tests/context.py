@@ -41,17 +41,20 @@ class TestContext(object):
                                                            max_value = 100)
         
         self.temp_sensor = Sensor.objects.create( sensor_id = "TEMP:XX",
+                                                  s_id = abs(hash("TEMP:XX")),
                                                   parent_device = self.dev,
                                                   description = "tempm",
                                                   sensor_type = self.sensor_type_temp)
         
         self.hum_sensor = Sensor.objects.create( sensor_id = "HUM:XX",
+                                                 s_id = abs(hash("HUM:XX")),
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
                                                  sensor_type = self.sensor_type_temp)
 
         self.loc0_sensor = Sensor.objects.create( sensor_id = "NO_LOC:XX",
+                                                  s_id = abs(hash("NO_LOC:XX")),
                                                   description = "Measurement humidity",
                                                   data_type = self.raw_data ,
                                                   parent_device = self.dev_loc0,

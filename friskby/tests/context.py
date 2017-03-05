@@ -28,11 +28,13 @@ class TestContext(object):
                                                            
 
         self.sensor_pm10 = Sensor.objects.create( sensor_id = "Test:PM10",
+                                                  s_id = abs(hash("Test:PM10")),
                                                   parent_device = self.sensor_context.dev,
                                                   description = "??",
                                                   sensor_type = self.sensor_type_pm10 )
 
         self.sensor_pm25 = Sensor.objects.create( sensor_id = "Test:PM25",
+                                                  s_id = abs(hash("Test:PM25")),
                                                   parent_device = self.sensor_context.dev,
                                                   description = "??",
                                                   sensor_type = self.sensor_type_pm25 )

@@ -18,6 +18,7 @@ class RawDataTest(TestCase):
     def test_get_api(self):
         sensor_id = "TEMP:XX:%04d" % random.randint(0,9999)
         sensor = Sensor.objects.create( sensor_id = sensor_id,
+                                        s_id = abs(hash(sensor_id)),
                                         parent_device = self.context.dev,
                                         sensor_type = self.context.sensor_type_temp , 
                                         description = "Measurement of ..")

@@ -309,6 +309,7 @@ class RawData(Model):
         rawdata = []
         for ts, value in zip(timestamp, values):
             rd = RawData(sensor_id=sensor_id,
+                         s_id=sensor,
                          timestamp_data=ts,
                          value=value)
             rd.save()

@@ -5,11 +5,11 @@ from sensor.tests.context import TestContext as SensorContext
 
 class TestContext(object):
     def __init__(self):
-        
+
         self.sensor_context = SensorContext( )
         self.pm10_mtype = MeasurementType.objects.create( name = "PM10" )
         self.pm25_mtype = MeasurementType.objects.create( name = "PM25" )
-        
+
         self.sensor_type_pm25 = SensorType.objects.create( product_name = "Test PM25",
                                                            short_description = "Short",
                                                            measurement_type = self.pm25_mtype ,
@@ -25,7 +25,7 @@ class TestContext(object):
                                                            unit = "c",
                                                            min_value = 0,
                                                            max_value = 1000)
-                                                           
+
 
         self.sensor_pm10 = Sensor.objects.create( sensor_id = "Test:PM10",
                                                   s_id = abs(hash("Test:PM10")),
@@ -40,7 +40,7 @@ class TestContext(object):
                                                   sensor_type = self.sensor_type_pm25 )
 
         self.external_key = self.sensor_context.external_key
-        
+
         RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-10T12:12:00+01" , "value" : 100 } )
         RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-11T12:12:00+01" , "value" :  50 } )
         RawData.create( {"key" : self.external_key , "sensorid" : "Test:PM10" , "timestamp" : "2015-10-12T12:12:00+01" , "value" :  10 } )

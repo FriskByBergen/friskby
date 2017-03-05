@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 
-from git_version.models import * 
+from git_version.models import *
 from api_key.models import *
 from sensor.models import *
 
@@ -15,15 +15,15 @@ class TestContext(object):
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
         self.user = User.objects.create_user( "test-user" )
-        self.dev = Device.objects.create( id = "DevXYZ" , 
-                                          location = self.loc , 
-                                          device_type = self.dev_type , 
+        self.dev = Device.objects.create( id = "DevXYZ" ,
+                                          location = self.loc ,
+                                          device_type = self.dev_type ,
                                           description = "Besrkivels",
                                           post_key = self.key,
                                           owner = self.user )
 
-        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" , 
-                                               device_type = self.dev_type , 
+        self.dev_loc0 = Device.objects.create( id = "DevNoLoc" ,
+                                               device_type = self.dev_type ,
                                                description = "Besrkivels",
                                                owner = self.user,
                                                post_key = self.key )
@@ -39,13 +39,13 @@ class TestContext(object):
                                                            unit = "Degree celcius",
                                                            min_value = 0,
                                                            max_value = 100)
-        
+
         self.temp_sensor = Sensor.objects.create( sensor_id = "TEMP:XX",
                                                   s_id = abs(hash("TEMP:XX")),
                                                   parent_device = self.dev,
                                                   description = "tempm",
                                                   sensor_type = self.sensor_type_temp)
-        
+
         self.hum_sensor = Sensor.objects.create( sensor_id = "HUM:XX",
                                                  s_id = abs(hash("HUM:XX")),
                                                  description = "Measurement humidity",
@@ -63,7 +63,5 @@ class TestContext(object):
 
         self.test_user_passwd = get_random_string( length = 10 ),
         self.test_user = User.objects.create_user( get_random_string( length = 10 ),
-                                                   password = self.test_user_passwd , 
+                                                   password = self.test_user_passwd ,
                                                    email = "joe@invalid.email.com" )
-
-        

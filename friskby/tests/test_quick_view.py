@@ -33,7 +33,7 @@ class QuickTest(TestCase):
         e_ds = x[0]
         self.assertEqual(1, len(x))
         self.assertEqual(maxval, e_ds['value'])
-        
+
     def test_get(self):
         url = reverse("friskby.view.quick")
         client = Client( )

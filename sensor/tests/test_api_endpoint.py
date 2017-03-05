@@ -156,32 +156,25 @@ class SensorTest(TestCase):
         sensor.sensor_id = "?=+/"
         with self.assertRaises(ValidationError):
             sensor.full_clean()
-            
+
         sensor.sensor_id = "TEMP:XX_aa-23864"
-        sensor.save( )
+        sensor.save()
         sensor.full_clean()
 
-        
-        
+
+
 
     def test_get(self):
-        client = Client( )
+        client = Client()
         response = client.get("/sensor/api/sensor/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
-        self.assertEqual( len(data) , 3 )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data), 3)
 
-        response = client.get("/sensor/api/sensor/TEMP:XX/")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-        data = json.loads( response.content )
+        # The following has been deprecated
+        # response = client.get("/sensor/api/sensor/TEMP:XX/")
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # data = json.loads(response.content)
 
-        sensor0 = data
-        self.assertEqual( sensor0["description"] , "tempm")
-
-
-
-
-
-
-
-
+        # sensor0 = data
+        # self.assertEqual(sensor0["description"], "tempm")

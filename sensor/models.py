@@ -124,6 +124,7 @@ class Sensor(Model):
 
     s_id = IntegerField(primary_key=True)
     sensor_id = CharField("Sensor ID",
+                          unique = True, 
                           max_length=60,
                           validators=[RegexValidator(regex="^%s$" % IDPattern)])
     sensor_type = ForeignKey(SensorType)

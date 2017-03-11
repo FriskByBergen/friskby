@@ -45,12 +45,15 @@ def data_index(df):
 
 def post_data(device, df):
     component, tid, value = data_index(df)
-    for id in range(len(komponent_id)):
+    for dev_id in range(len(komponent_id)):
         for i in range(len(df)):
-            if df[i][component] == komponent_id[id]:
-                ts = current_date + "T" + df[i][tid] + ":00Z"
+            if df[i][component] == komponent_id[dev_id]:
+                clock = df[i][tid]
+                if clock.strip() == '00:00':
+                    clock = '23:59'
+                ts = current_date + "T" + clock + ":00Z"
                 n = float(df[i][value].replace(',','.'))
-                sensor_id = device + sensor_types[id]
+                sensor_id = device + sensor_types[dev_id]
                 sensor = GW.getSensor(sensor_id, key)
                 if(n > 0):
                     sensor.postValue(n, timestamp = ts)

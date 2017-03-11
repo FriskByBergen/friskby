@@ -46,7 +46,6 @@ class Quick(View):
 
         if "start" in request.GET:
             start_time = TimeStamp.parse_datetime( request.GET["start"] )
-            print(start_time)
         else:
             start_time = end_time - datetime.timedelta( seconds = period )
 
@@ -128,12 +127,12 @@ class Quick(View):
                    "device_json": json_string, 
                    "timestamp": end_time,
                    "timezone_offset": TimeStamp.timezoneOffset(),
-                   "current_start": TimeStamp.create(start_time, "%Y-%m-%d %H:%M:%S"),
-                   "current_end": TimeStamp.create(end_time, "%Y-%m-%d %H:%M:%S"),
-                   "previous_start": TimeStamp.create(previous_start, "%Y-%m-%d %H:%M:%S"),
-                   "previous_end": TimeStamp.create(previous_end, "%Y-%m-%d %H:%M:%S"),
-                   "next_start": TimeStamp.create(next_start, "%Y-%m-%d %H:%M:%S"),
-                   "next_end": TimeStamp.create(next_end, "%Y-%m-%d %H:%M:%S"),
+                   "current_start": TimeStamp.create(start_time, "%Y-%m-%dT%H:%M:%S"),
+                   "current_end": TimeStamp.create(end_time, "%Y-%m-%dT%H:%M:%S"),
+                   "previous_start": TimeStamp.create(previous_start, "%Y-%m-%dT%H:%M:%S"),
+                   "previous_end": TimeStamp.create(previous_end, "%Y-%m-%dT%H:%M:%S"),
+                   "next_start": TimeStamp.create(next_start, "%Y-%m-%dT%H:%M:%S"),
+                   "next_end": TimeStamp.create(next_end, "%Y-%m-%dT%H:%M:%S"),
                    "sensortype": sensor_type_name,
                    "othersensor": other_sensor_name,
                    "pretty_sensor": pretty_sensor,

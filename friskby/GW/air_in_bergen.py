@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from datetime import date
+from datetime import datetime as dt
+import pytz
 import pandas as pd
 from friskby_gw import FriskByGW
 
@@ -23,7 +24,8 @@ komponent_id = ["PM10", "PM2.5"]
 
 key = "9fbb2727-067d-4618-af05-e45cafdd673d"
 
-current_date = date.today().isoformat()
+bergen = pytz.timezone('Europe/Oslo')
+bergen_time = dt.now(bergen)
 
 # probably this function is not necessary and we can just use 0, 1, 2 in post_data(device, df) instead of these variables,
 # but if something will change in table, f.e. the first value will be Date, then Time etc. we'll have some
@@ -48,14 +50,15 @@ def post_data(device, df):
     for dev_id in range(len(komponent_id)):
         for i in range(len(df)):
             if df[i][component] == komponent_id[dev_id]:
-                clock = df[i][tid]
-                if clock.strip() == '00:00':
-                    clock = '23:59'
-                ts = current_date + "T" + clock + ":00Z"
-                n = float(df[i][value].replace(',','.'))
+                hour, minute = map(int, df[i][tid].split(':'))
+                ts = bergen_time.replace(hour=hour,
+                                         minute=minute,
+                                         second=0,
+                                         microsecond=0).isoformat()
+                n = float(df[i][value].replace(',', '.'))
                 sensor_id = device + sensor_types[dev_id]
                 sensor = GW.getSensor(sensor_id, key)
-                if(n > 0):
+                if(n >= 0):
                     sensor.postValue(n, timestamp = ts)
 
 for device in luft_map:

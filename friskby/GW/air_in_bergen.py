@@ -9,16 +9,17 @@ sensor_types = ['_PM10', '_PM25']
 
 GW = FriskByGW()
 
-luft_map = {"BG_1": "http://www.luftkvalitet.info/home/"
-                          "overview.aspx?type=2&topic=1&id=%7b751808f5-d561-4737-9185-4ecc0e834975%7d", # LODDEFJORD
-            "BG_2": "http://luftkvalitet.info/"
-                             "home/overview.aspx?type=2&topic=1&id=%7b4ff685c1-ad51-4468-b2fc-08345d11f447%7d", # DANMARKSPLASS
-            "BG_3": "http://www.luftkvalitet.info/home/"
-                         "overview.aspx?type=2&topic=1&id=%7b5b0ff070-e6e6-4f60-88a3-bd923ac3a7e6%7d", # RAADHUSET
-            "BG_4": "http://www.luftkvalitet.info/home/"
-                      "overview.aspx?type=2&topic=1&id=%7bceade2ac-e62f-4e50-af7c-347e402fff27%7d" # AASANE
+base_url = 'http://www.luftkvalitet.info/home/overview.aspx?type=2&topic=1&id=%'
+key_bg1 = '7b751808f5-d561-4737-9185-4ecc0e834975%7d' # LODDEFJORD
+key_bg2 = '7b4ff685c1-ad51-4468-b2fc-08345d11f447%7d' # DANMARKSPLASS
+key_bg3 = '7b5b0ff070-e6e6-4f60-88a3-bd923ac3a7e6%7d' # RAADHUSET
+key_bg4 = '7bceade2ac-e62f-4e50-af7c-347e402fff27%7d' # AASANE
 
-            }
+luft_map = {"BG_1": '%s%s' % (base_url, key_bg1),
+            "BG_2": '%s%s' % (base_url, key_bg2),
+            "BG_3": '%s%s' % (base_url, key_bg3),
+            "BG_4": '%s%s' % (base_url, key_bg4)}
+
 # keys for parsing data
 komponent_id = ["PM10", "PM2.5"]
 
@@ -68,4 +69,3 @@ for device in luft_map:
         post_data(device, df)
     except ValueError as e:
         pass
-

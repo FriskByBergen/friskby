@@ -1,0 +1,38 @@
+{% extends "friskby/friskby_base.html" %}
+{% block title %} Friskby {% endblock %}
+
+{% block js %}
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="http://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://openlayers.org/en/v3.20.0/build/ol.js" type="text/javascript"></script>
+  <script src="{{ STATIC_URL }}js/median/chart.js"></script>
+  <script type="text/javascript">
+    window.onload = function() {
+        Highcharts.setOptions({
+            global: {
+                timezoneOffset: {{timezone_offset}}
+            }
+        });
+
+        var values = {{meandata|safe}};
+        var errors = {{stddata|safe}};
+        var chart = createchart(); // from chart.js
+        chart.showDataFor(values, errors);
+    };
+  </script>
+{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block body %}
+  <div class="row">
+  <h1>{{start_time}}</h1>
+  <div class="col-12 col-m-12">
+    <div id="chart">
+    </div>
+  </div>
+</div>
+{% endblock %}

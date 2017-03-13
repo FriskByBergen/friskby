@@ -26,7 +26,7 @@ function createchart() {
               text: 'μg/m3'
           },
           min: 0,
-          max: 50
+          max: 100
       },
       tooltip: {
           headerFormat: '<b>{series.name}</b><br>',
@@ -49,29 +49,26 @@ function createchart() {
         var ser = chart.get(id);
         ser.show();
       },
-      showDataFor: function(values, key) {
-        while(chart.series.length > 0)
-           chart.series[0].remove(true);
-         values.forEach(function(sensor) {
-            chart.addSeries({
-              id: sensor.id,
-              name: sensor.locname,
-              data: sensor[key].map(function(measurement) {
-                return [Date.parse(measurement.timestamp_data),
-                        measurement.value];
-              })
-            });
-        });
-      },
-      scrollTo: function(date) {
-        chart.xAxis[0].removePlotBand("plotLine");
-
-        chart.xAxis[0].addPlotLine({
-                value: Date.parse(date),
-                width: 3,
-                color: 'red',
-                id: "plotLine"
-            });
+      showDataFor: function(values, errors) {
+          var plot_data = [];
+          for (var i = 0; i < values.length; i++) {
+              plot_data.push([Date.parse(values[i].timestamp_data), values[i].value]);
+          }
+          var plot_error = [];
+          for (var i = 0; i < errors.length; i++) {
+              var up = values[i].value + errors[i].value;
+              var dn = values[i].value - errors[i].value;
+              plot_error.push([Date.parse(values[i].timestamp_data), dn,up]);
+          }
+          chart.addSeries({
+              type: 'spline',
+              name: 'Bergen',
+              data: plot_data
+          });
+          chart.addSeries({
+              type: 'errorbar',
+              data: plot_error
+          });
       }
     };
 }

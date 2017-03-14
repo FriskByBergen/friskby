@@ -14,7 +14,7 @@ from git_version.models import GitVersion
 
 
 class MeasurementType(Model):
-    name = CharField("Type of measurement", max_length=60)
+    name = CharField("Type of measurement", max_length=60, unique = True)
 
     def __unicode__(self):
         return self.name

@@ -57,17 +57,18 @@ function createchart() {
           var plot_error = [];
           for (var i = 0; i < errors.length; i++) {
               var up = values[i].value + errors[i].value;
-              var dn = values[i].value - errors[i].value;
-              plot_error.push([Date.parse(values[i].timestamp_data), dn,up]);
+              var dn = Math.max(0,values[i].value - errors[i].value);
+              plot_error.push([Date.parse(values[i].timestamp_data), dn, up]);
           }
+          chart.addSeries({
+              name: 'Uncertainty',
+              type: 'areasplinerange',
+              data: plot_error
+          });
           chart.addSeries({
               type: 'spline',
               name: 'Bergen',
               data: plot_data
-          });
-          chart.addSeries({
-              type: 'errorbar',
-              data: plot_error
           });
       }
     };

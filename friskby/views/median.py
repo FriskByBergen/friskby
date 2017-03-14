@@ -20,6 +20,7 @@ class Median(View):
 
     def get(self, request):
         period = 2 * 24 * 3600 # 2 days
+        delta = timedelta(minutes=60) # sample every 60 minutes
         device_list = Device.objects.all()
 
         if "time" in request.GET:
@@ -79,7 +80,6 @@ class Median(View):
             idx = 0
             datalist = row['datalist']
             now_time = start_time
-            delta_30m = timedelta(minutes=30)
             while now_time < end_time:
                 current_measurements = []
                 val = lambda i: datalist[i]['value']
@@ -90,7 +90,7 @@ class Median(View):
                 if not now_time in the_data:
                     the_data[now_time] = []
                 the_data[now_time] += current_measurements
-                now_time = now_time + delta_30m
+                now_time = now_time + delta
 
         mean_values = []
         std_values  = []

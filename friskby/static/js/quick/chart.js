@@ -1,5 +1,6 @@
 function createchart() {
   console.log("making chart");
+  var default_plot = ["FriskPI10", "FriskPaiMorten", "FriskPI06", "FriskPIFlikka"];
   var ctx = document.getElementById("chart");
   var chart = new Highcharts.Chart({
       chart: {
@@ -26,7 +27,7 @@ function createchart() {
               text: 'μg/m3'
           },
           min: 0,
-          max: 50
+          max: 100
       },
       tooltip: {
           headerFormat: '<b>{series.name}</b><br>',
@@ -59,7 +60,8 @@ function createchart() {
               data: sensor[key].map(function(measurement) {
                 return [Date.parse(measurement.timestamp_data),
                         measurement.value];
-              })
+              }),
+              visible: default_plot.indexOf(sensor.id)>=0
             });
         });
       },

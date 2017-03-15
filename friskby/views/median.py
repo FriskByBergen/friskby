@@ -56,7 +56,7 @@ class Median(View):
             try:
                 if d.location is None:
                     continue
-                if not d.id in ('FriskPI10','FriskPIFlikka','FriskPaiMorten','FriskPI06'):
+                if not d.id in ('FriskPI10','FriskPIFlikka','FriskPaiMorten','FriskPI06','FriskPI05'):
                     continue
                 sensor = Sensor.objects.get(parent_device=d, sensor_type__measurement_type=sensortype)
             except Sensor.DoesNotExist:

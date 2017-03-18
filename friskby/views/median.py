@@ -56,7 +56,8 @@ class Median(View):
             try:
                 if d.location is None:
                     continue
-                if not d.id in ('FriskPI10','FriskPIFlikka','FriskPaiMorten','FriskPI06','FriskPI05'):
+                if not d.id in ('FriskPaiMorten', 'FriskPI05', 'FriskPI06',
+                                'FriskPI09', 'FriskPI10', 'FriskPIFlikka'):
                     continue
                 sensor = Sensor.objects.get(parent_device=d, sensor_type__measurement_type=sensortype)
             except Sensor.DoesNotExist:
@@ -95,8 +96,10 @@ class Median(View):
         mean_values = []
         std_values  = []
         for sometime in the_data:
-            vals = np.array(the_data[sometime])
-            if len(vals) > 1:
+            vals = np.array(sorted(the_data[sometime]))
+            if len(vals) > 2:
+                percentile_10 = max(1, len(vals)//10) # remove top and bottom 10%
+                vals = vals[percentile_10:-percentile_10]
                 mean_values.append({'timestamp_data':sometime.isoformat(),
                                     'value':round(vals.mean(), 2)})
                 std_values.append({'timestamp_data':sometime.isoformat(),

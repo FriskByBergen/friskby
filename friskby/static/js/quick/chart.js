@@ -1,6 +1,6 @@
 function createchart() {
   console.log("making chart");
-  var default_plot = ["FriskPI10", "FriskPaiMorten", "FriskPI06", "FriskPIFlikka", "FriskPI05"];
+  var default_plot = ["FriskPaiMorten", "FriskPI05", "FriskPI06", "FriskPI09", "FriskPI10", "FriskPIFlikka"];
   var ctx = document.getElementById("chart");
   var chart = new Highcharts.Chart({
       chart: {

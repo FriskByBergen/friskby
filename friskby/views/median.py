@@ -20,20 +20,28 @@ class Median(View):
 
     def get(self, request):
         period = 2 * 24 * 3600 # 2 days
-        delta = timedelta(minutes=60) # sample every 60 minutes
+        delta_minutes = 60 # sample every 60 minutes
         device_list = Device.objects.all()
 
-        if "time" in request.GET:
-            end_time = TimeStamp.parse_datetime(request.GET["time"])
+        if 'delta' in request.GET:
+            try:
+                delta_minutes = int(request.GET["delta"])
+            except ValueError as err:
+                print('Received non int as delta: %s' % err)
+        delta = timedelta(minutes=delta_minutes)
+
+        if "end" in request.GET:
+            end_time = TimeStamp.parse_datetime(request.GET["end"])
         else:
             last = RawData.objects.latest('timestamp_data')
             end_time = last.timestamp_data
 
+        start_time = None
         if "start" in request.GET:
             start_time = TimeStamp.parse_datetime(request.GET["start"])
-        else:
+        if not start_time:
             start_time = end_time - datetime.timedelta(seconds=period)
-        start_time = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
+            start_time = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
         if "sensortype" in request.GET:
             sensor_type_name = request.GET["sensortype"]

@@ -190,7 +190,7 @@ class Sensor(Model):
 
 class RawData(Model):
     sensor_id = CharField(max_length=128)
-    s_id = ForeignKey(Sensor, null=True)
+    s_id = ForeignKey(Sensor)
     timestamp_recieved = DateTimeField()
     timestamp_data = DateTimeField()
     value = FloatField(default=-1)

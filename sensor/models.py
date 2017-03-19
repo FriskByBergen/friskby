@@ -81,8 +81,9 @@ class Device(Model):
         return config
 
     def lockDevice(self):
-        self.locked = True
-        self.save()
+        if self.locked == False:
+            self.locked = True
+            self.save()
 
 
 

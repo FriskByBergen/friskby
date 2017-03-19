@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from sensor.management.commands.lock_device import Command as Lock
+from sensor.management.commands.unlock_device import Command as UnLock
 from sensor.management.commands.post import Command as Post
 from sensor.management.commands.drop_testdata import Command as DropTestData
 from sensor.management.commands.add_testdata import Command as AddTestData
@@ -13,6 +15,37 @@ class CommandTest(TestCase):
     def test_post(self):
         cmd = Post( )
         
+
+    def test_locking(self):
+        add_dev = AddTestDevice( )
+        add_dev.handle( num = 100, device = ["Dev1"])
+        dev1 = Device.objects.get( pk = "Dev1")
+        self.assertEqual( True , dev1.locked )
+        
+        unlock = UnLock( )
+        unlock.handle( device = ["Dev1"] )
+        dev1.refresh_from_db( )
+        self.assertEqual( False , dev1.locked )     
+
+        lock = Lock( )
+        lock.handle( )
+        dev1.refresh_from_db( )
+        self.assertEqual( True , dev1.locked )     
+
+        unlock.handle( device = ["Dev1"] )
+        dev1.refresh_from_db( )
+        self.assertEqual( False , dev1.locked )     
+        lock.handle( device = ["Dev2"])
+        dev1.refresh_from_db( )
+        self.assertEqual( False , dev1.locked )     
+
+        lock.handle( device = ["Dev1"])
+        dev1.refresh_from_db( )
+        self.assertEqual( True , dev1.locked )     
+
+
+
+
 
     def test_data(self):
         add_dev = AddTestDevice( )

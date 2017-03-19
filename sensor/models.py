@@ -218,7 +218,7 @@ class RawData(Model):
 
         ts = TimeStamp.parse_datetime(data["timestamp"])
         if ts is None:
-            return "Error: invalid timestamp - expected: YYYY-MM-DDTHH:MM:SS+zz"
+            return "Error: invalid timestamp - expected: %s" % TimeStamp.DATETIME_FORMAT
 
         return None
 

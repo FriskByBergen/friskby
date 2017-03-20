@@ -30,19 +30,7 @@ function createmap() {
       var norm_val = normalize(val,0,35,0,255);
       var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
       return new ol.style.Style({
-        fill: new ol.style.Fill({color: color}),
-        stroke: new ol.style.Stroke({color: 'white', width: 2}),
-        text: new ol.style.Text({
-            font: '10px Calibri,sans-serif',
-            fill: new ol.style.Fill({
-                color: '#000'
-            }),
-            stroke: new ol.style.Stroke({
-                color: '#fff',
-                width: 2
-            }),
-            text: "" + val.toFixed(1)
-        })
+        fill: new ol.style.Fill({color: color})
       });
     };
   };

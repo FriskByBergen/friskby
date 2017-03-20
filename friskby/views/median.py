@@ -22,6 +22,9 @@ class Median(View):
         period = 2 * 24 * 3600 # 2 days
         delta_minutes = 60 # sample every 60 minutes
         device_list = Device.objects.all()
+        default_sensors = ('FriskPaiMorten', 'FriskPI05', 'FriskPI06',
+                           'FriskPI09', 'FriskPI10', 'FriskPIFlikka',
+                           'FriskPiSasak')
 
         if 'delta' in request.GET:
             try:
@@ -43,15 +46,15 @@ class Median(View):
             start_time = end_time - datetime.timedelta(seconds=period)
             start_time = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        if "sensortype" in request.GET:
-            sensor_type_name = request.GET["sensortype"]
-        else:
-            sensor_type_name = "PM10"
+        sensor_type_name = 'PM10'
+        if 'sensortype' in request.GET and request.GET["sensortype"] == 'PM25':
+            sensor_type_name = 'PM25'
 
         try:
             sensortype = MeasurementType.objects.get(name=sensor_type_name)
         except MeasurementType.DoesNotExist:
-            return HttpResponse("Internal error - missing measurement type %s" % sensor_type_name, status=500)
+            return HttpResponse("Internal error: no such measurement type %s." %
+                                sensor_type_name, status=500)
 
         data_all = RawData.objects.filter(timestamp_data__range=(start_time,
             end_time)).values('s_id',
@@ -62,12 +65,10 @@ class Median(View):
         device_rows = []
         for d in device_list:
             try:
-                if d.location is None:
+                if not d.location or d.id not in default_sensors:
                     continue
-                if not d.id in ('FriskPaiMorten', 'FriskPI05', 'FriskPI06',
-                                'FriskPI09', 'FriskPI10', 'FriskPIFlikka'):
-                    continue
-                sensor = Sensor.objects.get(parent_device=d, sensor_type__measurement_type=sensortype)
+                sensor = Sensor.objects.get(parent_device=d,
+                                            sensor_type__measurement_type=sensortype)
             except Sensor.DoesNotExist:
                 continue
 

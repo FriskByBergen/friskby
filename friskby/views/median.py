@@ -22,6 +22,9 @@ class Median(View):
         period = 2 * 24 * 3600 # 2 days
         delta_minutes = 60 # sample every 60 minutes
         device_list = Device.objects.all()
+        default_sensors = ('FriskPaiMorten', 'FriskPI05', 'FriskPI06',
+                           'FriskPI09', 'FriskPI10', 'FriskPIFlikka',
+                           'FriskPiSasak')
 
         if 'delta' in request.GET:
             try:
@@ -62,12 +65,10 @@ class Median(View):
         device_rows = []
         for d in device_list:
             try:
-                if d.location is None:
+                if not d.location or d.id not in default_sensors:
                     continue
-                if not d.id in ('FriskPaiMorten', 'FriskPI05', 'FriskPI06',
-                                'FriskPI09', 'FriskPI10', 'FriskPIFlikka'):
-                    continue
-                sensor = Sensor.objects.get(parent_device=d, sensor_type__measurement_type=sensortype)
+                sensor = Sensor.objects.get(parent_device=d,
+                                            sensor_type__measurement_type=sensortype)
             except Sensor.DoesNotExist:
                 continue
 

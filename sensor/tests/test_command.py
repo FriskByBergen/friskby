@@ -6,6 +6,8 @@ from sensor.management.commands.add_testdata import Command as AddTestData
 from sensor.management.commands.drop_testdevice import Command as DropTestDevice
 from sensor.management.commands.add_testdevice import Command as AddTestDevice
 
+from sensor.management.commands.clean_test import Command as CleanTest
+
 from sensor.models import *
 
 class CommandTest(TestCase):
@@ -41,3 +43,33 @@ class CommandTest(TestCase):
 
         with self.assertRaises( Sensor.DoesNotExist ):
             Sensor.objects.get( sensor_id = "Dev2_PM10" )
+
+
+    def test_clean(self):
+        add_dev = AddTestDevice( )
+        add_dev.handle( num = 10, device = ["FriskPITest", "Other"])
+        rd = RawData.objects.all( )
+        self.assertEqual( len(rd) , 40 )        
+
+        rd = RawData.objects.all( )
+        for d in rd:
+            d.timestamp_data = TimeStamp.parse_datetime("2015-01-01T00:00:00+01")
+            d.save()
+            
+        clean_test = CleanTest( )
+        clean_test.handle( )
+        rd = RawData.objects.all( )
+        self.assertEqual( len(rd) , 20 )
+
+        add_data = AddTestData(  )
+        add_data.handle( device = "FriskPITest", num = 100 , sensor = None)
+        rd = RawData.objects.all( )
+        for d in rd:
+            d.timestamp_data = TimeStamp.now( )
+            d.save()
+
+        rd = RawData.objects.all( )
+        len1 = len(rd)
+        clean_test.handle( )
+        rd = RawData.objects.all( )
+        self.assertEqual(len(rd), len1)

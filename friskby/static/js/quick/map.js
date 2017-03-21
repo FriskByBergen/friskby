@@ -27,8 +27,9 @@ function createmap() {
         return new ol.style.Style({visible: false});
 
       var val = data[data.length - 1].value;
-      var norm_val = normalize(val,0,35,0,255);
-      var color = 'rgba(' + norm_val + ',' + (255 - norm_val) + ',0,1)';
+      var red_val = normalize(val, 0, 25, 0, 255);
+      var green_val = normalize(val, 25, 35, 255, 0);
+      var color = 'rgba(' + red_val + ',' + green_val + ',0,1)';
       return new ol.style.Style({
         fill: new ol.style.Fill({color: color})
       });

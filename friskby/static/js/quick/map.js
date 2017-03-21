@@ -12,9 +12,8 @@ function createmap() {
     target: 'map',
     layers: [
       new ol.layer.Tile({
-        source: new ol.source.Stamen({ 
-          'toner-lite'
-        })
+        source: new ol.source.OSM()
+        //source: new ol.source.Stamen('toner-lite')
       })
     ],
     view: new ol.View({

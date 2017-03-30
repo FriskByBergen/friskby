@@ -69,6 +69,7 @@ class Command(BaseCommand):
         except MeasurementType.DoesNotExist:
             mtype_PM25 = MeasurementType.objects.create( name = "PM25" )
 
+        max_id = 2**31 - 1
         sensor_type_PM25 = SensorType.objects.create( product_name = "XX12762 Turbo",
                                                       measurement_type = mtype_PM25,
                                                       short_description = "Temp",
@@ -79,14 +80,14 @@ class Command(BaseCommand):
 
         raw_data = DataType.objects.get( pk = "RAWDATA" )
         sensor_PM10 = Sensor.objects.create( sensor_id = "%s_PM10" % device_id ,
-                                             s_id = abs(hash("%s_PM10" % device_id)) ,
+                                             s_id = abs(hash("%s_PM10" % device_id)) % max_id,
                                              description = "PM10",
                                              data_type = raw_data ,
                                              parent_device = dev,
                                              sensor_type = sensor_type_PM10 )
 
         sensor_PM25 = Sensor.objects.create( sensor_id = "%s_PM25" % device_id ,
-                                             s_id = abs(hash("%s_PM25" % device_id)) ,
+                                             s_id = abs(hash("%s_PM25" % device_id)) % max_id,
                                              description = "PM25",
                                              data_type = raw_data ,
                                              parent_device = dev,

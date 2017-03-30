@@ -28,17 +28,37 @@ class TestContext(object):
                                                owner = self.user,
                                                post_key = self.key )
 
-        self.mtype = MeasurementType.objects.create( name = "Temperature" )
+        self.mtype_temp = MeasurementType.objects.create( name = "Temperature" )
+        self.mtype_hum = MeasurementType.objects.create( name = "Hum" )
+        self.mtype_pressure = MeasurementType.objects.create( name = "Press" )
         self.raw_data = DataType.objects.get( pk = "RAWDATA" )
         self.test_data = DataType.objects.get( pk = "TEST" )
 
         self.sensor_type_temp = SensorType.objects.create( product_name = "XX12762 Turbo",
-                                                           measurement_type = self.mtype,
+                                                           measurement_type = self.mtype_temp,
                                                            short_description = "Temp",
                                                            description = "Measurement of temperature",
                                                            unit = "Degree celcius",
                                                            min_value = 0,
                                                            max_value = 100)
+
+        self.sensor_type_hum = SensorType.objects.create( product_name = "XX12762 Turbo",
+                                                          measurement_type = self.mtype_hum,
+                                                          short_description = "Temp",
+                                                          description = "Measurement of temperature",
+                                                          unit = "Degree celcius",
+                                                          min_value = 0,
+                                                          max_value = 100)
+
+
+        self.sensor_type_pressure = SensorType.objects.create( product_name = "XX12762 Turbo",
+                                                               measurement_type = self.mtype_pressure,
+                                                               short_description = "Temp",
+                                                               description = "Measurement of temperature",
+                                                               unit = "Degree celcius",
+                                                               min_value = 0,
+                                                               max_value = 100)
+
 
         self.temp_sensor = Sensor.objects.create( sensor_id = "TEMP:XX",
                                                   s_id = abs(hash("TEMP:XX")),
@@ -51,14 +71,14 @@ class TestContext(object):
                                                  description = "Measurement humidity",
                                                  data_type = self.raw_data ,
                                                  parent_device = self.dev,
-                                                 sensor_type = self.sensor_type_temp)
+                                                 sensor_type = self.sensor_type_hum)
 
         self.loc0_sensor = Sensor.objects.create( sensor_id = "NO_LOC:XX",
                                                   s_id = abs(hash("NO_LOC:XX")),
-                                                  description = "Measurement humidity",
+                                                  description = "Measurement pressure",
                                                   data_type = self.raw_data ,
                                                   parent_device = self.dev_loc0,
-                                                  sensor_type = self.sensor_type_temp)
+                                                  sensor_type = self.sensor_type_pressure)
 
 
         self.test_user_passwd = get_random_string( length = 10 ),

@@ -211,9 +211,13 @@ class RawData(Model):
             return "Error: empty payload"
 
         missing_keys = []
-        for key in ["key", "sensorid", "value", "timestamp"]:
+        for key in ["key", "value", "timestamp"]:
             if not key in data:
                 missing_keys.append(key)
+
+        if "sensor_id" not in data and "id" not in data:
+            missing_keys.append("id")
+
         if missing_keys:
             return "Error: missing fields in payload: %s" % missing_keys
 
@@ -265,14 +269,47 @@ class RawData(Model):
 
     @classmethod
     def create(cls, data):
-        if "sensorid" in data:
+        if "id" in data:
+            (dev_id,mt) = data["id"]
+
+            try:
+                device = Device.objects.get( pk = dev_id )
+            except Device.DoesNotExist:
+                raise ValueError("No such device: %s" % dev_id)
+
+            try:
+                mtype = MeasurementType.objects.get( name = mt )
+            except MeasurementType.DoesNotExist:
+                raise ValueError("No such measurement type: %s" % mt)
+
+
+            # The data model is somewhat broken here; the assumption
+            # is that a devide_id and a measurement type should
+            # uniquely define a sensor, but that is actually not
+            # reflected in the data model.
+            #
+            # That is reflected in the except: clauses below which
+            # catch both the DoesNotExist and the
+            # MultipleObjectsReturned exceptions.
+            try:
+                stype = SensorType.objects.get( measurement_type = mtype )
+            except (SensorType.DoesNotExist, SensorType.MultipleObjectsReturned):
+                raise ValueError("Internal error: not exactly one sensortype corresponding to measurment type:%s" % mtype)
+
+            try:
+                sensor = Sensor.objects.get( parent_device = device, sensor_type = stype )
+            except (Sensor.DoesNotExist, Sensor.MultipleObjectsReturned):
+                raise ValueError("Internal error: not exactly one sensor corresponding to (%s,%s)" % (device, mtype))
+            sensor_id = sensor.sensor_id
+
+        elif "sensorid" in data:
             sensor_id = data["sensorid"]
             try:
                 sensor = Sensor.objects.get(sensor_id=sensor_id)
             except Sensor.DoesNotExist:
                 raise ValueError("No such sensor: %s" % sensor_id)
         else:
-            raise ValueError("Must have 'sensorid' as part of data")
+            raise ValueError("Must have 'sensorid' or 'id' as part of data")
 
         if "key" in data:
             key = data["key"]

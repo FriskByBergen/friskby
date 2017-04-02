@@ -18,7 +18,7 @@ def sample(sensor , n):
     data = arma( n )
     for d in data:
         ts += datetime.timedelta( seconds = 600 )
-        rd = RawData.objects.create( s_id = sensor,
+        rd = RawData.objects.create( sensor = sensor,
                                      sensor_string_id = sensor.sensor_id,
                                      timestamp_data = ts,
                                      value = d)

@@ -190,7 +190,7 @@ class Sensor(Model):
 
 class RawData(Model):
     sensor_string_id = CharField(max_length=128)
-    s_id = ForeignKey(Sensor)
+    sensor = ForeignKey(Sensor)
     timestamp_recieved = DateTimeField()
     timestamp_data = DateTimeField()
     value = FloatField(default=-1)
@@ -348,7 +348,7 @@ class RawData(Model):
         rawdata = []
         for ts, value in zip(timestamp, values):
             rd = RawData(sensor_string_id=sensor.sensor_id,
-                         s_id=sensor,
+                         sensor=sensor,
                          timestamp_data=ts,
                          value=value)
             rd.save()

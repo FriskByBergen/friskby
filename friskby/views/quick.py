@@ -75,7 +75,7 @@ class Quick(View):
             return HttpResponse( "Internal error - missing measurement type %s" % sensor_type_name , status = 500 )
             
         data_all = RawData.objects.filter(timestamp_data__range=(start_time,
-            end_time)).values('s_id',
+            end_time)).values('sensor',
                               'value',
                               'timestamp_data').order_by('timestamp_data')
 
@@ -90,7 +90,7 @@ class Quick(View):
             except Sensor.DoesNotExist:
                 continue
 
-            dataquery = downsample([x for x in data_all if x['s_id'] == sensor.s_id], minutes=30, cutoff=100)
+            dataquery = downsample([x for x in data_all if x['sensor'] == sensor.s_id], minutes=30, cutoff=100)
             datalist = map( make_timestamp , dataquery )
             
             if len(datalist) == 0:

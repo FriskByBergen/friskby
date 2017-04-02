@@ -15,6 +15,6 @@ class Command(BaseCommand):
             
         time_limit = TimeStamp.now() - datetime.timedelta( days = 1 )
         sensor_list = test_dev.sensorList()
-        rd = RawData.objects.filter( s_id__in = test_dev.sensorList( ) , timestamp_data__lt = time_limit)
+        rd = RawData.objects.filter( sensor__in = test_dev.sensorList( ) , timestamp_data__lt = time_limit)
         rd.delete( )
         

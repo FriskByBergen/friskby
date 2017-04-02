@@ -233,8 +233,8 @@ class ReadingView(APIView):
     def post(self , request , format = None):
         try:
             raw_data = RawData.create( request.data )
-        except ValueError:
-            return Response(RawData.error( request.data ) , status = status.HTTP_400_BAD_REQUEST )
+        except ValueError as e:
+            return Response(str(e) , status = status.HTTP_400_BAD_REQUEST )
         
         rd        = raw_data[0]
         sensorid  = rd.sensor_id

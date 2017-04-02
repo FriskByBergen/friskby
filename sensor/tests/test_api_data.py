@@ -108,6 +108,35 @@ class Readingtest(TestCase):
         response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
 
+        # Valid - using id=(device_id, measurement_type) instead of sensor_id
+        data = {"id" : ( self.context.dev.id , self.context.mtype_temp.name),
+                "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
+        string_data = json.dumps( data )
+        response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_201_CREATED , response.data)
+
+        # Bad request - invalid device id
+        data = {"id" : ( "INVALID_ID" , self.context.mtype_temp.name),
+                "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
+        string_data = json.dumps( data )
+        response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data )
+
+        # Bad request - invalid mtype
+        data = {"id" : ( self.context.dev.id , "INVALID"),
+                "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
+        string_data = json.dumps( data )
+        response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
+
+
+        # Bad request - invalid id form
+        data = {"id" : self.context.dev.id,
+                "value" : "50" , "timestamp" : "2015-10-10T12:12:00+01", "key" : self.context.external_key}
+        string_data = json.dumps( data )
+        response = client.post( url , data = json.dumps( data ) , content_type = "application/json")
+        self.assertEqual( response.status_code , status.HTTP_400_BAD_REQUEST , response.data)
+
 
 
     def test_get(self):

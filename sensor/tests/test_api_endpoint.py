@@ -133,7 +133,7 @@ class SensorTypeTest(TestCase):
         response = client.get("/sensor/api/sensortype/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data), 1)
+        self.assertEqual(len(data), 3)
 
         response = client.get("/sensor/api/sensortype/%d/" % self.context.sensor_type_temp.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -189,7 +189,6 @@ class Sensor(Model):
 
 
 class RawData(Model):
-    sensor_string_id = CharField(max_length=128)
     sensor = ForeignKey(Sensor)
     timestamp_recieved = DateTimeField()
     timestamp_data = DateTimeField()
@@ -197,8 +196,8 @@ class RawData(Model):
     processed = BooleanField(default=False)
 
     def __unicode__(self):
-        return "Sensor:%s: Value:%s" % (self.sensor_string_id, self.value)
-
+        return "Sensor:%s: Value:%s" % (self.sensor, self.value)
+    
 
     def save(self, *args, **kwargs):
         if self.timestamp_recieved is None:
@@ -232,21 +231,21 @@ class RawData(Model):
         ts = []
         if num is None:
             if start is None and end is None:
-                qs = RawData.objects.filter(sensor_string_id=sensor.sensor_id).order_by('timestamp_data')
+                qs = RawData.objects.filter(sensor=sensor).order_by('timestamp_data')
             else:
                 if end is None:
-                    qs = RawData.objects.filter(sensor_string_id=sensor.sensor_id,
+                    qs = RawData.objects.filter(sensor=sensor,
                                                 timestamp_data__gte=start).order_by('timestamp_data')
                 elif start is None:
-                    qs = RawData.objects.filter(sensor_string_id=sensor.sensor_id,
+                    qs = RawData.objects.filter(sensor=sensor,
                                                 timestamp_data__lte=end).order_by('timestamp_data')
                 else:
-                    qs = RawData.objects.filter(sensor_string_id=sensor.sensor_id,
+                    qs = RawData.objects.filter(sensor=sensor,
                                                 timestamp_data__range=[start, end]).order_by('timestamp_data')
 
         else:
             if start is None and end is None:
-                qs = reversed(RawData.objects.filter(sensor_string_id=sensor.sensor_id).order_by('-timestamp_data')[:num])
+                qs = reversed(RawData.objects.filter(sensor=sensor).order_by('-timestamp_data')[:num])
             else:
                 raise ValueError("Can not supply both num and start")
 
@@ -347,8 +346,7 @@ class RawData(Model):
 
         rawdata = []
         for ts, value in zip(timestamp, values):
-            rd = RawData(sensor_string_id=sensor.sensor_id,
-                         sensor=sensor,
+            rd = RawData(sensor=sensor,
                          timestamp_data=ts,
                          value=value)
             rd.save()

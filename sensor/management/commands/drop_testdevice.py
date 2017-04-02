@@ -21,7 +21,7 @@ class Command(BaseCommand):
     def drop_device(self , dev):
         sys.stdout.write("Dropping device:%s and all related data\n" % dev.id)
         for sensor in dev.sensorList():
-            RawData.objects.filter( sensor_string_id = sensor.sensor_id ).delete()
+            RawData.objects.filter( sensor = sensor ).delete()
 
         dev.delete()
 

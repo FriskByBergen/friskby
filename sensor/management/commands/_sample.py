@@ -7,7 +7,7 @@ tz = pytz.timezone("Europe/Oslo")
 
 
 def sample(sensor , n):
-    raw_data = RawData.objects.filter( sensor_id = sensor.sensor_id )
+    raw_data = RawData.objects.filter( sensor = sensor )
     if len(raw_data) == 0:
         start = tz.localize(datetime.datetime(2010, 1, 1))
     else:
@@ -18,8 +18,7 @@ def sample(sensor , n):
     data = arma( n )
     for d in data:
         ts += datetime.timedelta( seconds = 600 )
-        rd = RawData.objects.create( s_id = sensor,
-                                     sensor_id = sensor.sensor_id,
+        rd = RawData.objects.create( sensor = sensor,
                                      timestamp_data = ts,
                                      value = d)
 

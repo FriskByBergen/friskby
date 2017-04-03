@@ -179,7 +179,7 @@ class Sensor(Model):
     # subsequently used to update the status of all the relevant
     # RawData records.
     def get_rawdata(self):
-        qs = RawData.objects.filter(sensor_id=self.sensor_id,
+        qs = RawData.objects.filter(sensor_string_id=self.sensor_id,
                                     processed=False).values_list('id',
                                                                  'timestamp_data',
                                                                  'value').order_by('timestamp_data')
@@ -189,16 +189,15 @@ class Sensor(Model):
 
 
 class RawData(Model):
-    sensor_id = CharField(max_length=128)
-    s_id = ForeignKey(Sensor)
+    sensor = ForeignKey(Sensor)
     timestamp_recieved = DateTimeField()
     timestamp_data = DateTimeField()
     value = FloatField(default=-1)
     processed = BooleanField(default=False)
 
     def __unicode__(self):
-        return "Sensor:%s: Value:%s" % (self.sensor_id, self.value)
-
+        return "Sensor:%s: Value:%s" % (self.sensor, self.value)
+    
 
     def save(self, *args, **kwargs):
         if self.timestamp_recieved is None:
@@ -232,21 +231,21 @@ class RawData(Model):
         ts = []
         if num is None:
             if start is None and end is None:
-                qs = RawData.objects.filter(sensor_id=sensor.sensor_id).order_by('timestamp_data')
+                qs = RawData.objects.filter(sensor=sensor).order_by('timestamp_data')
             else:
                 if end is None:
-                    qs = RawData.objects.filter(sensor_id=sensor.sensor_id,
+                    qs = RawData.objects.filter(sensor=sensor,
                                                 timestamp_data__gte=start).order_by('timestamp_data')
                 elif start is None:
-                    qs = RawData.objects.filter(sensor_id=sensor.sensor_id,
+                    qs = RawData.objects.filter(sensor=sensor,
                                                 timestamp_data__lte=end).order_by('timestamp_data')
                 else:
-                    qs = RawData.objects.filter(sensor_id=sensor.sensor_id,
+                    qs = RawData.objects.filter(sensor=sensor,
                                                 timestamp_data__range=[start, end]).order_by('timestamp_data')
 
         else:
             if start is None and end is None:
-                qs = reversed(RawData.objects.filter(sensor_id=sensor.sensor_id).order_by('-timestamp_data')[:num])
+                qs = reversed(RawData.objects.filter(sensor=sensor).order_by('-timestamp_data')[:num])
             else:
                 raise ValueError("Can not supply both num and start")
 
@@ -300,21 +299,21 @@ class RawData(Model):
                 sensor = Sensor.objects.get( parent_device = device, sensor_type = stype )
             except (Sensor.DoesNotExist, Sensor.MultipleObjectsReturned):
                 raise ValueError("Internal error: not exactly one sensor corresponding to (%s,%s)" % (device, mtype))
-            sensor_id = sensor.sensor_id
+            sensor_string_id = sensor.sensor_id
 
         elif "sensorid" in data:
-            sensor_id = data["sensorid"]
+            sensor_string_id = data["sensorid"]
             try:
-                sensor = Sensor.objects.get(sensor_id=sensor_id)
+                sensor = Sensor.objects.get(sensor_id=sensor_string_id)
             except Sensor.DoesNotExist:
-                raise ValueError("No such sensor: %s" % sensor_id)
+                raise ValueError("No such sensor: %s" % sensor_string_id)
         else:
             raise ValueError("Must have 'sensorid' or 'id' as part of data")
 
         if "key" in data:
             key = data["key"]
             if not sensor.valid_post_key(key):
-                raise ValueError("Invalid post key:'%s' for sensor:'%s'" % (key, sensor_id))
+                raise ValueError("Invalid post key:'%s' for sensor:'%s'" % (key, sensor_string_id))
         else:
             raise ValueError("Must have 'key' in data")
 
@@ -347,8 +346,7 @@ class RawData(Model):
 
         rawdata = []
         for ts, value in zip(timestamp, values):
-            rd = RawData(sensor_id=sensor_id,
-                         s_id=sensor,
+            rd = RawData(sensor=sensor,
                          timestamp_data=ts,
                          value=value)
             rd.save()

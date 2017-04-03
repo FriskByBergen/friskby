@@ -16,5 +16,5 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         for sensor in sensor_list( options ):
-            RawData.objects.filter( sensor_id = sensor.sensor_id ).delete()
+            RawData.objects.filter( sensor = sensor ).delete()
         

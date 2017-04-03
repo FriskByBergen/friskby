@@ -237,22 +237,18 @@ class ReadingView(APIView):
             return Response(str(e) , status = status.HTTP_400_BAD_REQUEST )
         
         rd        = raw_data[0]
-        sensorid  = rd.sensor_id
         value     = rd.value
         timestamp = rd.timestamp_data
         location  = None
-        try:
-            sensor = models.Sensor.objects.get( sensor_id = sensorid )
-        except models.Sensor.DoesNotExist:
-            return Response("The sensorID:%s is not found. " % sensorid , status.HTTP_404_NOT_FOUND)
+        sensor = rd.sensor
 
         if not sensor.valid_input( value ):
-            return Response("The value:%s for sensor:%s is invalid" % (value , sensorid) , status.HTTP_400_BAD_REQUEST)
+            return Response("The value:%s for sensor:%s is invalid" % (value , rd.sensor) , status.HTTP_400_BAD_REQUEST)
         value = float(value)
 
         if sensor.parent_device.location is None:
             if not "location" in request.data:
-                return Response("Sensor:%s does not have location - must supply in post" % sensorid , status.HTTP_400_BAD_REQUEST)
+                return Response("Sensor:%s does not have location - must supply in post" % rd.sensor , status.HTTP_400_BAD_REQUEST)
             location = request.data["location"]
                     
 
@@ -355,7 +351,7 @@ class RawDataView(APIView):
         except models.Sensor.DoesNotExist:
             return Response("The sensorID:%s is not found" % sensor_id , status = 404)#status.HTTP_404_NOT_FOUND)
 
-        query = models.RawData.objects.filter( sensor_id = sensor.sensor_id )
+        query = models.RawData.objects.filter( sensor = sensor )
         data = []
         for row in query:
             data.append( (row.timestamp_data , row.value ))

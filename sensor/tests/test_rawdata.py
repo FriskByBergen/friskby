@@ -199,7 +199,8 @@ class RawDataTest(TestCase):
             RawData.create(data)
 
         qs = RawData.objects.all()
-
+        print qs[0]
+        
         ts,values = RawData.get_vectors(self.context.temp_sensor)
         self.assertEqual(len(ts), 10)
         self.assertEqual(len(values), 10)
@@ -241,3 +242,5 @@ class RawDataTest(TestCase):
 
         ts,values = RawData.get_vectors(self.context.temp_sensor, start = TimeStamp.parse_datetime("2015-11-10T12:13:08+01"))
         self.assertEqual(len(ts), 0)
+
+        

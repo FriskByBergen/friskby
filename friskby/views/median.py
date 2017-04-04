@@ -57,7 +57,7 @@ class Median(View):
                                 sensor_type_name, status=500)
 
         data_all = RawData.objects.filter(timestamp_data__range=(start_time,
-            end_time)).values('s_id',
+            end_time)).values('sensor',
                               'value',
                               'timestamp_data').order_by('timestamp_data')
 
@@ -72,7 +72,7 @@ class Median(View):
             except Sensor.DoesNotExist:
                 continue
 
-            dataquery = [x for x in data_all if x['s_id'] == sensor.s_id]
+            dataquery = [x for x in data_all if x['sensor'] == sensor.s_id]
             datalist = map(make_timestamp, dataquery)
 
             if len(datalist) == 0:

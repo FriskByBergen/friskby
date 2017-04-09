@@ -15,10 +15,10 @@ class DeviceTest(TestCase):
 
     def test_get_config(self):
         client = Client( )
-        response = client.get( reverse("sensor.device_config" , args = ["XXX"]))
+        response = client.get( reverse("api.device.info" , args = ["XXX"]))
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
 
-        url = reverse( "sensor.device_config" , args = [ self.context.dev.id ])
+        url = reverse( "api.device.info" , args = [ self.context.dev.id ])
         response = client.get( url )
         self.assertEqual( response.status_code , status.HTTP_200_OK )
 
@@ -61,7 +61,7 @@ class DeviceTest(TestCase):
         device.save( )
 
         client = Client( )
-        url = reverse( "sensor.device_config" , args = [ self.context.dev.id ])
+        url = reverse( "api.device.info" , args = [ self.context.dev.id ])
         response = client.get( url )
         data = json.loads(response.content)
         client_config = data["client_config"]
@@ -75,14 +75,17 @@ class DeviceTest(TestCase):
 
         # Invalid key supplied - closed device
         client = Client( )
-        url = reverse( "sensor.device_config" , args = [ self.context.dev.id ])
+        url = reverse( "api.device.info" , args = [ self.context.dev.id ])
         response = client.get( url , {"key" : "Invalid"})
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
-
+        client_config = response.data["client_config"]
+        self.assertEqual( response.status_code , status.HTTP_200_OK )
+        self.assertEqual( False, self.context.dev.valid_post_key( response.data["post_key"] ))
+        
         response = client.get( url , {"key" : device.post_key.external_key})
         data = json.loads(response.content)
-        client_config = data["client_config"]
-        self.assertTrue( self.context.dev.valid_post_key( client_config["post_key"] ))
+        client_config = response.data["client_config"]
+        self.assertEqual( True, self.context.dev.valid_post_key( response.data["post_key"] ))
+        self.assertEqual( True, self.context.dev.valid_post_key( client_config["post_key"] ))
 
 
 
@@ -93,7 +96,7 @@ class DeviceTest(TestCase):
 
         # Invalid key -> 403
         data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
-        url = reverse( "sensor.device_config" , args = [ self.context.dev.id ])
+        url = reverse( "api.device.info" , args = [ self.context.dev.id ])
         response = client.put( url,
                                data = json.dumps( data ) ,
                                content_type = "application/json")
@@ -109,12 +112,11 @@ class DeviceTest(TestCase):
 
         # Invalid sensor -> 404
         data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
-        invalid_url = reverse( "sensor.device_config" , args = [ "NOXXX" ])
+        invalid_url = reverse( "api.device.info" , args = [ "NOXXX" ])
         response = client.put( invalid_url,
                                data = json.dumps( data ) ,
                                content_type = "application/json")
         self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
-
 
         # No data -> 204
         data = {"key" : str(self.context.dev.post_key.external_key)}

@@ -5,6 +5,10 @@ import sensor.models as models
 from api_views import *
 
 urlpatterns = [
+    url(r'^device/$' , DeviceView.as_view() , name = "api.device.info"),
+    url(r'^device/(?P<pk>%s)/$' % models.Device.IDPattern, DeviceView.as_view() , name = "api.device.info"),
+    #
+    #
     url(r'^client_log/$' , ClientLogView.as_view(), name = "sensor.api.client_log"),
     #
     url(r'^measurement_type/$' , MeasurementTypeListView.as_view()),
@@ -12,9 +16,6 @@ urlpatterns = [
     #
     url(r'^device_type/$' , DeviceTypeListView.as_view()),
     url(r'^device_type/(?P<pk>[0-9]+)/$' , DeviceTypeView.as_view()),
-    #
-    url(r'^device/$' , DeviceListView.as_view()),
-    url(r'^device/(?P<pk>%s)/$' % models.Device.IDPattern, DeviceView.as_view() , name = "sensor.device_config"),
     #
     url(r'^location/$' , LocationListView.as_view()),
     url(r'^location/(?P<pk>[0-9]+)/$' , LocationView.as_view()),

@@ -12,7 +12,6 @@ from api_key.models import ApiKey
 from git_version.models import GitVersion
 
 
-
 class MeasurementType(Model):
     name = CharField("Type of measurement", max_length=60, unique = True)
 
@@ -39,9 +38,13 @@ class DeviceType(Model):
         return self.name
 
 
-
 class Device(Model):
     IDPattern = "[-_:a-zA-Z0-9]+"
+
+    DEVICE_CHANNEL_CHOICES = (
+        ("stable", "Stable"),
+        ("latest", "Latest (development channel)"),
+    )
 
     id = CharField("Device ID",
                    max_length=60,
@@ -55,7 +58,11 @@ class Device(Model):
     git_version = ForeignKey(GitVersion, blank=True, null=True)
     locked = BooleanField(default=True)
     owner = ForeignKey(User)
-
+    channel = CharField(
+        choices=DEVICE_CHANNEL_CHOICES,
+        default="stable",
+        max_length=128,
+    )
 
     def __unicode__(self):
         return self.id
@@ -69,10 +76,13 @@ class Device(Model):
     def clientConfig(self):
         # The post key is not set here, and must be explicitly set in the
         # view code if the request is correctly authorized.
-        config = {"sensor_list" : [sensor.sensor_id for sensor in self.sensorList()],
-                  "post_path" : reverse("sensor.api.post"),
-                  "config_path" : reverse("sensor.device_config", args=[self.id]),
-                  "device_id" : self.id}
+        config = {
+            "sensor_list": [sensor.sensor_id for sensor in self.sensorList()],
+            "post_path": reverse("sensor.api.post"),
+            "config_path": reverse("sensor.device_config", args=[self.id]),
+            "device_id": self.id,
+            "channel": self.channel,
+        }
 
         if self.git_version:
             config["git_repo"] = self.git_version.repo
@@ -81,10 +91,9 @@ class Device(Model):
         return config
 
     def lockDevice(self):
-        if self.locked == False:
+        if self.locked is False:
             self.locked = True
             self.save()
-
 
 
 class SensorType(Model):
@@ -125,7 +134,7 @@ class Sensor(Model):
 
     s_id = IntegerField(primary_key=True)
     sensor_id = CharField("Sensor ID",
-                          unique = True, 
+                          unique = True,
                           max_length=60,
                           validators=[RegexValidator(regex="^%s$" % IDPattern)])
     sensor_type = ForeignKey(SensorType)
@@ -197,7 +206,7 @@ class RawData(Model):
 
     def __unicode__(self):
         return "Sensor:%s: Value:%s" % (self.sensor, self.value)
-    
+
 
     def save(self, *args, **kwargs):
         if self.timestamp_recieved is None:
@@ -382,7 +391,7 @@ class TimeStamp(Model):
     @classmethod
     def now(cls):
         return timezone.now()
-    
+
     @classmethod
     def timezoneOffset(cls):
         return -1*timezone.localtime(timezone.now()).utcoffset().seconds/60

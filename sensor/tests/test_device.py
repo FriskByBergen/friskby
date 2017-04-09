@@ -2,7 +2,6 @@ import json
 
 from django.urls import reverse
 from django.test import TestCase, Client
-from django.core.exceptions import ValidationError
 from rest_framework import status
 
 from sensor.models import *
@@ -49,6 +48,7 @@ class DeviceTest(TestCase):
         self.assertEqual( client_config["git_repo"] , self.context.git_version.repo )
         self.assertEqual( client_config["git_ref"] , self.context.git_version.ref )
         self.assertEqual( client_config["git_follow"] , self.context.git_version.follow_head )
+        self.assertEqual(client_config["channel"], self.context.channel)
         self.assertTrue( "post_path" in client_config )
         self.assertTrue( "config_path" in client_config )
         self.assertEqual( client_config["device_id"] , self.context.dev.id )

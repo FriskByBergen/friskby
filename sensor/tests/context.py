@@ -15,6 +15,7 @@ class TestContext(object):
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
         self.user = User.objects.create_user( "test-user" )
+        self.channel = "stable"
         self.dev = Device.objects.create( id = "DevXYZ" ,
                                           location = self.loc ,
                                           device_type = self.dev_type ,

@@ -24,5 +24,5 @@ class DeviceView(View):
         url = reverse("api.device.info" , kwargs = {"pk" : device.id} )
         api_get = requests.get( request.build_absolute_uri( url ))
 
-        return render( request , "sensor/device.html" , json.loads( api_get.text ))
+        return render( request , "sensor/device.html" , api_get.json( ))
         

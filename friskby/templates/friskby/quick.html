@@ -72,7 +72,11 @@
       <table class="pure-table">
         <tr><th>Location</th><th>{{pretty_sensor}}</th><th>Last update</th></tr>
           {% for d in device_rows %}
-        <tr><td>{{d.locname}}</td><td class="valuecol">{{d.last}}</td><td>{{d.time}}</td></tr>
+        <tr>
+	  <td><a href="{% url 'view.device.info' pk=d.id %}">{{d.locname}}</a></td>
+	  <td class="valuecol">{{d.last}}</td>
+	  <td>{{d.time}}</td>
+	</tr>
         {% endfor %}
       </table>
     </div>

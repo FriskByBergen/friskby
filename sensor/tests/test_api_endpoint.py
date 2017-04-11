@@ -82,7 +82,6 @@ class DeviceTest(TestCase):
         response = client.get("/sensor/api/device/Valid-ID/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(data["description"], "desc")
 
 
 

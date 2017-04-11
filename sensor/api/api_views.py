@@ -42,42 +42,75 @@ class DeviceTypeView(generics.RetrieveAPIView):
     serializer_class = DeviceTypeSerializer
 
 #################################################################
-
-class DeviceListView(generics.ListCreateAPIView):
-    queryset = models.Device.objects.all()
-    serializer_class = DeviceSerializer
     
-
 class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin):    
     queryset = models.Device.objects.all()
     serializer_class = DeviceSerializer
 
+
+    def get(self, request, *args, **kwargs):
+        if "pk" in kwargs:
+            key = None
+            if "key" in request.GET:
+                key = request.GET["key"]
+            return self.get_detail( request , kwargs["pk"], key)
+        else:
+            return self.get_list( request )
+
+        
+    def get_list(self, request):
+        data = []
+        for dev in models.Device.objects.all():
+            location_name = "-------"
+            if dev.location:
+                location_name = dev.location.name
+            data.append( (dev.id , location_name ))
+
+        return Response( data , status = status.HTTP_200_OK )
     
-    def get(self , request , *args, **kwargs):
-        device_id = kwargs["pk"]
+
+
+    
+    def get_detail(self , request , device_id, key):
         try:
             device = Device.objects.get( pk = device_id )
         except Device.DoesNotExist:
             return Response("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
+
+        data = {"id" : device_id,
+                "owner" : { "name" : device.owner.get_full_name( ),
+                            "email" : device.owner.email }}
+
+        if device.location:
+            loc = device.location
+            data["location"] = {"name" : loc.name,
+                                "latitude" : loc.latitude,
+                                "longitude" : loc.longitude }
+
+
+        data["client_config"] = device.clientConfig( )
         
-        serialized = DeviceSerializer( device )
+        data["post_key"] = "----------"
+        if device.locked:
+            if device.valid_post_key( key ):
+                data["post_key"] = str(device.post_key.external_key)
+                data["client_config"]["post_key"] = str(device.post_key.external_key)
+        else:
+            data["post_key"] = str(device.post_key.external_key)
+            data["client_config"]["post_key"] = str(device.post_key.external_key)
 
-        if "key" in request.GET:
-            if device.valid_post_key( request.GET["key"] ):
-                serialized.data["client_config"]["post_key"] = str(device.post_key.external_key)
-            else:
-                return Response( "Invalid key" , status = status.HTTP_403_FORBIDDEN )
+        sensor_types = [sensor.sensor_type.id for sensor in device.sensorList()]
+        data["sensor_types"] = sensor_types
 
-        if not device.locked:
-            serialized.data["client_config"]["post_key"] = str(device.post_key.external_key)
-            # Here we actually lock the device after a successfull
-            # GET, to ensure that the device will not be dangling in
-            # an open state. Should in addition have a scheduled job
-            # locking all open devices.
-            device.lockDevice( )
+        # Here we actually lock the device after a successfull
+        # GET, to ensure that the device will not be dangling in
+        # an open state. Should in addition have a scheduled job
+        # locking all open devices.
+        device.lockDevice( )
 
-        return Response( serialized.data , status = status.HTTP_200_OK )
+        return Response( data , status = status.HTTP_200_OK )
 
+    
 
     def put(self , request , *args, **kwargs):
         device_id = kwargs["pk"]

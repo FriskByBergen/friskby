@@ -14,8 +14,14 @@ class TestContext(object):
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
-        self.user = User.objects.create_user( "test-user" )
         self.channel = "stable"
+        self.user_passwd = get_random_string( length = 10 ),
+        self.user = User.objects.create_user( get_random_string( length = 10 ),
+                                              password = self.user_passwd ,
+                                              first_name = "First",
+                                              last_name = "Last",
+                                              email = "joe@example.org" )
+
         self.dev = Device.objects.create( id = "DevXYZ" ,
                                           location = self.loc ,
                                           device_type = self.dev_type ,
@@ -81,8 +87,8 @@ class TestContext(object):
                                                   parent_device = self.dev_loc0,
                                                   sensor_type = self.sensor_type_pressure)
 
-
         self.test_user_passwd = get_random_string( length = 10 ),
         self.test_user = User.objects.create_user( get_random_string( length = 10 ),
                                                    password = self.test_user_passwd ,
                                                    email = "joe@invalid.email.com" )
+

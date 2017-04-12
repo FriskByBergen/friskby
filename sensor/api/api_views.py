@@ -77,30 +77,7 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
         except Device.DoesNotExist:
             return Response("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
 
-        data = {"id" : device_id,
-                "owner" : { "name" : device.owner.get_full_name( ),
-                            "email" : device.owner.email }}
-
-        if device.location:
-            loc = device.location
-            data["location"] = {"name" : loc.name,
-                                "latitude" : loc.latitude,
-                                "longitude" : loc.longitude }
-
-
-        data["client_config"] = device.clientConfig( )
-        
-        data["post_key"] = "----------"
-        if device.locked:
-            if device.valid_post_key( key ):
-                data["post_key"] = str(device.post_key.external_key)
-                data["client_config"]["post_key"] = str(device.post_key.external_key)
-        else:
-            data["post_key"] = str(device.post_key.external_key)
-            data["client_config"]["post_key"] = str(device.post_key.external_key)
-
-        sensor_types = [sensor.sensor_type.id for sensor in device.sensorList()]
-        data["sensor_types"] = sensor_types
+        serial = DeviceSerializer( data = device , context = {"key" : key})
 
         # Here we actually lock the device after a successfull
         # GET, to ensure that the device will not be dangling in
@@ -108,7 +85,7 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
         # locking all open devices.
         device.lockDevice( )
 
-        return Response( data , status = status.HTTP_200_OK )
+        return Response( serial.get_data( ) , status = status.HTTP_200_OK )
 
     
 

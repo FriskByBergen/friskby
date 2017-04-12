@@ -73,11 +73,7 @@
         <tr><th>Location</th><th>{{pretty_sensor}}</th><th>Last update</th></tr>
           {% for d in device_rows %}
         <tr>
-	  <!--
-	      <td><a href="{% url 'view.device.info' pk=d.id %}">{{d.locname}}</a></td>
-              The device detail view URL did not work when deployed to heroku. Temporarily disabling it. 
-	  -->
-	  <td>{{d.locname}}</td>
+	  <td><a href="{% url 'view.device.info' pk=d.id %}">{{d.locname}}</a></td>
 	  <td class="valuecol">{{d.last}}</td>
 	  <td>{{d.time}}</td>
 	</tr>

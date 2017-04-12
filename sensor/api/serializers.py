@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from rest_framework import serializers
 from sensor.models import *
 
@@ -26,16 +28,54 @@ class DeviceTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class DeviceSerializer(serializers.ModelSerializer):
-    location = LocationSerializer( read_only = True )
-    device_type = DeviceTypeSerializer( read_only = True )
-    client_config = serializers.ReadOnlyField( source = "clientConfig" )
 
-    class Meta:
-        model = Device
-        fields = ('id', 'location' , 'device_type','description' , 'client_config')
+# Would have preferred to implement this as a proper serializer,
+# now it is just a simple class inspired by the rest framework serializers
+
+class DeviceSerializer(object):
+
+    def __init__(self, data = None, context = None):
+        if data is None:
+            self._data = {}
+            return
+
+        key = None
+        if context:
+            if "key" in context:
+                key = context["key"]
+        
+            
+        device = data
+        data = {"id" : device.id,
+                "owner" : { "name" : device.owner.get_full_name( ),
+                            "email" : device.owner.email }}
+
+        if device.location:
+            loc = device.location
+            data["location"] = {"name" : loc.name,
+                                "latitude" : loc.latitude,
+                                "longitude" : loc.longitude }
 
 
+        data["client_config"] = device.clientConfig( )
+        
+        data["post_key"] = "----------"
+        if device.locked:
+            if device.valid_post_key( key ):
+                data["post_key"] = str(device.post_key.external_key)
+                data["client_config"]["post_key"] = str(device.post_key.external_key)
+        else:
+            data["post_key"] = str(device.post_key.external_key)
+            data["client_config"]["post_key"] = str(device.post_key.external_key)
+
+        sensor_types = [sensor.sensor_type.id for sensor in device.sensorList()]
+        data["sensor_types"] = sensor_types
+        self._data = data
+
+    def get_data(self):
+        return self._data
+
+    
 
 class DataTypeSerializer(serializers.ModelSerializer):
     class Meta:

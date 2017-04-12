@@ -48,3 +48,10 @@ class DeviceInfoTest(TestCase):
             self.assertEqual( response.data[key] , expected[key] )
 
 
+    def test_get_view(self):
+        client = Client( )
+        response = client.get( reverse("view.device.info" , kwargs = {"pk" : "NO_SUCH_DEVICE"}) )
+        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND)
+
+        response = client.get( reverse("view.device.info" , kwargs = {"pk" : self.context.dev.id}) )
+        self.assertEqual( response.status_code , status.HTTP_200_OK)

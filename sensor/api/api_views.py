@@ -4,10 +4,12 @@ import time
 import datetime
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import QueryDict
-from django.http import HttpResponse
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+
 from django.views import View
+from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -19,6 +21,13 @@ import json
 import sensor.models as models
 from sensor.api.serializers import *
 from sensor.api.info_serializers import *
+
+
+def authenticate(device, api_key):
+    """Raises an exception unless the device's key matches the provided api_key.
+    """
+    if not device.valid_post_key(api_key):
+        raise KeyError('Invalid post key "%s" for device "%s".' % (api_key, device.id))
 
 
 
@@ -132,6 +141,32 @@ class LocationListView(generics.ListCreateAPIView):
 class LocationView(generics.RetrieveAPIView):
     queryset = models.Location.objects.all()
     serializer_class = LocationSerializer
+
+class LocationCreator(View):
+
+    def get(self, request, pk):
+        device = get_object_or_404(Device, pk=pk)
+        device_data = DeviceSerializer(data=device)
+        if 'key' not in request.GET:
+            raise KeyError('Missing API-key "key".  Needed to authenticate.')
+        authenticate(device, request.GET['key'])
+
+        for k in ('latitude', 'longitude', 'name'):
+            if k not in request.GET:
+                raise KeyError('Missing key %s' % k)
+        payload = {'key': request.GET['key'],
+                   'latitude': request.GET['latitude'],
+                   'longitude': request.GET['longitude'],
+                   'name': request.GET['name'],
+                   'altitude': 0,  # optional, set if exists
+        }
+        if 'altitude' in request.GET:
+            payload['altitude'] = request.GET['altitude']
+        loc = Location.create(payload)
+        device.location = loc
+        device.save()
+        red = reverse("view.device.info", kwargs={'pk':device.id})
+        return HttpResponseRedirect(red)
 
 #################################################################
 

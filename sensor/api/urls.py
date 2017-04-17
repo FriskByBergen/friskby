@@ -19,6 +19,8 @@ urlpatterns = [
     #
     url(r'^location/$' , LocationListView.as_view()),
     url(r'^location/(?P<pk>[0-9]+)/$' , LocationView.as_view()),
+    url(r'^location/create/(?P<pk>%s)/$' % models.Device.IDPattern,
+        LocationCreator.as_view(), name="view.location.creator"),
     #
     url(r'^data_type/$' , DataTypeListView.as_view()),
     url(r'^data_type/(?P<pk>[0-9]+)/$' , DataTypeView.as_view()),

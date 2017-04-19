@@ -24,7 +24,7 @@ class Location(Model):
     name = CharField("Location", max_length=60)
     latitude = FloatField("Latitude")
     longitude = FloatField("Longitude")
-    altitude = FloatField("Altitude", null=True)
+    altitude = FloatField("Altitude")
 
     def __unicode__(self):
         return self.name

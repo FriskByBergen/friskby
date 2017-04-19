@@ -106,7 +106,7 @@ class DataTypeTest(TestCase):
 
 class LocationTest(TestCase):
     def setUp(self):
-        Location.objects.create(name = "DanmarksPlass", latitude = 100.0, longitude = 60)
+        Location.objects.create(name = "DanmarksPlass", latitude = 100.0, longitude = 60, altitude = 100)
         Location.objects.create(name = "Ulriken", latitude = 200, longitude = 120, altitude = 600)
 
 
@@ -120,7 +120,7 @@ class LocationTest(TestCase):
         loc0 = data[0]
         self.assertEqual(loc0["name"], "DanmarksPlass")
         self.assertEqual(loc0["latitude"], 100.0)
-        self.assertTrue(loc0["altitude"] is None)
+        self.assertEqual(loc0["altitude"] , 100.0)
 
 
 class SensorTypeTest(TestCase):

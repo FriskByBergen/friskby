@@ -21,7 +21,8 @@ class DeviceInfoTest(TestCase):
         client = Client( )
         response = client.get(url)
         self.assertEqual( response.status_code , status.HTTP_200_OK)
-        device_list = response.data
+        device_list = json.loads( response.content )
+        print device_list
         self.assertEqual( len(device_list) , 2 )
         dev_map = dict( device_list )
         self.assertTrue( "DevXYZ" in dev_map )
@@ -35,6 +36,7 @@ class DeviceInfoTest(TestCase):
 
         
         response = client.get( reverse("api.device.info" , kwargs = {"pk" : self.context.dev.id}) )
+        obj = json.loads( response.content )
         self.assertEqual( response.status_code , status.HTTP_200_OK)
         expected = {"id" : self.context.dev.id,
                     "location" :  {"name"     : self.context.loc.name,
@@ -43,9 +45,9 @@ class DeviceInfoTest(TestCase):
                     "owner" : {"name" : self.context.user.get_full_name( ),
                                "email" : self.context.user.email },
                     "sensor_types" : [ self.context.sensor_type_temp.id, self.context.sensor_type_hum.id ]}
-
+        
         for key in expected.keys():
-            self.assertEqual( response.data[key] , expected[key] )
+            self.assertEqual( obj[key] , expected[key] )
 
 
     def test_get_view(self):

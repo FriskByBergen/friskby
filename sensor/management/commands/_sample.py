@@ -16,9 +16,11 @@ def sample(sensor , n):
         
     ts = start
     data = arma( n )
+    location = sensor.get_location( )
     for d in data:
         ts += datetime.timedelta( seconds = 600 )
         rd = RawData.objects.create( sensor = sensor,
                                      timestamp_data = ts,
-                                     value = d)
+                                     value = d,
+                                     location = location )
 

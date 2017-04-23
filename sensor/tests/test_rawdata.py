@@ -183,7 +183,7 @@ class RawDataTest(TestCase):
         self.assertEqual(len(rd), 2)
         self.assertEqual(rd[0].value, 10)
         self.assertEqual(rd[1].value, 20)
-
+        self.assertEqual(rd[0].location , self.context.loc)
 
 
 

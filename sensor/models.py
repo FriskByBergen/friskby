@@ -160,6 +160,9 @@ class Sensor(Model):
     def get_vectors(self, num=None, start=None, end=None):
         return RawData.get_vectors(self, num=num, start=start, end=end)
 
+    def get_location(self):
+        return self.parent_device.location
+    
 
     def get_current(self, timeout_seconds):
         current = {}

@@ -1,24 +1,20 @@
-<html>
-<head>
-<title>
-Friskby device: {{ id }}
-</title>
-</head>
-<body>
-  <h3> Detailed view of device: {{ id }} </h3>
-  <table>
-    <tr>
-      <th> ID: </th> <td> {{ id }} </td>
-    </tr>
-    <tr>
-      <th> Owner: </th> <td> {{ owner }} </td>
-    </tr>
-    <tr>
-      <th> Location: </th> <td> {{ location }} </td>
-    </tr>
-    <tr>
-      <th> Config: </th> <td> {{ client_config }} </td>
-    </tr>
-  </table>	
-</body>
-</html>
+{% extends "friskby/friskby_base.html" %}
+{% block title %} Friskby device: {{ id }} {% endblock %}
+
+{% block body %}
+<h3> Detailed view of device: {{ id }} </h3>
+<table>
+  <tr>
+    <th> ID: </th> <td> {{ id }} </td>
+  </tr>
+  <tr>
+    <th> Owner: </th> <td> {{ owner }} </td>
+  </tr>
+  <tr>
+    <th> Location: </th> <td> {{ location }} </td>
+  </tr>
+  <tr>
+    <th> Config: </th> <td> {{ client_config }} </td>
+  </tr>
+</table>	
+{% endblock %}

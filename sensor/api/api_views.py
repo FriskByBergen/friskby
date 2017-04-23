@@ -4,6 +4,10 @@ import time
 import datetime 
 
 from django.conf import settings
+from django.http import QueryDict
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views import View
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -43,9 +47,9 @@ class DeviceTypeView(generics.RetrieveAPIView):
 
 #################################################################
     
-class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin):    
-    queryset = models.Device.objects.all()
-    serializer_class = DeviceSerializer
+class DeviceView(View):    
+    #queryset = models.Device.objects.all()
+    #serializer_class = DeviceSerializer
 
 
     def get(self, request, *args, **kwargs):
@@ -65,8 +69,8 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
             if dev.location:
                 location_name = dev.location.name
             data.append( (dev.id , location_name ))
-
-        return Response( data , status = status.HTTP_200_OK )
+            
+        return JsonResponse( data , status = status.HTTP_200_OK , safe = False )
     
 
 
@@ -75,7 +79,7 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
         try:
             device = Device.objects.get( pk = device_id )
         except Device.DoesNotExist:
-            return Response("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
+            return HttpResponse("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
 
         serial = DeviceSerializer( data = device , context = {"key" : key})
 
@@ -85,7 +89,7 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
         # locking all open devices.
         device.lockDevice( )
 
-        return Response( serial.get_data( ) , status = status.HTTP_200_OK )
+        return JsonResponse( serial.get_data( ) )
 
     
 
@@ -94,24 +98,23 @@ class DeviceView(generics.GenericAPIView , RetrieveModelMixin , UpdateModelMixin
         try:
             device = Device.objects.get( pk = device_id )
         except Device.DoesNotExist:
-            return Response("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
-            
-        data = request.data
+            return HttpResponse("The device id: %s is invalid" % device_id , status = status.HTTP_404_NOT_FOUND)
 
+        data = json.loads( request.body )
         if "key" in data:
             if not device.valid_post_key( data["key"] ):
-                return Response("Invalid key: %s for device:%s " % (data["key"], device_id) , 
-                                status = status.HTTP_403_FORBIDDEN )
+                return HttpResponse("Invalid key: %s for device:%s " % (data["key"], device_id) , 
+                                    status = status.HTTP_403_FORBIDDEN )
         else:
-            return Response("Missing key for device: %s" % device_id , 
-                            status = status.HTTP_403_FORBIDDEN )
+            return HttpResponse("Missing key for device: %s" % device_id , 
+                                status = status.HTTP_403_FORBIDDEN )
             
         if "git_ref" in data:
             device.client_version = data["git_ref"]
             device.save( )
-            return Response("Client version set to: %s" % device.client_version, status = status.HTTP_200_OK )
+            return HttpResponse("Client version set to: %s" % device.client_version, status = status.HTTP_200_OK )
         else:
-            return Response("Empty payload?" , status = status.HTTP_204_NO_CONTENT)
+            return HttpResponse("Empty payload?" , status = status.HTTP_204_NO_CONTENT)
             
             
 

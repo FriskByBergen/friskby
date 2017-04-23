@@ -77,14 +77,16 @@ class DeviceTest(TestCase):
         client = Client( )
         url = reverse( "api.device.info" , args = [ self.context.dev.id ])
         response = client.get( url , {"key" : "Invalid"})
-        client_config = response.data["client_config"]
+        obj = json.loads( response.content )
+        client_config = obj["client_config"]
         self.assertEqual( response.status_code , status.HTTP_200_OK )
-        self.assertEqual( False, self.context.dev.valid_post_key( response.data["post_key"] ))
+        obj = json.loads( response.content )
+        self.assertEqual( False, self.context.dev.valid_post_key( obj["post_key"] ))
         
         response = client.get( url , {"key" : device.post_key.external_key})
         data = json.loads(response.content)
-        client_config = response.data["client_config"]
-        self.assertEqual( True, self.context.dev.valid_post_key( response.data["post_key"] ))
+        client_config = data["client_config"]
+        self.assertEqual( True, self.context.dev.valid_post_key( data["post_key"] ))
         self.assertEqual( True, self.context.dev.valid_post_key( client_config["post_key"] ))
 
 

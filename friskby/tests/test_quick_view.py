@@ -5,7 +5,7 @@ from rest_framework import status
 
 from .context import TestContext
 from sensor.models import *
-from friskby.views.quick import downsample
+from sensor.sample import downsample
 from datetime import datetime as dt
 
 class QuickTest(TestCase):

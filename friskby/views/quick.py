@@ -6,31 +6,7 @@ from django.views.generic import View
 from django.utils import formats
 
 from sensor.models import *
-
-def make_timestamp( row ):
-    timedate_format = "%Y-%m-%dT%H:%M:%SZ"
-    row["timestamp_data"] = TimeStamp.create( row["timestamp_data"], timedate_format )
-    return row
-
-def with_cutoff(elt, cutoff):
-    elt['value'] = min(cutoff, elt['value'])
-    return elt
-
-def downsample(lst, minutes = 15, cutoff = 100):
-    if not lst:
-        return []
-    ret = []
-    prev = None
-    ret.append(with_cutoff(lst[0], cutoff))
-    prev = lst[0]['timestamp_data']
-    for e in lst:
-        delta = e['timestamp_data'] - prev
-        if delta.total_seconds() > minutes*60:
-            ret.append(with_cutoff(e, cutoff))
-            prev = e['timestamp_data']
-    if ret[-1]['timestamp_data'] != lst[-1]['timestamp_data']:
-        ret.append(with_cutoff(lst[-1], cutoff)) # retain the last element
-    return ret
+from sensor.sample import make_datalist
 
 class Quick(View):
 
@@ -90,9 +66,7 @@ class Quick(View):
             except Sensor.DoesNotExist:
                 continue
 
-            dataquery = downsample([x for x in data_all if x['sensor'] == sensor.s_id], minutes=30, cutoff=100)
-            datalist = map( make_timestamp , dataquery )
-            
+            datalist = make_datalist( [x for x in data_all if x['sensor'] == sensor.s_id], block_size = 30, value_cutoff=100)
             if len(datalist) == 0:
                 continue
 

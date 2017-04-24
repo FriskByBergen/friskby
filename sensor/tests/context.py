@@ -13,6 +13,8 @@ class TestContext(object):
         self.key = ApiKey.objects.create( description = "Newkey")
         self.external_key = str(self.key.external_key)
         self.loc = Location.objects.create( name = "Ulriken" , latitude = 200 , longitude = 120 , altitude = 600)
+
+        self.loc2 = Location.objects.create( name = "LOC2" , latitude = 200 , longitude = 120 , altitude = 600)
         self.dev_type = DeviceType.objects.create( name = "HP-X123" )
         self.channel = "stable"
         self.user_passwd = get_random_string( length = 10 ),

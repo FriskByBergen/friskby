@@ -160,6 +160,9 @@ class Sensor(Model):
     def get_vectors(self, num=None, start=None, end=None):
         return RawData.get_vectors(self, num=num, start=start, end=end)
 
+    def get_location(self):
+        return self.parent_device.location
+    
 
     def get_current(self, timeout_seconds):
         current = {}
@@ -201,8 +204,10 @@ class RawData(Model):
     timestamp_recieved = DateTimeField()
     timestamp_data = DateTimeField()
     value = FloatField(default=-1)
+    location = ForeignKey(Location)
     processed = BooleanField(default=False)
-
+    
+    
     def __unicode__(self):
         return "Sensor:%s: Value:%s" % (self.sensor, self.value)
 
@@ -328,6 +333,10 @@ class RawData(Model):
         if not sensor.on_line:
             raise ValueError("Sensor '%s' is offline - can not accept data")
 
+        location = sensor.get_location( )
+        if location is None:
+            raise ValueError("Sensor '%s' has no location - can not accept data")
+        
         string_values = []
         string_ts = []
         if "value" in data and "timestamp" in data:
@@ -356,7 +365,8 @@ class RawData(Model):
         for ts, value in zip(timestamp, values):
             rd = RawData(sensor=sensor,
                          timestamp_data=ts,
-                         value=value)
+                         value=value,
+                         location=location)
             rd.save()
             rawdata.append(rd)
         return rawdata

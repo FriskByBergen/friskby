@@ -18,3 +18,5 @@ class SensorTest(TestCase):
 
         self.assertTrue(obj.valid_input("50"))
         self.assertTrue(obj.valid_input(50))
+
+        self.assertEqual( obj.get_location( ), self.context.loc )

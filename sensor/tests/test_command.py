@@ -118,6 +118,7 @@ class CommandTest(TestCase):
         add_dev.handle( num = 100, device = ["FriskPITest"])
         for rd in RawData.objects.all( ):
             rd.location = self.context.loc2
+            rd.save() 
 
         device = Device.objects.get( pk = "FriskPITest" ) 
 
@@ -126,3 +127,19 @@ class CommandTest(TestCase):
         for rd in RawData.objects.all( ):
             self.assertEqual( rd.location , device.location )
         
+
+        for rd in RawData.objects.all( ):
+            rd.location = self.context.loc2
+            rd.save() 
+            
+        ud.handle( offset = 50, num = 10)
+        index = 0
+        for rd in RawData.objects.all( ):
+            if index < 50:
+                self.assertEqual( rd.location , self.context.loc2 )
+            elif index < 60:
+                self.assertEqual( rd.location , device.location )
+            else:
+                self.assertEqual( rd.location , self.context.loc2 )
+
+            index += 1

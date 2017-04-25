@@ -8,22 +8,20 @@
 
   <script type="text/javascript">
       window.onload = function() {
-         var chart = createDeviceChart("chart", "Tittel");
+         var chart = createDeviceChart("chart", "Plot for device:{{ id }}");
 
-         chart.addSeries( {
-            name : "Plot1",
-            data : [[Date.parse("2017-04-01T00:00:00Z"),0],
-	   	    [Date.parse("2017-04-02T00:00:00Z"),100],
-		    [Date.parse("2017-04-03T00:00:00Z"),0],
-		    [Date.parse("2017-04-04T00:00:00Z"),20]]} );
-
-         chart.addSeries( {
-	    name : "Plot2",
-	    data : [[Date.parse("2017-04-01T00:00:00Z"),100],
-	   	    [Date.parse("2017-04-02T00:00:00Z"),00],
-		    [Date.parse("2017-04-03T00:00:00Z"),0],
-		    [Date.parse("2017-04-04T00:00:00Z"),100]]});
-
+         var data = {{ data|safe }};
+         for (var name in data) {
+             var values = data[name];
+             var plot_data = [];
+             for (var i = 0; i < values.length; i++) {
+                 plot_data.push([Date.parse(values[i].timestamp_data), values[i].value]);
+             }
+             chart.addSeries( {
+             name : name,
+             data : plot_data });
+	 }  
+            
       };
   </script>
 

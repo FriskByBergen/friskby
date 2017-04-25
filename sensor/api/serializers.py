@@ -73,8 +73,8 @@ class DeviceSerializer(object):
         data["sensor_types"] = sensor_types
 
 
-        period = 7*3600*24 # One week
-        period *= 52*10
+        # Time range is hardcoded for the last week.
+        period = 7*3600*24 
         end_time = TimeStamp.now( )
         start_time = end_time - datetime.timedelta( seconds = period )
 

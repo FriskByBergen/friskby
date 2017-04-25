@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 from sensor.models import *
-
+import sensor.sample as sample
 
 # This module only contains 'pure' serializers; in particular that
 # implies that foreign keys are just represented with their ID. In the
@@ -68,8 +68,25 @@ class DeviceSerializer(object):
             data["post_key"] = str(device.post_key.external_key)
             data["client_config"]["post_key"] = str(device.post_key.external_key)
 
-        sensor_types = [sensor.sensor_type.id for sensor in device.sensorList()]
+        sensor_list = device.sensorList( )
+        sensor_types = [sensor.sensor_type.id for sensor in sensor_list]
         data["sensor_types"] = sensor_types
+
+
+        # Time range is hardcoded for the last week.
+        period = 7*3600*24 
+        end_time = TimeStamp.now( )
+        start_time = end_time - datetime.timedelta( seconds = period )
+
+        
+        data_all = RawData.objects.filter(timestamp_data__range=(start_time,end_time), sensor__in=sensor_list).values('sensor',
+                                                                                                                      'value',
+                                                                                                                      'timestamp_data').order_by('timestamp_data')
+        sample_data = {}
+        for sensor in sensor_list:
+            sample_data[ str(sensor.sensor_type.measurement_type)  ] = sample.make_datalist([ x for x in data_all if x['sensor'] == sensor.s_id ] , block_size = 30, value_cutoff = 100)
+        data["data"] = sample_data
+
         self._data = data
 
     def get_data(self):

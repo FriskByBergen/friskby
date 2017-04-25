@@ -1,6 +1,32 @@
 {% extends "friskby/friskby_base.html" %}
 {% block title %} Friskby device: {{ id }} {% endblock %}
 
+{% block js %}
+  <script src="{{ STATIC_URL }}js/include/highcharts.js"></script>
+  <script src="{{ STATIC_URL }}js/include/highcharts-more.js"></script>
+  <script src="{{ STATIC_URL }}js/device/chart.js"></script>
+
+  <script type="text/javascript">
+      window.onload = function() {
+         var chart = createDeviceChart("chart", "Plot for device:{{ id }}");
+
+         var data = {{ data|safe }};
+         for (var name in data) {
+             var values = data[name];
+             var plot_data = [];
+             for (var i = 0; i < values.length; i++) {
+                 plot_data.push([Date.parse(values[i].timestamp_data), values[i].value]);
+             }
+             chart.addSeries( {
+             name : name,
+             data : plot_data });
+	 }  
+            
+      };
+  </script>
+
+{% endblock %}
+
 {% block body %}
 <h3> Detailed view of device: {{ id }} </h3>
 <table>
@@ -17,4 +43,6 @@
     <th> Config: </th> <td> {{ client_config }} </td>
   </tr>
 </table>	
+
+<div id="chart" style="height: 400px; width: 80%;"></div>
 {% endblock %}

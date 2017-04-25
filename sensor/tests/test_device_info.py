@@ -36,8 +36,8 @@ class DeviceInfoTest(TestCase):
 
         
         response = client.get( reverse("api.device.info" , kwargs = {"pk" : self.context.dev.id}) )
-        obj = json.loads( response.content )
         self.assertEqual( response.status_code , status.HTTP_200_OK)
+        obj = json.loads( response.content )
         expected = {"id" : self.context.dev.id,
                     "location" :  {"name"     : self.context.loc.name,
                                    "latitude" : float(self.context.loc.latitude),
@@ -49,6 +49,9 @@ class DeviceInfoTest(TestCase):
         for key in expected.keys():
             self.assertEqual( obj[key] , expected[key] )
 
+        self.assertTrue( "data" in obj )
+        print obj["data"]
+            
 
     def test_get_view(self):
         client = Client( )

@@ -190,10 +190,9 @@ class Sensor(Model):
     # subsequently used to update the status of all the relevant
     # RawData records.
     def get_rawdata(self):
-        qs = RawData.objects.filter(sensor_string_id=self.sensor_id,
-                                    processed=False).values_list('id',
-                                                                 'timestamp_data',
-                                                                 'value').order_by('timestamp_data')
+        qs = RawData.objects.filter(sensor_string_id=self.sensor_id).values_list('id',
+                                                                                 'timestamp_data',
+                                                                                 'value').order_by('timestamp_data')
 
         return qs
 
@@ -205,7 +204,6 @@ class RawData(Model):
     timestamp_data = DateTimeField()
     value = FloatField(default=-1)
     location = ForeignKey(Location)
-    processed = BooleanField(default=False)
     
     
     def __unicode__(self):

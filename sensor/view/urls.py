@@ -9,6 +9,3 @@ urlpatterns = [
     url(r'^device/(?P<pk>%s)/$' % models.Device.IDPattern, DeviceView.as_view() , name = "view.device.info"),
     url(r'^keys/$' , KeyView.as_view(), name = "key.view.main")
 ]
-    
-
-

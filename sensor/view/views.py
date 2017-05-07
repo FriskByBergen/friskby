@@ -17,9 +17,8 @@ class MainView(View):
 
 
 class DeviceView(View):
-    
+
     def get(self, request, pk):
         device = get_object_or_404( Device, pk = pk)
         device_data = DeviceSerializer( data = device )
         return render( request , "sensor/device.html" , device_data.get_data( ))
-        

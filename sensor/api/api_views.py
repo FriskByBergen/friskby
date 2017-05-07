@@ -1,7 +1,7 @@
 import json
 import requests
 import time
-import datetime 
+import datetime
 
 from django.conf import settings
 from django.http import QueryDict
@@ -20,18 +20,18 @@ import sensor.models as models
 from sensor.api.serializers import *
 from sensor.api.info_serializers import *
 
-        
+
 
 class MeasurementTypeListView(generics.ListCreateAPIView):
     queryset = models.MeasurementType.objects.all()
     serializer_class = MeasurementTypeSerializer
-    
 
 
-class MeasurementTypeView(generics.RetrieveAPIView):    
+
+class MeasurementTypeView(generics.RetrieveAPIView):
     queryset = models.MeasurementType.objects.all()
     serializer_class = MeasurementTypeSerializer
-    
+
 
 #################################################################
 
@@ -39,15 +39,15 @@ class MeasurementTypeView(generics.RetrieveAPIView):
 class DeviceTypeListView(generics.ListCreateAPIView):
     queryset = models.DeviceType.objects.all()
     serializer_class = DeviceTypeSerializer
-    
 
-class DeviceTypeView(generics.RetrieveAPIView):    
+
+class DeviceTypeView(generics.RetrieveAPIView):
     queryset = models.DeviceType.objects.all()
     serializer_class = DeviceTypeSerializer
 
 #################################################################
-    
-class DeviceView(View):    
+
+class DeviceView(View):
     #queryset = models.Device.objects.all()
     #serializer_class = DeviceSerializer
 
@@ -61,7 +61,7 @@ class DeviceView(View):
         else:
             return self.get_list( request )
 
-        
+
     def get_list(self, request):
         data = []
         for dev in models.Device.objects.all():
@@ -69,12 +69,12 @@ class DeviceView(View):
             if dev.location:
                 location_name = dev.location.name
             data.append( (dev.id , location_name ))
-            
+
         return JsonResponse( data , status = status.HTTP_200_OK , safe = False )
-    
 
 
-    
+
+
     def get_detail(self , request , device_id, key):
         try:
             device = Device.objects.get( pk = device_id )
@@ -91,7 +91,7 @@ class DeviceView(View):
 
         return JsonResponse( serial.get_data( ) )
 
-    
+
 
     def put(self , request , *args, **kwargs):
         device_id = kwargs["pk"]
@@ -103,22 +103,22 @@ class DeviceView(View):
         data = json.loads( request.body )
         if "key" in data:
             if not device.valid_post_key( data["key"] ):
-                return HttpResponse("Invalid key: %s for device:%s " % (data["key"], device_id) , 
+                return HttpResponse("Invalid key: %s for device:%s " % (data["key"], device_id) ,
                                     status = status.HTTP_403_FORBIDDEN )
         else:
-            return HttpResponse("Missing key for device: %s" % device_id , 
+            return HttpResponse("Missing key for device: %s" % device_id ,
                                 status = status.HTTP_403_FORBIDDEN )
-            
+
         if "git_ref" in data:
             device.client_version = data["git_ref"]
             device.save( )
             return HttpResponse("Client version set to: %s" % device.client_version, status = status.HTTP_200_OK )
         else:
             return HttpResponse("Empty payload?" , status = status.HTTP_204_NO_CONTENT)
-            
-            
 
-        
+
+
+
 
 
 
@@ -127,9 +127,9 @@ class DeviceView(View):
 class LocationListView(generics.ListCreateAPIView):
     queryset = models.Location.objects.all()
     serializer_class = LocationSerializer
-    
 
-class LocationView(generics.RetrieveAPIView):    
+
+class LocationView(generics.RetrieveAPIView):
     queryset = models.Location.objects.all()
     serializer_class = LocationSerializer
 
@@ -139,9 +139,9 @@ class LocationView(generics.RetrieveAPIView):
 class DataTypeListView(generics.ListCreateAPIView):
     queryset = models.DataType.objects.all()
     serializer_class = DataTypeSerializer
-    
 
-class DataTypeView(generics.RetrieveAPIView):    
+
+class DataTypeView(generics.RetrieveAPIView):
     queryset = models.DataType.objects.all()
     serializer_class = DataTypeSerializer
 
@@ -152,9 +152,9 @@ class DataTypeView(generics.RetrieveAPIView):
 class TimeStampListView(generics.ListCreateAPIView):
     queryset = models.TimeStamp.objects.all()
     serializer_class = TimeStampSerializer
-    
 
-class TimeStampView(generics.RetrieveAPIView):    
+
+class TimeStampView(generics.RetrieveAPIView):
     queryset = models.TimeStamp.objects.all()
     serializer_class = TimeStampSerializer
 
@@ -165,9 +165,9 @@ class TimeStampView(generics.RetrieveAPIView):
 class SensorListView(generics.ListCreateAPIView):
     queryset = models.Sensor.objects.all()
     serializer_class = SensorSerializer
-    
 
-class SensorView(generics.RetrieveAPIView):    
+
+class SensorView(generics.RetrieveAPIView):
     queryset = models.Sensor.objects.all()
     serializer_class = SensorSerializer
 
@@ -177,9 +177,9 @@ class SensorView(generics.RetrieveAPIView):
 class SensorTypeListView(generics.ListCreateAPIView):
     queryset = models.SensorType.objects.all()
     serializer_class = SensorTypeSerializer
-    
 
-class SensorTypeView(generics.RetrieveAPIView):    
+
+class SensorTypeView(generics.RetrieveAPIView):
     queryset = models.SensorType.objects.all()
     serializer_class = SensorTypeSerializer
 
@@ -196,18 +196,18 @@ class SensorInfoView(APIView):
                 sensor_list = [ models.Sensor.objects.get( sensor_id = sensor_id ) ]
             except models.Sensor.DoesNotExist:
                 return Response("The sensorID:%s is not found" % sensor_id , status.HTTP_404_NOT_FOUND)
-            
+
         result = []
         for sensor in sensor_list:
             serialized = SensorInfoSerializer( sensor )
             data = serialized.data
-            
+
             result.append( data )
-            
+
         if sensor_id is None:
-            return Response( result , status = status.HTTP_200_OK ) 
+            return Response( result , status = status.HTTP_200_OK )
         else:
-            return Response( result[0] , status = status.HTTP_200_OK ) 
+            return Response( result[0] , status = status.HTTP_200_OK )
 
 
 class ReadingView(APIView):
@@ -218,7 +218,7 @@ class ReadingView(APIView):
 #        else:
 #            return (status.HTTP_400_BAD_REQUEST , "Missing 'sensorid' field in payload")
 #
-#                    
+#
 #        if "value" in data:
 #            value = data["value"]
 #        else:
@@ -235,10 +235,10 @@ class ReadingView(APIView):
 #            if sensor.parent_device.location is None:
 #                if not "location" in data:
 #                    return (status.HTTP_400_BAD_REQUEST , "Sensor:%s does not have location - must supply in post" % sensorid)
-#                        
+#
 #        except models.Sensor.DoesNotExist:
 #            return (status.HTTP_404_NOT_FOUND , "The sensorID:%s is not found" % sensorid)
-#            
+#
 #        return (True , "")
 
 
@@ -248,7 +248,7 @@ class ReadingView(APIView):
             raw_data = RawData.create( request.data )
         except ValueError as e:
             return Response(str(e) , status = status.HTTP_400_BAD_REQUEST )
-        
+
         rd        = raw_data[0]
         value     = rd.value
         timestamp = rd.timestamp_data
@@ -263,7 +263,7 @@ class ReadingView(APIView):
             if not "location" in request.data:
                 return Response("Sensor:%s does not have location - must supply in post" % rd.sensor , status.HTTP_400_BAD_REQUEST)
             location = request.data["location"]
-                    
+
 
         if sensor.on_line:
             sensor.last_value = value
@@ -277,13 +277,13 @@ class ReadingView(APIView):
             return Response(1 , status.HTTP_201_CREATED)
         else:
             return Response("Sensor: %s is offline - rawdata created and stored" % rd.sensor_id )
-            
-        
+
+
 
     def get(self , request , sensor_id = None):
         if sensor_id is None:
             return Response("Must supply sensorid when querying" , status = status.HTTP_400_BAD_REQUEST )
-            
+
         try:
             if "num" in request.GET:
                 num = int(request.GET["num"])
@@ -300,8 +300,8 @@ class ReadingView(APIView):
             return Response(ts , status = status.HTTP_200_OK )
         except models.Sensor.DoesNotExist:
             return Response("No such sensor:%s" % sensor_id , status = status.HTTP_404_NOT_FOUND )
-            
-        
+
+
 
 
 
@@ -345,14 +345,14 @@ class CurrentValueView(APIView):
                 sensor_list = models.Sensor.objects.all( )
             else:
                 sensor_list = models.Sensor.objects.filter( sensor_type__measurement_type = mtype )
-            
+
             data = []
             for sensor in sensor_list:
-                sensor_data = sensor.get_current( timeout ) 
+                sensor_data = sensor.get_current( timeout )
                 if sensor_data is None:
                     sensor_data = {"sensorid" : sensor.sensor_id }
                 data.append( sensor_data )
-                
+
             return Response( data )
 
 
@@ -368,13 +368,13 @@ class RawDataView(APIView):
         data = []
         for row in query:
             data.append( (row.timestamp_data , row.value ))
-        
+
         return Response( data )
-                                       
+
 #################################################################
 
-class ClientLogView(APIView):    
-    
+class ClientLogView(APIView):
+
     def post(self , request):
         data = request.data
         try:
@@ -383,7 +383,7 @@ class ClientLogView(APIView):
             msg = data["msg"]
         except KeyError:
             return Response("Invalid log data" , status = 400)
-            
+
         try:
             device = Device.objects.get( pk = device_id )
         except Device.DoesNotExist:
@@ -399,8 +399,8 @@ class ClientLogView(APIView):
             return Response(1 , status.HTTP_201_CREATED )
         else:
             return Response("Invalid key :%s" % api_key , status = 403)
-    
-   
+
+
     def get(self, request):
         data = []
         for log_entry in ClientLog.objects.filter( ):
@@ -415,4 +415,3 @@ class ClientLogView(APIView):
             data.append( node )
 
         return Response( data )
-        

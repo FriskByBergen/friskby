@@ -29,6 +29,13 @@ class Location(Model):
     def __unicode__(self):
         return self.name
 
+    @classmethod
+    def create(cls, data):
+        altitude = data.get('altitude', 0)
+        return Location.objects.create(longitude=data['longitude'],
+                                       latitude=data['latitude'],
+                                       altitude=altitude,
+                                       name=data['name'])
 
 
 class DeviceType(Model):

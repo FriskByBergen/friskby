@@ -7,7 +7,6 @@ from sensor.management.commands.drop_testdata import Command as DropTestData
 from sensor.management.commands.add_testdata import Command as AddTestData
 from sensor.management.commands.drop_testdevice import Command as DropTestDevice
 from sensor.management.commands.add_testdevice import Command as AddTestDevice
-from sensor.management.commands.update_location import Command as UpdateLocation
 
 from sensor.management.commands.clean_test import Command as CleanTest
 from sensor.models import *
@@ -113,33 +112,3 @@ class CommandTest(TestCase):
         self.assertEqual(len(rd), len1)
 
 
-    def test_update_location(self):
-        add_dev = AddTestDevice( )
-        add_dev.handle( num = 100, device = ["FriskPITest"])
-        for rd in RawData.objects.all( ):
-            rd.location = self.context.loc2
-            rd.save() 
-
-        device = Device.objects.get( pk = "FriskPITest" ) 
-
-        ud = UpdateLocation( )
-        ud.handle( )
-        for rd in RawData.objects.all( ):
-            self.assertEqual( rd.location , device.location )
-        
-
-        for rd in RawData.objects.all( ):
-            rd.location = self.context.loc2
-            rd.save() 
-            
-        ud.handle( offset = 50, num = 10)
-        index = 0
-        for rd in RawData.objects.all( ):
-            if index < 50:
-                self.assertEqual( rd.location , self.context.loc2 )
-            elif index < 60:
-                self.assertEqual( rd.location , device.location )
-            else:
-                self.assertEqual( rd.location , self.context.loc2 )
-
-            index += 1

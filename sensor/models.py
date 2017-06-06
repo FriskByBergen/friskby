@@ -9,7 +9,6 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 
 from api_key.models import ApiKey
-from git_version.models import GitVersion
 
 
 class MeasurementType(Model):
@@ -62,7 +61,6 @@ class Device(Model):
     description = CharField("Description", max_length=256)
     post_key = ForeignKey(ApiKey)
     client_version = CharField(max_length=128, blank=True, null=True)
-    git_version = ForeignKey(GitVersion, blank=True, null=True)
     locked = BooleanField(default=True)
     owner = ForeignKey(User)
     channel = CharField(
@@ -89,11 +87,6 @@ class Device(Model):
                   "device_id" : self.id,
                   "channel": self.channel}
 
-
-        if self.git_version:
-            config["git_repo"] = self.git_version.repo
-            config["git_ref"] = self.git_version.ref
-            config["git_follow"] = self.git_version.follow_head
         return config
 
     def lockDevice(self):

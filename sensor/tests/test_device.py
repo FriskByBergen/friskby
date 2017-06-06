@@ -35,19 +35,11 @@ class DeviceTest(TestCase):
         self.assertTrue( "TEMP:XX" in sensor_list )
         self.assertTrue( "HUM:XX" in sensor_list )
 
-        self.assertFalse( "git_repo" in client_config )
-        self.assertFalse( "git_ref" in client_config )
-        self.assertFalse( "git_follow" in client_config )
-
-        self.context.dev.git_version = self.context.git_version
         self.context.dev.save(  )
         response = client.get("/sensor/api/device/%s/" % self.context.dev.id)
         data = json.loads(response.content)
         client_config = data["client_config"]
 
-        self.assertEqual( client_config["git_repo"] , self.context.git_version.repo )
-        self.assertEqual( client_config["git_ref"] , self.context.git_version.ref )
-        self.assertEqual( client_config["git_follow"] , self.context.git_version.follow_head )
         self.assertEqual(client_config["channel"], self.context.channel)
         self.assertTrue( "post_path" in client_config )
         self.assertTrue( "config_path" in client_config )
@@ -92,50 +84,6 @@ class DeviceTest(TestCase):
 
 
 
-    def test_post_version(self):
-        client = Client( )
-        device_id = self.context.dev.id
-
-        # Invalid key -> 403
-        data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
-        url = reverse( "api.device.info" , args = [ self.context.dev.id ])
-        response = client.put( url,
-                               data = json.dumps( data ) ,
-                               content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
-
-        # Missing key -> 403
-        data = {"git_ref" : "abcdef"}
-        response = client.put(url,
-                              data = json.dumps( data ) ,
-                              content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_403_FORBIDDEN )
-
-
-        # Invalid sensor -> 404
-        data = {"key" : "Invalid key" , "git_ref" : "abcdef"}
-        invalid_url = reverse( "api.device.info" , args = [ "NOXXX" ])
-        response = client.put( invalid_url,
-                               data = json.dumps( data ) ,
-                               content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_404_NOT_FOUND )
-
-        # No data -> 204
-        data = {"key" : str(self.context.dev.post_key.external_key)}
-        response = client.put( url,
-                               data = json.dumps( data ) ,
-                               content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_204_NO_CONTENT )
-
-        # All good -> 200
-        data = {"key" : str(self.context.dev.post_key.external_key) , "git_ref" : "abcdef"}
-        response = client.put(url,
-                              data = json.dumps( data ) ,
-                              content_type = "application/json")
-        self.assertEqual( response.status_code , status.HTTP_200_OK )
-
-        device = Device.objects.get( pk = device_id )
-        self.assertEqual( device.client_version , "abcdef")
 
 
     def test_post_log(self):

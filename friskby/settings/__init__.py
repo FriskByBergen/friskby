@@ -53,7 +53,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'git_version',
+    # The git_version app is no longer in use, but it must retained
+    # here to ensure that migrations continue to work.
+    'git_version',          
     'api_key',
     'sensor'
 )
